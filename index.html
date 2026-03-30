@@ -76,24 +76,18 @@
     @media (max-width: 1120px) { .content { grid-template-columns: 1fr; } #map { height: 520px; } .premium-banner { flex-direction:column; align-items:flex-start; } }
     @media (max-width: 760px) { .container { padding: 18px 14px 48px; } .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .controls { grid-template-columns: 1fr; } .item-top { flex-direction: column; align-items: start; } #map { height: 420px; } }
   </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B3FYWYWXTN"></script>
   <script>
-    const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
-    function initAnalytics() {
-      if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') return;
-      const s = document.createElement('script');
-      s.async = true;
-      s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-      document.head.appendChild(s);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function(){dataLayer.push(arguments);};
-      gtag('js', new Date());
-      gtag('config', GA_MEASUREMENT_ID);
-    }
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-B3FYWYWXTN');
+
     function trackEvent(name, params = {}) {
-      if (window.gtag && GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') gtag('event', name, params);
+      if (window.gtag) gtag('event', name, params);
       console.log('track:', name, params);
     }
-    initAnalytics();
   </script>
 </head>
 <body>
