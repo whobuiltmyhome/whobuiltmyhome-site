@@ -1,0 +1,184 @@
+{
+  "collections": [
+    {
+      "description": "Verified addresses with historical Buchan company sale or deed associations. Current-structure builders are unconfirmed; the John F. Buchan / William E. Buchan split remains unreviewed.",
+      "id": "buchan",
+      "name": "Buchan company associations",
+      "propertyCount": 2975,
+      "status": "available"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.buchan.com/about-us/",
+      "id": "john-f-buchan",
+      "name": "John F. Buchan / John Buchan Homes",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://buchanhomes.com/about",
+      "id": "william-e-buchan",
+      "name": "William E. Buchan / William Buchan Homes",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.burnstead.com/builder-documents-1",
+      "id": "burnstead",
+      "name": "Burnstead",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.murrayfranklyn.com/ourdifference",
+      "id": "murray-franklyn",
+      "name": "Murray Franklyn",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
+      "id": "camwest",
+      "name": "CamWest",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest",
+      "id": "quadrant",
+      "name": "Quadrant Homes",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.connerhomes.com/about/",
+      "id": "conner",
+      "name": "Conner Homes",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
+      "id": "toll-brothers",
+      "name": "Toll Brothers",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.mainvuehomes.com/wa/about-mainvue",
+      "id": "mainvue",
+      "name": "MainVue Homes",
+      "propertyCount": 0,
+      "status": "planned"
+    },
+    {
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "historySource": "https://www.lennar.com/new-homes/washington/seattle",
+      "id": "lennar",
+      "name": "Lennar",
+      "propertyCount": 0,
+      "status": "planned"
+    }
+  ],
+  "coverage": "A curated Buchan-associated release in King County, Washington. Missing results do not establish that a builder was uninvolved. The planned ten collections are not yet a countywide inventory.",
+  "detailsSha256": "a7cec1c52d36f0174abdc936696cf1f54c109ee07f5197274f96c59a6a6ff351",
+  "detailsUrl": "data/details.a7cec1c52d36f017.json",
+  "evidenceLabels": {
+    "associated": "Company association; builder unconfirmed",
+    "chronology-review": "Construction chronology needs review",
+    "land-only-evidence": "Land-only classification in supporting sales",
+    "legal-corroboration-missing": "Legal description not independently corroborated",
+    "minor-chronology-gap": "One or two-year date difference",
+    "multi-parcel-recording": "Recording covers multiple parcels",
+    "recording-crosswalk": "County recording crosswalk used"
+  },
+  "evidenceScope": "Verified current addresses and historical company associations. Builder attribution for the current structures has not been confirmed.",
+  "generatedAt": "2026-09-14T18:50:14Z",
+  "geometryAvailable": false,
+  "geometryDescription": "This release has no reviewed home-level coordinates. County parcel maps remain available through property links.",
+  "heldRecoveryCandidateCount": 362,
+  "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation.",
+  "indexSha256": "f38761569ab8e16ac3990be96ba2af9f1c4f0345280eb1161fe935253969b7bb",
+  "indexUrl": "data/index.f38761569ab8e16a.json",
+  "postalSourceAsOf": [
+    "2026-09-11",
+    "2026-09-13"
+  ],
+  "priorityReviewPropertyCount": 57,
+  "releaseId": "2026-09-14-buchan-associations-v1",
+  "researchWindow": [
+    1976,
+    2026
+  ],
+  "researchWindowDescription": "Recording-history research window, not continuous or complete historical coverage. County construction years are retained separately and can precede 1976.",
+  "reviewCounts": {
+    "chronology-review": 18,
+    "land-only-evidence": 52,
+    "legal-corroboration-missing": 401,
+    "minor-chronology-gap": 162,
+    "multi-parcel-recording": 15,
+    "recording-crosswalk": 105
+  },
+  "reviewFlagDescriptions": {
+    "chronology-review": "The county construction year is at least three years after the earliest verified company recording. Structure identity and construction history need review; rebuilding is not established.",
+    "land-only-evidence": "Supporting Assessor sales include residential land-only classifications and no residential improved-property classification. This does not establish who built the current structure.",
+    "legal-corroboration-missing": "The complete plat, lot, and block combination was not independently corroborated. The verified association uses the Assessor recording-to-parcel crosswalk.",
+    "minor-chronology-gap": "The county construction year is one or two years after the earliest verified company recording. This date difference alone does not establish rebuilding or a different builder.",
+    "multi-parcel-recording": "The Assessor links a supporting recording to more than one parcel. Each public record remains a distinct verified PIN.",
+    "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk."
+  },
+  "ruleVersion": "buchan-public-projection-1",
+  "sourceAsOf": "2026-09-04",
+  "sourceRetrievedOn": "2026-09-13",
+  "sourceSnapshots": {
+    "finalVerificationSha256": "1f06d5b3a931e4b0cb70eba281027595676b6893e552025063f595c7ef38b45a",
+    "independentAssessorEvidenceSha256": "c51d53e80ae134e368030bd4b879c23a8df46ad56ab96774682fc07aad722941"
+  },
+  "sources": [
+    {
+      "asOf": "2026-09-04",
+      "name": "Legal",
+      "retrievedOn": "2026-09-13",
+      "sha256": "f3dda171edd47110bfa717266bc22f599d2ad801d6511eca419eb7c75dfa05aa",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Legal.zip"
+    },
+    {
+      "asOf": "2026-09-04",
+      "name": "Lookup",
+      "retrievedOn": "2026-09-13",
+      "sha256": "27b5d492021bfdbd6b245f4890e068af1dda6a165bcaea3860616a11c468489e",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Lookup.zip"
+    },
+    {
+      "asOf": "2026-09-04",
+      "name": "Parcel",
+      "retrievedOn": "2026-09-13",
+      "sha256": "e60e188614671eeeda303e30dac2a2608c7fc7930cb1d4e768f4bc0626e60316",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Parcel.zip"
+    },
+    {
+      "asOf": "2026-09-04",
+      "name": "Real Property Sales",
+      "retrievedOn": "2026-09-13",
+      "sha256": "efd110440e9bde37186ca3751bb81a9e3253e8389c9486e02b1d8ec53d0c7c88",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "asOf": "2026-09-04",
+      "name": "Residential Building",
+      "retrievedOn": "2026-09-13",
+      "sha256": "2ee8fca58b6b436c27188fedcca1132230b085ec24312f34cd2a6d4067f5291d",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
+    }
+  ],
+  "verifiedPropertyCount": 2975,
+  "version": 1
+}
