@@ -128,7 +128,33 @@ async function bootstrap() {
   let lastTrackedSearch = '';
   let detailRequest = 0;
   let isReady = false;
+  let mapController = null;
+  let mapLoading = null;
+  let mapExpanded = false;
   const integer = value => Number(value).toLocaleString('en-US');
+
+  async function showMap() {
+    if (!isReady || !manifest.geometryAvailable) return;
+    byId('map-error').hidden = true;
+    byId('retry-map').hidden = true;
+    byId('map-status').textContent = 'Loading parcel locations and map…';
+    try {
+      if (!mapController) {
+        if (!mapLoading) mapLoading = import('./property-map.js').then(({ createPropertyMap }) => {
+          mapController = createPropertyMap({ manifest, properties, onOpen: pin => openProperty(pin, true),
+            elements: { canvas: byId('property-map'), status: byId('map-status'), error: byId('map-error'),
+              retry: byId('retry-map'), fit: byId('fit-map'), tileNotice: byId('map-tile-notice') } });
+        }).finally(() => { mapLoading = null; });
+        await mapLoading;
+      }
+      mapController.setProperties(filtered);
+      if (mapExpanded) await mapController.show();
+    } catch {
+      byId('map-status').textContent = 'Map unavailable. Search results are still available below.';
+      byId('map-error').hidden = false;
+      byId('retry-map').hidden = false;
+    }
+  }
 
   function syncUrl() {
     const next = `${window.location.pathname}${buildUrlSearch(state)}${window.location.hash}`;
@@ -177,6 +203,7 @@ async function bootstrap() {
     ui['filter-error'].hidden = !invalidYears;
     ui['filter-error'].textContent = invalidYears ? 'The “from” year must be earlier than or equal to the “to” year.' : '';
     filtered = filterProperties(properties, state);
+    mapController?.setProperties(filtered);
     const page = paginateProperties(filtered, state.page);
     state.page = page.page;
     ui['property-list'].replaceChildren(...page.items.map(propertyRow));
@@ -416,6 +443,7 @@ async function bootstrap() {
       ui['search-button'].disabled = false;
       ui.filters.disabled = false;
       ui.sort.disabled = false;
+      byId('toggle-map').disabled = !manifest.geometryAvailable;
       render();
       if (state.pin) await openProperty(state.pin);
     } catch { showLoadError(); }
@@ -429,6 +457,16 @@ async function bootstrap() {
     render();
     emitSearch();
   });
+  byId('toggle-map').addEventListener('click', () => {
+    mapExpanded = !mapExpanded;
+    byId('toggle-map').setAttribute('aria-expanded', String(mapExpanded));
+    byId('toggle-map').textContent = mapExpanded ? 'Hide map' : 'Show map';
+    byId('map-content').hidden = !mapExpanded;
+    if (mapExpanded) void showMap();
+    else mapController?.hide();
+  });
+  byId('retry-map').addEventListener('click', () => { void showMap(); });
+  byId('fit-map').addEventListener('click', () => mapController?.fit());
   ui.search.addEventListener('input', () => {
     clearTimeout(searchTimer);
     state.q = ui.search.value.slice(0, MAX_QUERY_LENGTH).trim();

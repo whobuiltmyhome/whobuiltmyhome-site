@@ -85,7 +85,6 @@ class PublicReleaseTests(unittest.TestCase):
                        for row in self.rows)
         self.assertEqual(priority, 57)
         self.assertEqual(priority, self.manifest["priorityReviewPropertyCount"])
-        self.assertFalse(self.manifest["geometryAvailable"])
 
 
 class ProjectionPolicyTests(unittest.TestCase):

@@ -55,11 +55,22 @@
         <div><h2 id="results-title" tabindex="-1">Explore the records</h2><p id="result-summary" role="status" aria-live="polite" aria-atomic="true">Loading the published collection…</p></div>
         <div class="result-tools"><button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button><label class="sort-label" for="sort">Sort</label><select id="sort" aria-label="Sort properties" disabled><option value="address">Address</option><option value="city">City</option><option value="year-asc">Year: oldest first</option><option value="year-desc">Year: newest first</option></select></div>
       </div>
+      <section class="map-panel" aria-labelledby="map-title">
+        <div class="map-heading"><div><h3 id="map-title">Explore on the map</h3><p>Follow the search results across King County.</p></div><button id="toggle-map" class="button button-secondary" type="button" aria-expanded="false" aria-controls="map-content" disabled>Show map</button></div>
+        <div id="map-content" hidden>
+          <div class="map-tools"><p id="map-status" role="status" aria-live="polite">Loading parcel locations…</p><button id="fit-map" class="button button-secondary" type="button" disabled>Fit results</button></div>
+          <div id="map-error" class="map-error" hidden><p>The map could not be loaded. You can keep searching the list below.</p><button id="retry-map" class="button button-secondary" type="button" hidden>Retry map</button></div>
+          <p id="map-tile-notice" class="map-error" role="status" hidden></p>
+          <div id="property-map" class="property-map" role="region" aria-label="Map of matching parcel locations" aria-describedby="map-help" tabindex="0"></div>
+          <p id="map-help" class="map-help">Select a numbered cluster to zoom in, then select a dot to open its record. Dots show approximate county parcel centers, not surveyed building locations. All matching records are included across list pages; moving the map does not change your filters.</p>
+          <div class="map-credit"><span>Parcel locations: <a href="https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0" target="_blank" rel="noopener noreferrer">King County GIS</a></span><a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener noreferrer">Report a background map issue ↗</a></div>
+        </div>
+      </section>
       <div id="load-state" class="state-panel" aria-live="polite"><div class="loader" aria-hidden="true"></div><p>Loading property records…</p></div>
       <ul id="property-list" class="property-list" aria-label="Matching property records" hidden></ul>
       <div id="empty-state" class="state-panel" hidden><span class="empty-icon" aria-hidden="true">⌕</span><h3>No matching records</h3><p>Try a shorter address or fewer filters. A missing result does not mean a company never worked on that property.</p><button class="button button-secondary" id="reset-empty" type="button">Clear search and filters</button></div>
       <nav id="pagination" class="pagination" aria-label="Result pages" hidden><button id="previous-page" class="button button-secondary" type="button">← Previous</button><span id="page-label"></span><button id="next-page" class="button button-secondary" type="button">Next →</button></nav>
-      <p class="map-note">Looking for a parcel map? Open a record for the official King County map. This release does not include home-level map coordinates.</p>
+      <p class="map-note">For parcel boundaries and additional county layers, open a property record and follow its official King County map link.</p>
       <noscript><div class="state-panel"><h2>JavaScript is needed for this explorer</h2><p>Search runs in your browser. You can also look up a property directly in <a href="https://blue.kingcounty.com/Assessor/eRealProperty/default.aspx" rel="noreferrer">King County eReal Property</a>.</p></div></noscript>
     </section>
 
