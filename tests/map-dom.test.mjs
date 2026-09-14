@@ -1,0 +1,107 @@
+// DOM integration, using the real vendored map libraries without requesting tiles.
+// This verifies behavior; it is not a visual browser or mobile rendering test.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
+
+test('real app and map recover from geometry failure, share filters, open evidence and keep list usable', async () => {
+  const root = new URL('../', import.meta.url);
+  const dom = new JSDOM(readFileSync(new URL('index.html', root), 'utf8'), {
+    url: 'http://localhost:8765/', runScripts: 'outside-only', pretendToBeVisual: true,
+  });
+  const { window } = dom;
+  const { document } = window;
+  const saved = new Map(['window', 'document', 'navigator', 'fetch'].map(k => [k, Object.getOwnPropertyDescriptor(globalThis, k)]));
+  let failGeometry = true;
+  const requested = [];
+  const fetchLocal = async input => {
+    const path = new URL(String(input)).pathname.slice(1);
+    requested.push(path);
+    if (path.includes('geometry.') && failGeometry) return { ok: false };
+    const content = JSON.parse(readFileSync(new URL(path, root), 'utf8'));
+    return { ok: true, json: async () => structuredClone(content) };
+  };
+  Object.defineProperties(globalThis, {
+    window: { value: window, configurable: true }, document: { value: document, configurable: true },
+    navigator: { value: window.navigator, configurable: true }, fetch: { value: fetchLocal, configurable: true },
+  });
+  window.matchMedia = () => ({ matches: true });
+  window.HTMLElement.prototype.scrollIntoView = function () {};
+  window.HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
+  window.HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); this.dispatchEvent(new window.Event('close')); };
+  window.SVGSVGElement.prototype.createSVGRect = () => ({});
+  const canvas = document.getElementById('property-map');
+  Object.defineProperties(canvas, { clientWidth: { value: 960 }, clientHeight: { value: 460 } });
+  const append = document.head.append.bind(document.head);
+  document.head.append = (...nodes) => {
+    append(...nodes);
+    for (const node of nodes) queueMicrotask(() => {
+      try {
+        if (node.tagName === 'SCRIPT') window.eval(readFileSync(fileURLToPath(node.src), 'utf8'));
+        node.onload?.();
+      } catch (error) { node.onerror?.(error); }
+    });
+  };
+  const byId = id => document.getElementById(id);
+  const until = async predicate => {
+    const deadline = Date.now() + 7000;
+    while (!predicate()) {
+      if (Date.now() > deadline) throw new Error('Timed out: ' + predicate.toString());
+      await new Promise(resolve => setTimeout(resolve, 25));
+    }
+  };
+  const change = (id, value, event = 'change') => { byId(id).value = value; byId(id).dispatchEvent(new window.Event(event, { bubbles: true })); };
+  try {
+    await import('../app.js');
+    await until(() => !byId('toggle-map').disabled);
+    assert.equal(document.querySelectorAll('.property-item').length, 50);
+    assert.equal(requested.some(path => path.includes('geometry.')), false, 'geometry stays lazy');
+    byId('toggle-map').click();
+    await until(() => !byId('retry-map').hidden);
+    assert.equal(document.querySelectorAll('.property-item').length, 50, 'map failure preserves list');
+    failGeometry = false;
+    byId('retry-map').click();
+    await until(() => byId('map-status').textContent.startsWith('2,975 of 2,975'));
+    assert.ok(canvas.querySelector('.property-map-cluster'), 'real library creates clusters');
+    assert.ok(canvas.querySelector('img.leaflet-tile').referrerPolicy === 'origin');
+    assert.ok(canvas.querySelector('.leaflet-control-attribution').textContent.includes('OpenStreetMap'));
+    const beforeZoom = canvas.querySelector('.leaflet-marker-pane').innerHTML;
+    canvas.querySelector('.property-map-cluster').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    await until(() => canvas.querySelector('.leaflet-marker-pane').innerHTML !== beforeZoom);
+    change('city', 'BELLEVUE'); change('year-from', '1980'); change('year-to', '1990');
+    await until(() => byId('map-status').textContent.startsWith('58 of 58'));
+    const markersBeforePage = canvas.querySelector('.leaflet-marker-pane').innerHTML;
+    byId('next-page').click();
+    assert.equal(document.querySelectorAll('.property-item').length, 8);
+    await new Promise(resolve => setTimeout(resolve, 250));
+    assert.equal(byId('map-status').textContent.startsWith('58 of 58'), true);
+    assert.equal(canvas.querySelector('.leaflet-marker-pane').innerHTML, markersBeforePage);
+    byId('clear-filters').click();
+    change('search', '0098000130', 'input');
+    await until(() => byId('map-status').textContent.startsWith('1 of 1'));
+    canvas.querySelector('.property-map-pin').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    await until(() => byId('detail-body').textContent.includes('Recording references'));
+    assert.equal(byId('detail-title').textContent, '2432 279TH DR SE');
+    assert.equal(byId('property-dialog').open, true);
+    byId('close-detail').click();
+    change('search', 'no-such-address-ever', 'input');
+    await until(() => byId('map-status').textContent.startsWith('No matching records'));
+    assert.equal(canvas.querySelectorAll('.leaflet-marker-icon').length, 0);
+    assert.equal(byId('empty-state').hidden, false);
+    assert.equal(byId('fit-map').disabled, true);
+    byId('toggle-map').click();
+    assert.equal(byId('map-content').hidden, true);
+    assert.equal(canvas.querySelectorAll('img.leaflet-tile').length, 0, 'hidden map removes tile layer');
+    byId('reset-empty').click();
+    assert.equal(document.querySelectorAll('.property-item').length, 50);
+    assert.equal(requested.every(path => path.startsWith('data/')), true, 'search makes no geocoding requests');
+  } finally {
+    dom.window.close();
+    for (const [key, descriptor] of saved) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+      else delete globalThis[key];
+    }
+  }
+});

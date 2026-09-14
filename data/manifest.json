@@ -102,8 +102,8 @@
   },
   "evidenceScope": "Verified current addresses and historical company associations. Builder attribution for the current structures has not been confirmed.",
   "generatedAt": "2026-09-14T18:50:14Z",
-  "geometryAvailable": false,
-  "geometryDescription": "This release has no reviewed home-level coordinates. County parcel maps remain available through property links.",
+  "geometryAvailable": true,
+  "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
   "heldRecoveryCandidateCount": 362,
   "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation.",
   "indexSha256": "f38761569ab8e16ac3990be96ba2af9f1c4f0345280eb1161fe935253969b7bb",
@@ -113,7 +113,7 @@
     "2026-09-13"
   ],
   "priorityReviewPropertyCount": 57,
-  "releaseId": "2026-09-14-buchan-associations-v1",
+  "releaseId": "2026-09-14-buchan-associations-map-v1",
   "researchWindow": [
     1976,
     2026
@@ -180,5 +180,11 @@
     }
   ],
   "verifiedPropertyCount": 2975,
-  "version": 1
+  "version": 1,
+  "geometryUrl": "data/geometry.ec5d694cf13a0bc1.json",
+  "geometrySha256": "ec5d694cf13a0bc1fd9725ffdfdfde19a8554d132961a92d60e163a9b81cbf99",
+  "mappedPropertyCount": 2975,
+  "unmappedPropertyCount": 0,
+  "geometrySource": "https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0",
+  "geometryRetrievedAt": "2026-09-14T23:44:09.802011+00:00"
 }

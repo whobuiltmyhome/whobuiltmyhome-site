@@ -8,8 +8,9 @@ The proposed ten brand collections are shown as awaiting evidence.
 
 ## Run locally
 
-Requires Python 3 and Node 20 or later. No package installation, hosted database,
-API service, or build step is needed to serve the site.
+Requires Python 3 to serve locally. No package installation, hosted database,
+API service, or build step is needed to serve the site. The test suite uses
+Node 20 or later and a development-only DOM test dependency.
 
 ```sh
 python3 -m http.server 8765
@@ -19,6 +20,7 @@ Open http://localhost:8765. Use HTTP instead of opening index.html directly,
 because the browser fetches the local data files.
 
 ```sh
+npm ci
 npm test
 python3 -m unittest discover -s tests -p 'data*.py'
 ```
@@ -33,8 +35,12 @@ See [the data contract](docs/data-contract.md) for the deterministic export,
 provenance, review labels, and input paths. Keep raw source evidence outside this
 public repository. Do not replace a reviewed release with a keyword candidate scan.
 
-The page offers official county parcel-map links. Home-level map geometry has
-not been joined into this release; the prior city-center circles have been removed.
+Choose **Show map** above the list to explore all matching records as clustered
+parcel centers. Search and filters control both views; list pagination does not
+limit the map. Click a cluster to zoom and a dot to open the evidence record.
+All 2,975 released records have exact PIN/street/ZIP matches to county geometry.
+The map uses approximate parcel centers, not surveyed building positions.
+See [mapping.md](docs/mapping.md) for data provenance and tile-provider behavior.
 
 ## Measurement and publishing
 

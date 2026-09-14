@@ -13,12 +13,13 @@ Fetch `data/manifest.json` first. `indexUrl` and `detailsUrl` are **relative to 
 | `manifest.json` | `version`, `releaseId`, `ruleVersion`, `verifiedPropertyCount`, `generatedAt`, `sourceAsOf`, `sourceRetrievedOn`, `postalSourceAsOf`, `indexUrl`, `indexSha256`, `detailsUrl`, `detailsSha256`, `collections`, evidence labels, review counts, coverage limitations and source provenance |
 | `index.<hash>.json` | Array of `{id, pin, address, city, zip, yearBuilt, collectionIds, status, reviewFlags}` |
 | `details.<hash>.json` | Object keyed by PIN: `{countyUrl, mapUrl, firstCompanyRecording, recordings, notes, addressStatus, builderStatus}` |
+| `geometry.<hash>.json` | Parcel centers keyed by PIN in `[latitude, longitude]` order, explicit exclusions, index hash, source and matching-rule provenance |
 
 `pin` is always a ten-digit string, including leading zeroes; `id` is `king-wa:` plus PIN. `address` is the street address; city and ZIP are separate. `yearBuilt` is the county construction year as a number, or `null` when unknown. A county year can precede the 1976–2026 recording-history research window; keep it unchanged. `collectionIds` is an array to permit future independently reviewed overlapping associations without inflating the distinct-property count.
 
 The index `status` is `associated`. Detail `addressStatus` is `verified`, and `builderStatus` is `unconfirmed`. `firstCompanyRecording` is an ISO calendar date of the earliest verified company recording, not the construction date or sale document date. `recordings` contains recording-identifier strings only. Display them as references. Details link to the county property record and parcel map; no unreviewed recording links are included.
 
-There are no reviewed home-level coordinates in this release. `geometryAvailable` is false. Do not infer a property's coordinates from a city center or a neighborhood marker. Property-list operation does not depend on maps.
+`geometryAvailable` is true for the map release. Its `geometryUrl` is fetched only when the map opens. `mappedPropertyCount` is 2,975 and `unmappedPropertyCount` is zero. These are approximate official parcel centers matched by exact PIN, normalized street, and ZIP; they are not surveyed building locations. See [mapping.md](mapping.md) for the separate geometry build and validation. Property-list operation does not depend on maps.
 
 ## Evidence and chronology rules
 
@@ -57,6 +58,6 @@ python scripts/build-public-data.py \
 python -m unittest discover -s tests -p 'data*_test.py'
 ```
 
-Reuse the same explicit generation timestamp to reproduce the manifest byte for byte. The same inputs always produce the same sorted index, detail bytes, filenames, and counts. The exporter checks count reconciliation, unique string PINs, held exclusions, known lookup meanings, proposed collection status, and source-grounded review totals before writing anything. Tests also cover privacy allowlisting, leading-zero identifiers, chronological edge cases, and cross-parcel classification isolation.
+Reuse the same explicit generation timestamp to reproduce the base manifest byte for byte. The same inputs always produce the same sorted index, detail bytes, filenames, and counts. Run the separate map exporter afterward with the matching cached geometry snapshot to reproduce the map-enabled manifest. A base-only export deliberately sets geometry unavailable until that matching geometry is attached. The exporter checks count reconciliation, unique string PINs, held exclusions, known lookup meanings, proposed collection status, and source-grounded review totals before writing anything. Tests also cover privacy allowlisting, leading-zero identifiers, chronological edge cases, and cross-parcel classification isolation.
 
 Payloads are written before the manifest, whose local replacement is atomic. Publish the manifest and referenced assets in one deployment snapshot; changing the manifest alone is insufficient. Retain prior hashed payloads for rollback and in-flight readers. This script does not deploy the site or delete earlier releases.
