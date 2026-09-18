@@ -24,11 +24,11 @@
       "status": "planned"
     },
     {
-      "description": "Initial collection covers three exact LLC names in 2010\u20132026 county transactions. Earlier corporations, Steven/Steve substitutions, truncated names, other affiliates and combined sellers await review. A current company document does not establish retrospective legal continuity.",
+      "description": "County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976\u2013September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home.",
       "historySource": "https://www.burnstead.com/builder-documents-1",
       "id": "burnstead",
       "name": "Burnstead",
-      "propertyCount": 173,
+      "propertyCount": 2584,
       "status": "available"
     },
     {
@@ -89,8 +89,8 @@
     }
   ],
   "coverage": "Partial King County collections for Buchan, Burnstead and Quadrant company associations. A missing result does not establish that a company was uninvolved. Other brands await evidence review.",
-  "detailsSha256": "98591ca5d80652750daaf336c909c193770381e585c6f159fb43572f11a8003f",
-  "detailsUrl": "data/details.98591ca5d8065275.json.gz",
+  "detailsSha256": "1a887856e4831dc8bcb2a6c389f05ee5e80e3f6d08de7ef7c724a1e2c8088472",
+  "detailsUrl": "data/details.1a887856e4831dc8.json.gz",
   "evidenceLabels": {
     "associated": "Company association; builder unconfirmed",
     "chronology-review": "Construction chronology needs review",
@@ -102,33 +102,33 @@
     "assessor-sale-association": "Assessor sale association; deed image unreviewed"
   },
   "evidenceScope": "Verified current addresses and historical company associations. Builder attribution for the current structures has not been confirmed.",
-  "generatedAt": "2026-09-15T21:40:00Z",
+  "generatedAt": "2026-09-18T06:30:00Z",
   "geometryAvailable": true,
   "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
   "heldRecoveryCandidateCount": 362,
   "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation.",
-  "indexSha256": "80b9523aaef5f9c1300ca01bdf28c19918c7f8d3ae94e1d52cdce2fa99505cf1",
-  "indexUrl": "data/index.80b9523aaef5f9c1.json.gz",
+  "indexSha256": "71ea4b724d5a69a139a0e2824af49bae2fd2130dc7bdc68336aa9faff35abade",
+  "indexUrl": "data/index.71ea4b724d5a69a1.json.gz",
   "postalSourceAsOf": [
     "2026-09-11",
     "2026-09-13",
-    "2026-09-15"
+    "2026-09-18"
   ],
-  "priorityReviewPropertyCount": 1465,
-  "releaseId": "2026-09-15-burnstead-quadrant-associations-v1",
+  "priorityReviewPropertyCount": 1621,
+  "releaseId": "2026-09-18-expanded-burnstead-associations-v2",
   "researchWindow": [
     1976,
     2026
   ],
   "researchWindowDescription": "Recording-history research window, not continuous or complete historical coverage. County construction years are retained separately and can precede 1976.",
   "reviewCounts": {
+    "assessor-sale-association": 8153,
+    "minor-chronology-gap": 1999,
+    "multi-parcel-recording": 1773,
+    "land-only-evidence": 1573,
+    "chronology-review": 209,
     "legal-corroboration-missing": 401,
-    "recording-crosswalk": 105,
-    "minor-chronology-gap": 1659,
-    "land-only-evidence": 1456,
-    "assessor-sale-association": 5742,
-    "chronology-review": 145,
-    "multi-parcel-recording": 1355
+    "recording-crosswalk": 105
   },
   "reviewFlagDescriptions": {
     "chronology-review": "The county construction year is at least three years after the earliest verified company recording. Structure identity and construction history need review; rebuilding is not established.",
@@ -139,7 +139,7 @@
     "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk.",
     "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed."
   },
-  "ruleVersion": "reviewed-company-associations-v1",
+  "ruleVersion": "reviewed-company-associations-v2",
   "sourceAsOf": "2026-09-04",
   "sourceRetrievedOn": "2026-09-13",
   "sourceSnapshots": {
@@ -183,14 +183,14 @@
       "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
     }
   ],
-  "verifiedPropertyCount": 8717,
+  "verifiedPropertyCount": 11123,
   "version": 2,
-  "geometryUrl": "data/geometry.c1d450529634fc33.json.gz",
-  "geometrySha256": "c1d450529634fc332a22f0b40f4bdd42bd036e67b827cf3ea2bd485006a7c91d",
-  "mappedPropertyCount": 8717,
+  "geometryUrl": "data/geometry.7d0d2b8641b6cf26.json.gz",
+  "geometrySha256": "7d0d2b8641b6cf26c2f7eee7270184e3cb74aa3be13949e9b94b41a4174b1eac",
+  "mappedPropertyCount": 11123,
   "unmappedPropertyCount": 0,
   "geometrySource": "https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0",
-  "geometryRetrievedAt": "2026-09-15T21:34:37.363137+00:00",
+  "geometryRetrievedAt": "2026-09-18T12:04:21.486830+00:00",
   "entities": [
     {
       "id": "burnstead-construction-llc",
@@ -209,6 +209,30 @@
       "name": "Steve Burnstead Construction LLC",
       "collectionId": "burnstead",
       "sourceUrl": "https://www.burnstead.com/builder-documents-1"
+    },
+    {
+      "id": "historical-burnstead-construction",
+      "name": "Historical Burnstead-named construction company",
+      "collectionId": "burnstead",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "historical-rick-burnstead-construction",
+      "name": "Historical Rick Burnstead-named construction company",
+      "collectionId": "burnstead",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "historical-steve-burnstead-construction",
+      "name": "Historical Steve or Steven Burnstead-named construction company",
+      "collectionId": "burnstead",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "historical-burnstead-homes",
+      "name": "Historical Burnstead Homes-named company",
+      "collectionId": "burnstead",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
     },
     {
       "id": "quadrant-corporation",

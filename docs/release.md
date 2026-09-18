@@ -1,13 +1,13 @@
-# September 15, 2026 collection expansion
+# September 18, 2026 Burnstead expansion
 
-The release adds 173 Burnstead-associated and 5,569 Quadrant-associated addresses
-to the original 2,975 Buchan addresses: **8,717 distinct mapped properties**.
-There are no overlapping PINs between these three released cohorts. Search,
+The release adds 2,584 Burnstead-associated and 5,569 Quadrant-associated addresses
+to the original 2,975 Buchan addresses: **11,123 distinct mapped properties**.
+Five PINs have both Buchan and Burnstead company connections. Search,
 collection filters and the map use the same complete inventory.
 
-Burnstead covers three reviewed LLC names in 2010–2026 transactions. Quadrant
+Burnstead covers three documented current LLCs plus historical Burnstead-named construction and homes sellers in 1976–2026 county transactions. Quadrant
 covers five corporate-name forms through 2020. These are partial company-sale
-collections; no original builder is certified. Earlier Burnstead corporations,
+collections; no original builder is certified. Burnstead historical names do not establish legal succession, and
 unreviewed variants, successor brands and other builder collections await review.
 The two Buchan attributions remain unresolved.
 

@@ -1,7 +1,7 @@
 """Expansion gates: preserve the frozen cohort and reject unsupported associations."""
 from collections import Counter
-import hashlib
 import gzip
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -44,15 +44,18 @@ class ExpansionTests(unittest.TestCase):
             for field in ('firstCompanyRecording', 'recordings', 'notes'):
                 self.assertEqual(c[field], original[p][field])
 
-    def test_exact_aliases_and_dates_reject_false_matches(self):
+    def test_reviewed_aliases_and_historical_business_names_reject_false_matches(self):
         self.assertEqual(builder.entity_for('The Quadrant Corp.', '2018-01-01', '2018-01-02')['id'], 'quadrant-corporation')
+        self.assertEqual(builder.entity_for('BURNSTEAD CONSTRUCTION CO', '2005-01-01', '2005-01-02')['id'], 'historical-burnstead-construction')
+        self.assertEqual(builder.entity_for('STEVEN BURNSTEAD CONSTRUCTION CO', '2005-01-01', '2005-01-02')['id'], 'historical-steve-burnstead-construction')
+        self.assertEqual(builder.entity_for('RICK BURNSTEAD CONSTRUCTION CO', '2005-01-01', '2005-01-02')['id'], 'historical-rick-burnstead-construction')
+        self.assertEqual(builder.entity_for('BURNSTEAD HOMES INC', '1992-01-01', '1992-01-02')['id'], 'historical-burnstead-homes')
         for name in ('QUADRANT REAL ESTATE LLC', 'QUADRANT CORPORAITON',
                      'TRI POINTE HOMES WASHINGTON INC +QUADRANT CORP',
-                     'STEVEN BURNSTEAD CONSTRUCTION LLC', 'BURNSTEAD CONSTRUCTION CO',
-                     'PRIVATE PERSON + RICK BURNSTEAD CONSTRUCTION LLC'):
+                     'BURNSTEAD FREDERICK H', 'BURNSTEAD INVESTMENTS LLC'):
             self.assertIsNone(builder.entity_for(name, '2018-01-01', '2018-01-02'))
         self.assertIsNone(builder.entity_for('QUADRANT CORPORATION', '2021-01-01', '2021-01-02'))
-        self.assertIsNone(builder.entity_for('RICK BURNSTEAD CONSTRUCTION LLC', '2009-01-01', '2009-01-02'))
+        self.assertEqual(builder.entity_for('RICK BURNSTEAD CONSTRUCTION LLC', '2009-01-01', '2009-01-02')['id'], 'historical-rick-burnstead-construction')
         self.assertIsNone(builder.entity_for('QUADRANT CORPORATION', '2020-12-30', '2021-01-02'))
 
     def test_sale_gate_rejects_invalid_recordings_and_unreviewed_instruments(self):
@@ -64,7 +67,7 @@ class ExpansionTests(unittest.TestCase):
         self.assertNotIn('PRIVATE_', json.dumps(projected))
         for key, value in [('RecordingNbr', ''), ('RecordingNbr', '201813990001'),
                            ('SaleInstrument', '15'), ('PropertyClass', '3'),
-                           ('SellerName', 'BURNSTEAD CONSTRUCTION CO')]:
+                           ('SellerName', 'BURNSTEAD FREDERICK H')]:
             self.assertIsNone(builder.sale_evidence(dict(row, **{key: value})))
 
     def test_public_schema_membership_counts_and_hashes_reconcile(self):
