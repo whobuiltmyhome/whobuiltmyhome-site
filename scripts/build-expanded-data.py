@@ -26,6 +26,11 @@ POLICY = json.loads((ROOT / 'data/entity-policy.json').read_text())
 BASE = json.loads((ROOT / 'tests/fixtures/buchan-manifest.json').read_text())
 COUNTY = 'https://blue.kingcounty.com/Assessor/eRealProperty/Detail.aspx?ParcelNbr='
 MAP = 'https://gismaps.kingcounty.gov/parcelviewer2/?pin='
+COLLECTION_KEYWORDS = {
+    'burnstead': ('BURNSTEAD',),
+    'murray-franklyn': ('MURRAY FRANKLYN', 'MURRAY FRANKLIN'),
+    'quadrant': ('QUADRANT',),
+}
 
 
 def digest(data):
@@ -36,17 +41,25 @@ def names(value):
     return re.sub(r'\s+', ' ', re.sub(r'[.,]', '', value.upper())).strip()
 
 
+def collection_matches(collection, seller):
+    return any(keyword in seller for keyword in COLLECTION_KEYWORDS[collection])
+
+
 def entity_for(seller, document_date, recording_date):
     normalized = names(seller)
+    historical = {entity['id']: entity for entity in POLICY['entities']}
     for entity in POLICY['entities']:
         if normalized in entity['aliases'] and all(entity['from'] <= day <= entity['through']
                                                      for day in (document_date, recording_date)):
             return entity
+    if (any(keyword in normalized for keyword in COLLECTION_KEYWORDS['murray-franklyn']) and
+            any(term in normalized for term in ('HOMES', 'DEVELOPMENT', 'LAND ACQUISITIONS', 'WEST', 'INC')) and
+            all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
+        return historical['historical-murray-franklyn-company']
     if ('BURNSTEAD' not in normalized or
             not any(term in normalized for term in ('CONST', 'CONSTR', 'HOMES')) or
             not all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
         return None
-    historical = {entity['id']: entity for entity in POLICY['entities']}
     has_rick = any(term in normalized for term in ('RICK', 'RICH', 'ROCK', 'RUCK'))
     has_steve = any(term in normalized for term in ('STEVE', 'STEVEN', 'STEVER', 'STEVEM'))
     if 'HOMES' in normalized and not any(term in normalized for term in ('CONST', 'CONSTR')):
@@ -58,7 +71,6 @@ def entity_for(seller, document_date, recording_date):
     else:
         entity_id = 'historical-burnstead-construction'
     return historical[entity_id]
-    return None
 
 
 def rows(path):
@@ -124,7 +136,7 @@ def main():
     lookups = {(r['LUType'], r['LUItem']): r['LUDescription'] for r in rows(lookup_path)}
     assert lookups['4', '7'] == 'Res-Land only' and lookups['4', '8'] == 'Res-Improved property'
     assert lookups['6', '2'] == 'Warranty Deed' and 'Warranty' in lookups['6', '3']
-    universe = {c: set() for c in ('burnstead', 'quadrant')}
+    universe = {c: set() for c in COLLECTION_KEYWORDS}
     sales = defaultdict(list)
     for row in rows(sales_path):
         p = pin(row)
@@ -132,14 +144,14 @@ def main():
             continue
         seller = names(row['SellerName'])
         for collection in universe:
-            if collection.upper() in seller:
+            if collection_matches(collection, seller):
                 try:
                     day = datetime.strptime(row['DocumentDate'], '%m/%d/%Y').date().isoformat()
                 except ValueError:
                     continue
                 if '1976-01-01' <= day <= '2026-12-31':
                     universe[collection].add(p)
-        if any(c.upper() in seller for c in universe):
+        if any(collection_matches(c, seller) for c in universe):
             sale = sale_evidence(row)
             if sale:
                 sales[p].append(sale)
@@ -239,7 +251,7 @@ def main():
         detail.update(firstCompanyRecording=min(c['firstCompanyRecording'] for c in cs),
                       recordings=sorted({r for c in cs for r in c['recordings']}),
                       notes=sorted({n for c in cs for n in c['notes']}))
-    audit = {'ruleVersion': 'reviewed-company-associations-v2', 'reviewedOn': '2026-09-18',
+    audit = {'ruleVersion': 'reviewed-company-associations-v3', 'reviewedOn': '2026-09-18',
              'entityPolicySha256': digest((ROOT / 'data/entity-policy.json').read_bytes()), 'collections': {}}
     for collection, all_pins in universe.items():
         held = Counter(reasons.get(p, 'no-eligible-reviewed-company-sale') for p in all_pins - released[collection])
@@ -268,7 +280,7 @@ def main():
                     mappedPropertyCount=len(geometry['locations']), unmappedPropertyCount=0,
                     postalSourceAsOf=sorted(set(BASE['postalSourceAsOf']) | {b['retrievedAt'][:10] for b in batches}),
                     geometryRetrievedAt=max(b['retrievedAt'] for b in batches), generatedAt=args.generated_at,
-                    releaseId='2026-09-18-expanded-burnstead-associations-v2', ruleVersion=audit['ruleVersion'],
+                    releaseId='2026-09-18-murray-franklyn-associations-v3', ruleVersion=audit['ruleVersion'],
                     verifiedPropertyCount=len(index), expansionAuditUrl='data/expansion-audit.json',
                     coverage='Partial King County collections for Buchan, Burnstead and Quadrant company associations. A missing result does not establish that a company was uninvolved. Other brands await evidence review.',
                     reviewFlagDescriptions=flags_text, reviewCounts=dict(Counter(f for r in public_rows for f in r['reviewFlags'])),

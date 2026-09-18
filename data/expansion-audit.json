@@ -1,7 +1,7 @@
 {
-  "ruleVersion": "reviewed-company-associations-v2",
+  "ruleVersion": "reviewed-company-associations-v3",
   "reviewedOn": "2026-09-18",
-  "entityPolicySha256": "1dadc1b790f72ae3acb3916a3b7bfb7a36b139ecf67414e736609171b28ea8f0",
+  "entityPolicySha256": "071248a6ceba5480e16aa3d705e92e30ca5a5930f30ec94040c49cc448a92211",
   "collections": {
     "burnstead": {
       "keywordCandidatePins": 3811,
@@ -15,6 +15,18 @@
         "not-current-single-building-single-unit": 16
       },
       "scope": "County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976\u2013September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home."
+    },
+    "murray-franklyn": {
+      "keywordCandidatePins": 211,
+      "publishedPins": 96,
+      "heldPins": 115,
+      "heldReasons": {
+        "address-mismatch": 10,
+        "missing-assessor-address-or-zip": 99,
+        "no-eligible-reviewed-company-sale": 4,
+        "not-current-single-building-single-unit": 2
+      },
+      "scope": "County sale associations for seller names containing Murray Franklyn or the Murray Franklin spelling variant plus an explicit homes, development, land-acquisition, west, or incorporated business term, 1976\u2013September 4, 2026. These associations do not certify the original builder."
     },
     "quadrant": {
       "keywordCandidatePins": 9776,

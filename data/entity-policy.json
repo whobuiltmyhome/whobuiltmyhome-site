@@ -11,10 +11,13 @@
     {"id":"historical-rick-burnstead-construction","collectionId":"burnstead","name":"Historical Rick Burnstead-named construction company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
     {"id":"historical-steve-burnstead-construction","collectionId":"burnstead","name":"Historical Steve or Steven Burnstead-named construction company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
     {"id":"historical-burnstead-homes","collectionId":"burnstead","name":"Historical Burnstead Homes-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"murray-franklyn-homes-llc","collectionId":"murray-franklyn","name":"Murray Franklyn Homes LLC","aliases":["MURRAY FRANKLYN HOMES LLC","MURRAY FRANKLIN HOMES LLC"],"from":"2019-01-01","through":"2026-09-04","sourceUrl":"https://www.murrayfranklyn.com/ourdifference"},
+    {"id":"historical-murray-franklyn-company","collectionId":"murray-franklyn","name":"Historical Murray Franklyn-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
     {"id":"quadrant-corporation","collectionId":"quadrant","name":"The Quadrant Corporation","aliases":["THE QUADRANT CORPORATION","QUADRANT CORPORATION","QUADRANT CORPORATION THE","THE QUADRANT CORP","QUADRANT CORP"],"from":"1976-01-01","through":"2020-12-31","sourceUrl":"https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest"}
   ],
   "limits": {
     "burnstead":"County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976–September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home.",
+    "murray-franklyn":"County sale associations for seller names containing Murray Franklyn or the Murray Franklin spelling variant plus an explicit homes, development, land-acquisition, west, or incorporated business term, 1976–September 4, 2026. These associations do not certify the original builder.",
     "quadrant":"Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand."
   },
   "additionalSources": [
