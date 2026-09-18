@@ -1,16 +1,20 @@
 {
-  "version": 1,
-  "reviewedOn": "2026-09-15",
-  "scope": "Exact reviewed corporate seller-name associations only; neither legal succession nor construction of the current home is inferred.",
-  "normalization": "Uppercase, collapse whitespace, remove periods and commas. All remaining names must match a listed alias in full.",
+  "version": 2,
+  "reviewedOn": "2026-09-18",
+  "scope": "Reviewed exact entities plus historical county seller names that contain Burnstead and an explicit construction or homes business term. Neither legal succession nor construction of the current home is inferred.",
+  "normalization": "Uppercase, collapse whitespace, remove periods and commas. Exact aliases are preferred. Historical Burnstead matches must also contain a construction stem (CONST or CONSTR) or HOMES; personal-name-only and investment-only matches are excluded.",
   "entities": [
     {"id":"burnstead-construction-llc","collectionId":"burnstead","name":"Burnstead Construction LLC","aliases":["BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
     {"id":"rick-burnstead-construction-llc","collectionId":"burnstead","name":"Rick Burnstead Construction LLC","aliases":["RICK BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
     {"id":"steve-burnstead-construction-llc","collectionId":"burnstead","name":"Steve Burnstead Construction LLC","aliases":["STEVE BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
+    {"id":"historical-burnstead-construction","collectionId":"burnstead","name":"Historical Burnstead-named construction company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"historical-rick-burnstead-construction","collectionId":"burnstead","name":"Historical Rick Burnstead-named construction company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"historical-steve-burnstead-construction","collectionId":"burnstead","name":"Historical Steve or Steven Burnstead-named construction company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"historical-burnstead-homes","collectionId":"burnstead","name":"Historical Burnstead Homes-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
     {"id":"quadrant-corporation","collectionId":"quadrant","name":"The Quadrant Corporation","aliases":["THE QUADRANT CORPORATION","QUADRANT CORPORATION","QUADRANT CORPORATION THE","THE QUADRANT CORP","QUADRANT CORP"],"from":"1976-01-01","through":"2020-12-31","sourceUrl":"https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest"}
   ],
   "limits": {
-    "burnstead":"Initial collection covers three exact LLC names in 2010–2026 county transactions. Earlier corporations, Steven/Steve substitutions, truncated names, other affiliates and combined sellers await review. A current company document does not establish retrospective legal continuity.",
+    "burnstead":"County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976–September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home.",
     "quadrant":"Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand."
   },
   "additionalSources": [

@@ -9,6 +9,7 @@ import argparse
 from collections import Counter, defaultdict
 import csv
 from datetime import datetime, timezone
+import gzip
 import hashlib
 import importlib.util
 import io
@@ -36,10 +37,27 @@ def names(value):
 
 
 def entity_for(seller, document_date, recording_date):
+    normalized = names(seller)
     for entity in POLICY['entities']:
-        if names(seller) in entity['aliases'] and all(entity['from'] <= day <= entity['through']
+        if normalized in entity['aliases'] and all(entity['from'] <= day <= entity['through']
                                                      for day in (document_date, recording_date)):
             return entity
+    if ('BURNSTEAD' not in normalized or
+            not any(term in normalized for term in ('CONST', 'CONSTR', 'HOMES')) or
+            not all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
+        return None
+    historical = {entity['id']: entity for entity in POLICY['entities']}
+    has_rick = any(term in normalized for term in ('RICK', 'RICH', 'ROCK', 'RUCK'))
+    has_steve = any(term in normalized for term in ('STEVE', 'STEVEN', 'STEVER', 'STEVEM'))
+    if 'HOMES' in normalized and not any(term in normalized for term in ('CONST', 'CONSTR')):
+        entity_id = 'historical-burnstead-homes'
+    elif has_rick and not has_steve:
+        entity_id = 'historical-rick-burnstead-construction'
+    elif has_steve and not has_rick:
+        entity_id = 'historical-steve-burnstead-construction'
+    else:
+        entity_id = 'historical-burnstead-construction'
+    return historical[entity_id]
     return None
 
 
@@ -221,7 +239,7 @@ def main():
         detail.update(firstCompanyRecording=min(c['firstCompanyRecording'] for c in cs),
                       recordings=sorted({r for c in cs for r in c['recordings']}),
                       notes=sorted({n for c in cs for n in c['notes']}))
-    audit = {'ruleVersion': 'reviewed-company-associations-v1', 'reviewedOn': '2026-09-15',
+    audit = {'ruleVersion': 'reviewed-company-associations-v2', 'reviewedOn': '2026-09-18',
              'entityPolicySha256': digest((ROOT / 'data/entity-policy.json').read_bytes()), 'collections': {}}
     for collection, all_pins in universe.items():
         held = Counter(reasons.get(p, 'no-eligible-reviewed-company-sale') for p in all_pins - released[collection])
@@ -240,23 +258,23 @@ def main():
     for label, value in [('index', public_rows), ('details', details)]:
         raw = geo.packed(value)
         sha = digest(raw)
-        url = f'data/{label}.{sha[:16]}.json'
-        (ROOT / url).write_bytes(raw)
+        url = f'data/{label}.{sha[:16]}.json.gz'
+        (ROOT / url).write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
         manifest[label + 'Url'], manifest[label + 'Sha256'] = url, sha
     geometry.update(indexSha256=manifest['indexSha256'], sourceBatches=geometry['sourceBatches'] + batches)
     raw = geo.packed(geometry)
     sha = digest(raw)
-    manifest.update(geometryUrl=f'data/geometry.{sha[:16]}.json', geometrySha256=sha,
+    manifest.update(geometryUrl=f'data/geometry.{sha[:16]}.json.gz', geometrySha256=sha,
                     mappedPropertyCount=len(geometry['locations']), unmappedPropertyCount=0,
                     postalSourceAsOf=sorted(set(BASE['postalSourceAsOf']) | {b['retrievedAt'][:10] for b in batches}),
                     geometryRetrievedAt=max(b['retrievedAt'] for b in batches), generatedAt=args.generated_at,
-                    releaseId='2026-09-15-burnstead-quadrant-associations-v1', ruleVersion=audit['ruleVersion'],
+                    releaseId='2026-09-18-expanded-burnstead-associations-v2', ruleVersion=audit['ruleVersion'],
                     verifiedPropertyCount=len(index), expansionAuditUrl='data/expansion-audit.json',
                     coverage='Partial King County collections for Buchan, Burnstead and Quadrant company associations. A missing result does not establish that a company was uninvolved. Other brands await evidence review.',
                     reviewFlagDescriptions=flags_text, reviewCounts=dict(Counter(f for r in public_rows for f in r['reviewFlags'])),
                     priorityReviewPropertyCount=sum(bool(set(r['reviewFlags']) & {'land-only-evidence', 'chronology-review'}) for r in public_rows))
     manifest['evidenceLabels'] = {**BASE['evidenceLabels'], 'assessor-sale-association': 'Assessor sale association; deed image unreviewed'}
-    (ROOT / manifest['geometryUrl']).write_bytes(raw)
+    (ROOT / manifest['geometryUrl']).write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
     (ROOT / 'data/expansion-audit.json').write_text(json.dumps(audit, indent=2) + '\n')
     temporary = ROOT / 'data/manifest.tmp'
     temporary.write_text(json.dumps(manifest, indent=2) + '\n')
