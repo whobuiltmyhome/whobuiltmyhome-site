@@ -50,9 +50,12 @@ class ExpansionTests(unittest.TestCase):
         self.assertEqual(builder.entity_for('STEVEN BURNSTEAD CONSTRUCTION CO', '2005-01-01', '2005-01-02')['id'], 'historical-steve-burnstead-construction')
         self.assertEqual(builder.entity_for('RICK BURNSTEAD CONSTRUCTION CO', '2005-01-01', '2005-01-02')['id'], 'historical-rick-burnstead-construction')
         self.assertEqual(builder.entity_for('BURNSTEAD HOMES INC', '1992-01-01', '1992-01-02')['id'], 'historical-burnstead-homes')
+        self.assertEqual(builder.entity_for('MURRAY FRANKLYN HOMES LLC', '2024-01-01', '2024-01-02')['id'], 'murray-franklyn-homes-llc')
+        self.assertEqual(builder.entity_for('MURRAY FRANKLIN WEST INC', '1988-01-01', '1988-01-02')['id'], 'historical-murray-franklyn-company')
         for name in ('QUADRANT REAL ESTATE LLC', 'QUADRANT CORPORAITON',
                      'TRI POINTE HOMES WASHINGTON INC +QUADRANT CORP',
-                     'BURNSTEAD FREDERICK H', 'BURNSTEAD INVESTMENTS LLC'):
+                     'BURNSTEAD FREDERICK H', 'BURNSTEAD INVESTMENTS LLC',
+                     'MURRAY FRANKLYN FAMILY TRUST'):
             self.assertIsNone(builder.entity_for(name, '2018-01-01', '2018-01-02'))
         self.assertIsNone(builder.entity_for('QUADRANT CORPORATION', '2021-01-01', '2021-01-02'))
         self.assertEqual(builder.entity_for('RICK BURNSTEAD CONSTRUCTION LLC', '2009-01-01', '2009-01-02')['id'], 'historical-rick-burnstead-construction')

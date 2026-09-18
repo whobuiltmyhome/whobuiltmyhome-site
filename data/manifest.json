@@ -32,12 +32,12 @@
       "status": "available"
     },
     {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "description": "County sale associations for seller names containing Murray Franklyn or the Murray Franklin spelling variant plus an explicit homes, development, land-acquisition, west, or incorporated business term, 1976\u2013September 4, 2026. These associations do not certify the original builder.",
       "historySource": "https://www.murrayfranklyn.com/ourdifference",
       "id": "murray-franklyn",
       "name": "Murray Franklyn",
-      "propertyCount": 0,
-      "status": "planned"
+      "propertyCount": 96,
+      "status": "available"
     },
     {
       "description": "Planned research collection; no reviewed properties published under this brand yet.",
@@ -89,8 +89,8 @@
     }
   ],
   "coverage": "Partial King County collections for Buchan, Burnstead and Quadrant company associations. A missing result does not establish that a company was uninvolved. Other brands await evidence review.",
-  "detailsSha256": "1a887856e4831dc8bcb2a6c389f05ee5e80e3f6d08de7ef7c724a1e2c8088472",
-  "detailsUrl": "data/details.1a887856e4831dc8.json.gz",
+  "detailsSha256": "438210841e554ce7462261a0037e6ee765f39f1e6377b6ede5329a5396e8cd9b",
+  "detailsUrl": "data/details.438210841e554ce7.json.gz",
   "evidenceLabels": {
     "associated": "Company association; builder unconfirmed",
     "chronology-review": "Construction chronology needs review",
@@ -102,28 +102,28 @@
     "assessor-sale-association": "Assessor sale association; deed image unreviewed"
   },
   "evidenceScope": "Verified current addresses and historical company associations. Builder attribution for the current structures has not been confirmed.",
-  "generatedAt": "2026-09-18T06:30:00Z",
+  "generatedAt": "2026-09-18T13:00:00Z",
   "geometryAvailable": true,
   "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
   "heldRecoveryCandidateCount": 362,
   "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation.",
-  "indexSha256": "71ea4b724d5a69a139a0e2824af49bae2fd2130dc7bdc68336aa9faff35abade",
-  "indexUrl": "data/index.71ea4b724d5a69a1.json.gz",
+  "indexSha256": "94902edb814a62f29b75554ca310f445d12a8ea4ff688d614a08cacbe3a4b505",
+  "indexUrl": "data/index.94902edb814a62f2.json.gz",
   "postalSourceAsOf": [
     "2026-09-11",
     "2026-09-13",
     "2026-09-18"
   ],
   "priorityReviewPropertyCount": 1621,
-  "releaseId": "2026-09-18-expanded-burnstead-associations-v2",
+  "releaseId": "2026-09-18-murray-franklyn-associations-v3",
   "researchWindow": [
     1976,
     2026
   ],
   "researchWindowDescription": "Recording-history research window, not continuous or complete historical coverage. County construction years are retained separately and can precede 1976.",
   "reviewCounts": {
-    "assessor-sale-association": 8153,
-    "minor-chronology-gap": 1999,
+    "assessor-sale-association": 8249,
+    "minor-chronology-gap": 2000,
     "multi-parcel-recording": 1773,
     "land-only-evidence": 1573,
     "chronology-review": 209,
@@ -139,7 +139,7 @@
     "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk.",
     "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed."
   },
-  "ruleVersion": "reviewed-company-associations-v2",
+  "ruleVersion": "reviewed-company-associations-v3",
   "sourceAsOf": "2026-09-04",
   "sourceRetrievedOn": "2026-09-13",
   "sourceSnapshots": {
@@ -183,14 +183,14 @@
       "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
     }
   ],
-  "verifiedPropertyCount": 11123,
+  "verifiedPropertyCount": 11219,
   "version": 2,
-  "geometryUrl": "data/geometry.7d0d2b8641b6cf26.json.gz",
-  "geometrySha256": "7d0d2b8641b6cf26c2f7eee7270184e3cb74aa3be13949e9b94b41a4174b1eac",
-  "mappedPropertyCount": 11123,
+  "geometryUrl": "data/geometry.9344f6352e8bfc38.json.gz",
+  "geometrySha256": "9344f6352e8bfc38bb0518511d75d5dd529b5ebd62398c0156cba7dcf52331ba",
+  "mappedPropertyCount": 11219,
   "unmappedPropertyCount": 0,
   "geometrySource": "https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0",
-  "geometryRetrievedAt": "2026-09-18T12:04:21.486830+00:00",
+  "geometryRetrievedAt": "2026-09-18T14:41:45.890272+00:00",
   "entities": [
     {
       "id": "burnstead-construction-llc",
@@ -232,6 +232,18 @@
       "id": "historical-burnstead-homes",
       "name": "Historical Burnstead Homes-named company",
       "collectionId": "burnstead",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "murray-franklyn-homes-llc",
+      "name": "Murray Franklyn Homes LLC",
+      "collectionId": "murray-franklyn",
+      "sourceUrl": "https://www.murrayfranklyn.com/ourdifference"
+    },
+    {
+      "id": "historical-murray-franklyn-company",
+      "name": "Historical Murray Franklyn-named company",
+      "collectionId": "murray-franklyn",
       "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
     },
     {

@@ -1,7 +1,8 @@
-# September 18, 2026 Burnstead expansion
+# September 18, 2026 company-connection expansion
 
-The release adds 2,584 Burnstead-associated and 5,569 Quadrant-associated addresses
-to the original 2,975 Buchan addresses: **11,123 distinct mapped properties**.
+The release includes 2,584 Burnstead-associated, 96 Murray Franklyn-associated,
+and 5,569 Quadrant-associated addresses alongside the original 2,975 Buchan
+addresses: **11,219 distinct mapped properties**.
 Five PINs have both Buchan and Burnstead company connections. Search,
 collection filters and the map use the same complete inventory.
 
