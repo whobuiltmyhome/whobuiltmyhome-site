@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "reviewedOn": "2026-09-15",
+  "scope": "Exact reviewed corporate seller-name associations only; neither legal succession nor construction of the current home is inferred.",
+  "normalization": "Uppercase, collapse whitespace, remove periods and commas. All remaining names must match a listed alias in full.",
+  "entities": [
+    {"id":"burnstead-construction-llc","collectionId":"burnstead","name":"Burnstead Construction LLC","aliases":["BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
+    {"id":"rick-burnstead-construction-llc","collectionId":"burnstead","name":"Rick Burnstead Construction LLC","aliases":["RICK BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
+    {"id":"steve-burnstead-construction-llc","collectionId":"burnstead","name":"Steve Burnstead Construction LLC","aliases":["STEVE BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
+    {"id":"quadrant-corporation","collectionId":"quadrant","name":"The Quadrant Corporation","aliases":["THE QUADRANT CORPORATION","QUADRANT CORPORATION","QUADRANT CORPORATION THE","THE QUADRANT CORP","QUADRANT CORP"],"from":"1976-01-01","through":"2020-12-31","sourceUrl":"https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest"}
+  ],
+  "limits": {
+    "burnstead":"Initial collection covers three exact LLC names in 2010–2026 county transactions. Earlier corporations, Steven/Steve substitutions, truncated names, other affiliates and combined sellers await review. A current company document does not establish retrospective legal continuity.",
+    "quadrant":"Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand."
+  },
+  "additionalSources": [
+    "https://www.sec.gov/Archives/edgar/data/1636970/000119312516598352/d136190ds3asr.htm",
+    "https://www.sec.gov/Archives/edgar/data/1561680/000156168022000080/thirdmodificationagreement.htm"
+  ]
+}

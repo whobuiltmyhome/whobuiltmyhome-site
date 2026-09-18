@@ -1,63 +1,64 @@
-# Release and rollback
+# September 15, 2026 collection expansion
 
-Repository: https://github.com/whobuiltmyhome/whobuiltmyhome-site
+The release adds 173 Burnstead-associated and 5,569 Quadrant-associated addresses
+to the original 2,975 Buchan addresses: **8,717 distinct mapped properties**.
+There are no overlapping PINs between these three released cohorts. Search,
+collection filters and the map use the same complete inventory.
 
-The full searchable collection shipped in PR #1, commit
-`5056883cafa9c7bc62f0aed16981dcfae7dff8fb`. The clustered map builds on that
-release in `codex/clustered-property-map`. GitHub history and Pages deployment
-status are authoritative for publication.
+Burnstead covers three reviewed LLC names in 2010–2026 transactions. Quadrant
+covers five corporate-name forms through 2020. These are partial company-sale
+collections; no original builder is certified. Earlier Burnstead corporations,
+unreviewed variants, successor brands and other builder collections await review.
+The two Buchan attributions remain unresolved.
 
-## Map release
+## Changes
 
-- A lazy, clustered parcel map shares the existing search and filter results.
-  It includes every matching record across list pages and opens the same evidence
-  dialog from individual markers.
-- All 2,975 existing records have exact PIN/street/ZIP matches to official county
-  parcel centroids. Coordinates are approximate parcel locations; builder
-  attribution and the existing evidence files remain unchanged.
-- Leaflet and its clustering plugin are vendored locally with licenses.
-  OpenStreetMap supplies the background tiles, with visible attribution,
-  origin-only referrers and normal browser caching. No paid account was created.
-- Search remains available when the optional map fails. Geometry has retry;
-  tile failures show a notice. Missing locations are explicitly counted.
-- Analytics stays disabled until the GA4 account settings in `analytics.md`
-  are checked. No GA4 account change is part of this release.
+- Reproducible frozen-county-source importer with exact entity/date, instrument,
+  residential-cohort, address and geometry gates; rejected candidates are counted.
+- Separate evidence per company connection, preserving every original Buchan
+  address and its evidence. The review filter applies to any connection.
+- Available collection cards show counts, scope and direct search links. Other
+  brands stay visibly pending.
+- Existing static hosting, vendored map libraries and tile behavior continue.
+  GA4 remains disabled pending the previously required account-settings review.
 
 ## Verification
 
-Twenty-four checks pass: twelve Python data/geometry checks and twelve Node
-analytics/search/map checks. The DOM integration test runs the actual application
-and vendored Leaflet libraries in jsdom, without loading external tiles. It covers
-lazy loading, geometry failure and retry, cluster navigation, combined filters,
-58 Bellevue matches across two list pages, marker-to-evidence opening, empty
-results and hiding the map. Geometry regeneration from the same cached county
-responses is deterministic. JavaScript syntax and patch whitespace also pass.
+All **28 tests pass**: 12 Node analytics/search/map tests and 16 Python baseline,
+expansion and geometry tests. The DOM test runs the real app and vendored map
+libraries, checking both new collection filters, map counts, company evidence,
+map failure/retry, clusters, pagination, empty results and the original Buchan
+search behavior. Tests also reject ambiguous aliases and unsupported dates,
+instruments and recordings, and enforce public-field allowlists.
 
-DOM tests do not establish visual or real-device performance. Browser/mobile
-visual verification remains separate. Earlier local browser preview attempts
-were blocked or timed out; no alternative browser surface was used to bypass
-those restrictions. The standalone offline preview supports search and evidence;
-its map is deliberately disabled with an explanation directing users to the site.
+A separate finished-artifact/source comparison checks every **5,845 new
+parcel/company/recording reference** and every **5,742 new county location**,
+with zero mismatches. The cached rebuild reproduces the same immutable data
+hashes. Source hashes, retrieval dates and terminal hold counts are published.
 
-## Publish
+```sh
+npm test
+python -m unittest discover -s tests -p 'data*.py'
+python scripts/check-expanded-sources.py \
+  --sales /path/to/Real_Property_Sales.zip \
+  --cache-dir /path/outside/repository/expanded-source-cache
+```
 
-1. Fetch `main` and reconcile any changes; do not overwrite unrelated work.
-2. Run `npm ci`, `npm test`, and
-   `python3 -m unittest discover -s tests -p 'data*.py'`.
-3. Include the complete application, vendored assets, geometry and manifest in
-   the pull request. Check the tree against the tested local files.
-4. Merge the authorized change into `main`, respecting repository checks, and
-   wait for the successful Pages deployment for that exact commit.
-5. Check deployed HTML, JavaScript, CSS, vendor files and manifest/geometry
-   against the tested release. Exercise the public browser when available.
+DOM checks establish behavior, not mobile rendering or real-device performance.
+The existing map was previously reviewed by the user; browser automation was
+unavailable. Evidence is an approximately 8.4 MB uncompressed lazy-loaded JSON
+file; slower connections may wait when opening the first record.
 
-`CNAME` remains `whobuiltmyhome.com`. No domain or hosting migration is needed.
-Retain prior hashed data files for cached readers. Reverting the release commit
-restores the previous list-only site without recomputing evidence.
+## Publishing and rollback
 
-## Other collections
+Repository: https://github.com/whobuiltmyhome/whobuiltmyhome-site
 
-The ten-brand roadmap still requires dated entity matching, evidence review and
-construction attribution. The 28,131 candidate PINs and 362 held recovery cases
-are not part of the published inventory. Adding the map approves no new builder
-claims or properties. Parcel outlines and imagery are outside this map release.
+Publish all assets and their manifest together. Verify the remote tree matches
+the tested local tree, respect required checks, merge using the expected PR head,
+and wait for successful Pages deployment of that exact merge commit. Then verify
+live asset hashes. GitHub PR and deployment history are authoritative for status.
+
+`CNAME` remains `whobuiltmyhome.com`. Retain prior hashed payloads for cached
+readers. The preceding published commit is
+`8d068a1cb158da0643a2b449cddb7171a0722d67`; reverting this expansion restores the
+2,975-property Buchan search and map without recomputing evidence.

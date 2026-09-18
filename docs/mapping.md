@@ -6,16 +6,17 @@ The list always works independently, including when map data fails to load.
 
 ## Geometry and coverage
 
-The September 14, 2026 geometry join maps all 2,975 published records, with
-2,975 distinct coordinate pairs and zero exclusions. Every record matched its
-ten-digit PIN, normalized street address and five-digit ZIP to the official
-[King County parcel service](https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0).
+The September 15, 2026 expansion retains the original 2,975 Buchan parcel
+centers and adds reviewed Burnstead and Quadrant connections. Counts come from
+the manifest; every published PIN has a matching centroid, with zero exclusions.
+Each address matches its ten-digit PIN, normalized street and five-digit ZIP in
+the official [King County parcel service](https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0).
 The query returns polygon centroids in WGS84 (`returnCentroid=true`,
 `returnGeometry=false`, `outSR=4326`). These are approximate parcel centers;
 they do not establish the location or builder of the current structure.
 
-Fifteen serial batches request only published PINs and allowlisted address
-fields. No owner, buyer, grantor or tax-mailing fields are requested. Each
+Serial batches request candidate PINs and allowlisted address fields; only
+qualifying matches become published locations. No owner, buyer, grantor or tax-mailing fields are requested. Each
 response is cached outside this repository. Raw response hashes, retrieval
 timestamps, the exact search-index hash and matching-rule version are retained
 in the immutable geometry file. Street normalization only handles case,
@@ -27,8 +28,8 @@ python3 scripts/build-map-data.py --cache-dir /path/outside/repo/map-source-cach
 ```
 
 Reuse the same source cache for byte-identical output; an uncached run queries
-the current county data and requires reviewing any changed matches. Run this
-after the base public-data exporter. It preserves the index and evidence bytes,
+the current county data and requires reviewing any changed matches. The expansion exporter already includes geometry. Run the map-only exporter
+to refresh geometry for the current published membership. It preserves the index and evidence bytes,
 writes geometry first, and updates the manifest last. It does not deploy.
 
 ## Interaction

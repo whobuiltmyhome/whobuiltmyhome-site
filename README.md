@@ -1,10 +1,9 @@
 # Who Built My Home
 
-A free static King County property explorer. The initial release contains 2,975
-verified address/company-sale associations in a combined Buchan collection.
-These are historical company connections, not confirmed builders of the current
-homes. John and William Buchan remain combined until entity attribution is reviewed.
-The proposed ten brand collections are shown as awaiting evidence.
+A free static King County property explorer with partial Buchan, Burnstead and
+Quadrant company-association collections. Current counts and source dates are
+in `data/manifest.json`. Every original builder remains unconfirmed. John and
+William Buchan remain combined; the other brands await evidence review.
 
 ## Run locally
 
@@ -38,7 +37,7 @@ public repository. Do not replace a reviewed release with a keyword candidate sc
 Choose **Show map** above the list to explore all matching records as clustered
 parcel centers. Search and filters control both views; list pagination does not
 limit the map. Click a cluster to zoom and a dot to open the evidence record.
-All 2,975 released records have exact PIN/street/ZIP matches to county geometry.
+Every published record has an exact PIN/street/ZIP match to county geometry.
 The map uses approximate parcel centers, not surveyed building positions.
 See [mapping.md](docs/mapping.md) for data provenance and tile-provider behavior.
 

@@ -4,10 +4,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { gunzipSync } from 'node:zlib';
 import { JSDOM } from 'jsdom';
 
 test('real app and map recover from geometry failure, share filters, open evidence and keep list usable', async () => {
   const root = new URL('../', import.meta.url);
+  const manifest = JSON.parse(readFileSync(new URL('data/manifest.json', root), 'utf8'));
+  const total = manifest.verifiedPropertyCount.toLocaleString('en-US');
   const dom = new JSDOM(readFileSync(new URL('index.html', root), 'utf8'), {
     url: 'http://localhost:8765/', runScripts: 'outside-only', pretendToBeVisual: true,
   });
@@ -20,7 +23,8 @@ test('real app and map recover from geometry failure, share filters, open eviden
     const path = new URL(String(input)).pathname.slice(1);
     requested.push(path);
     if (path.includes('geometry.') && failGeometry) return { ok: false };
-    const content = JSON.parse(readFileSync(new URL(path, root), 'utf8'));
+    const bytes = readFileSync(new URL(path, root));
+    const content = JSON.parse(path.endsWith('.gz') ? gunzipSync(bytes) : bytes);
     return { ok: true, json: async () => structuredClone(content) };
   };
   Object.defineProperties(globalThis, {
@@ -63,14 +67,16 @@ test('real app and map recover from geometry failure, share filters, open eviden
     assert.equal(document.querySelectorAll('.property-item').length, 50, 'map failure preserves list');
     failGeometry = false;
     byId('retry-map').click();
-    await until(() => byId('map-status').textContent.startsWith('2,975 of 2,975'));
+    await until(() => byId('map-status').textContent.startsWith(`${total} of ${total}`));
     assert.ok(canvas.querySelector('.property-map-cluster'), 'real library creates clusters');
     assert.ok(canvas.querySelector('img.leaflet-tile').referrerPolicy === 'origin');
     assert.ok(canvas.querySelector('.leaflet-control-attribution').textContent.includes('OpenStreetMap'));
+    assert.equal(byId('collection').querySelector('option[value=burnstead]').disabled, false);
+    assert.equal(byId('collection').querySelector('option[value=quadrant]').disabled, false);
     const beforeZoom = canvas.querySelector('.leaflet-marker-pane').innerHTML;
     canvas.querySelector('.property-map-cluster').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
     await until(() => canvas.querySelector('.leaflet-marker-pane').innerHTML !== beforeZoom);
-    change('city', 'BELLEVUE'); change('year-from', '1980'); change('year-to', '1990');
+    change('collection', 'buchan'); change('city', 'BELLEVUE'); change('year-from', '1980'); change('year-to', '1990');
     await until(() => byId('map-status').textContent.startsWith('58 of 58'));
     const markersBeforePage = canvas.querySelector('.leaflet-marker-pane').innerHTML;
     byId('next-page').click();
@@ -86,6 +92,17 @@ test('real app and map recover from geometry failure, share filters, open eviden
     assert.equal(byId('detail-title').textContent, '2432 279TH DR SE');
     assert.equal(byId('property-dialog').open, true);
     byId('close-detail').click();
+    for (const collection of manifest.collections.filter(c => ['burnstead', 'quadrant'].includes(c.id))) {
+      byId('clear-filters').click();
+      change('collection', collection.id);
+      const count = collection.propertyCount.toLocaleString('en-US');
+      await until(() => byId('map-status').textContent.startsWith(`${count} of ${count}`));
+      document.querySelector('.property-item button').click();
+      await until(() => byId('detail-body').querySelector(`[data-collection=${collection.id}]`));
+      assert.ok(byId('detail-body').textContent.includes('Company names in supporting sales:'));
+      assert.ok(byId('detail-body').textContent.includes('deed image and original builder have not been independently confirmed'));
+      byId('close-detail').click();
+    }
     change('search', 'no-such-address-ever', 'input');
     await until(() => byId('map-status').textContent.startsWith('No matching records'));
     assert.equal(canvas.querySelectorAll('.leaflet-marker-icon').length, 0);

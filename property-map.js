@@ -3,6 +3,16 @@ import { mapConfig } from './map-config.js';
 const resourcePromises = new Map();
 const integer = value => value.toLocaleString('en-US');
 
+async function responseJson(response) {
+  if (!response.ok) throw new Error('Map data unavailable');
+  if (typeof response.arrayBuffer !== 'function') return response.json();
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  const stream = bytes[0] === 0x1f && bytes[1] === 0x8b
+    ? new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
+    : new Blob([bytes]).stream();
+  return JSON.parse(await new Response(stream).text());
+}
+
 export function validateGeometry(data, manifest, properties) {
   if (data?.version !== 1 || data.indexSha256 !== manifest.indexSha256 ||
       data.coordinateOrder !== 'latitude,longitude' || data.locationType !== 'parcel-centroid' ||
@@ -125,8 +135,7 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
       const url = new URL(manifest.geometryUrl, document.baseURI);
       if (url.origin !== window.location.origin) throw new Error('Invalid geometry source');
       const [L, response] = await Promise.all([loadLibraries(), fetch(url, { credentials: 'same-origin', signal: AbortSignal.timeout(15000) })]);
-      if (!response.ok) throw new Error('Map data unavailable');
-      const data = await response.json();
+      const data = await responseJson(response);
       locations = validateGeometry(data, manifest, properties);
       library = L;
       map = L.map(canvas, { scrollWheelZoom: false, minZoom: 8, maxZoom: mapConfig.maxZoom, zoomControl: true });

@@ -132,8 +132,7 @@ def main():
                     geometrySha256=digest, mappedPropertyCount=len(locations),
                     unmappedPropertyCount=len(excluded), geometrySource=SOURCE,
                     geometryRetrievedAt=max(b['retrievedAt'] for b in batches),
-                    geometryDescription='Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.',
-                    releaseId='2026-09-14-buchan-associations-map-v1')
+                    geometryDescription='Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.')
     temporary = manifest_path.with_suffix('.tmp')
     temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
     temporary.replace(manifest_path)
