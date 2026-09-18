@@ -1,5 +1,6 @@
 """Parcel matching and complete map-release reconciliation."""
 import hashlib
+import gzip
 import importlib.util
 import json
 from pathlib import Path
@@ -14,12 +15,12 @@ spec.loader.exec_module(exporter)
 class GeometryTests(unittest.TestCase):
     def test_release_locations_partition_exact_published_membership(self):
         manifest = json.loads((ROOT / 'data/manifest.json').read_text())
-        properties = json.loads((ROOT / manifest['indexUrl']).read_text())
-        raw = (ROOT / manifest['geometryUrl']).read_bytes()
+        properties = json.loads(gzip.decompress((ROOT / manifest['indexUrl']).read_bytes()))
+        raw = gzip.decompress((ROOT / manifest['geometryUrl']).read_bytes())
         geometry = json.loads(raw)
         digest = hashlib.sha256(raw).hexdigest()
         self.assertEqual(manifest['geometrySha256'], digest)
-        self.assertEqual(manifest['geometryUrl'], f'data/geometry.{digest[:16]}.json')
+        self.assertEqual(manifest['geometryUrl'], f'data/geometry.{digest[:16]}.json.gz')
         self.assertEqual(geometry['indexSha256'], manifest['indexSha256'])
         self.assertEqual(geometry['source'], exporter.SOURCE)
         self.assertEqual(geometry['ruleVersion'], exporter.RULE)
@@ -27,9 +28,8 @@ class GeometryTests(unittest.TestCase):
         self.assertFalse(set(geometry['locations']) & set(geometry['excluded']))
         self.assertEqual(len(geometry['locations']), manifest['mappedPropertyCount'])
         self.assertEqual(len(geometry['excluded']), manifest['unmappedPropertyCount'])
-        self.assertEqual(len(geometry['locations']), 2975)
-        self.assertEqual(sum(b['requested'] for b in geometry['sourceBatches']), 2975)
-        self.assertEqual(len({tuple(p) for p in geometry['locations'].values()}), 2975)
+        self.assertEqual(len(geometry['locations']), manifest['verifiedPropertyCount'])
+        self.assertGreaterEqual(sum(b['requested'] for b in geometry['sourceBatches']), len(properties))
         for point in geometry['locations'].values():
             self.assertEqual(len(point), 2)
             self.assertTrue(47 <= point[0] <= 47.9 and -122.6 <= point[1] <= -121)

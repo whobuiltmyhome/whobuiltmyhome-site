@@ -1,63 +1,52 @@
-# Public data contract, version 1
+# Public data contract, version 2
 
-The site publishes **2,975 distinct verified address/company associations** from the frozen September 13, 2026 Buchan verification release. Every current-structure builder is **unconfirmed**. A historical company transaction is not a construction attribution.
+The site publishes distinct King County addresses with historical company connections. **The builder of every current structure remains unconfirmed.** Buchan, Burnstead and Quadrant collections are partial; counts in `data/manifest.json` are published address counts, not estimates of all homes built by a brand.
 
-One neutral `buchan` collection is available. The John F. Buchan / William E. Buchan split is unreviewed. Ten proposed brand collections are marked `planned`; `propertyCount: 0` means no properties are published under that collection, not that the builder has no homes. Do not relabel neutral records based on a keyword or brand acquisition.
+The original 2,975 Buchan addresses and their collection-specific evidence are preserved exactly. John F. Buchan and William E. Buchan remain unresolved. The [version 1 contract](buchan-data-contract-v1.md) describes that frozen cohort. New Burnstead or Quadrant evidence never approves a held Buchan association, even when the parcel has an independently eligible connection to another company.
 
-## Assets and loading
+## Loading and fields
 
-Fetch `data/manifest.json` first. `indexUrl` and `detailsUrl` are **relative to the site root**, not to the manifest directory. The index is complete; fetch the detail file only when a property is opened. Hashes cover the exact UTF-8 file bytes, including the trailing newline. Immutable filenames contain the first 16 hex characters of the SHA-256 digest. The full digest is in the manifest.
+Read `data/manifest.json` first. Its index, details and geometry URLs are relative to the site root. Immutable filenames contain the first 16 characters of the SHA-256 of their exact UTF-8 bytes, including the trailing newline; the full hashes are in the manifest. Search uses the complete index; details and geometry load on demand. Retain older hashed files for cached readers and rollback.
 
-| File | Public fields |
+| Asset | Contract |
 | --- | --- |
-| `manifest.json` | `version`, `releaseId`, `ruleVersion`, `verifiedPropertyCount`, `generatedAt`, `sourceAsOf`, `sourceRetrievedOn`, `postalSourceAsOf`, `indexUrl`, `indexSha256`, `detailsUrl`, `detailsSha256`, `collections`, evidence labels, review counts, coverage limitations and source provenance |
-| `index.<hash>.json` | Array of `{id, pin, address, city, zip, yearBuilt, collectionIds, status, reviewFlags}` |
-| `details.<hash>.json` | Object keyed by PIN: `{countyUrl, mapUrl, firstCompanyRecording, recordings, notes, addressStatus, builderStatus}` |
-| `geometry.<hash>.json` | Parcel centers keyed by PIN in `[latitude, longitude]` order, explicit exclusions, index hash, source and matching-rule provenance |
+| Index | Array of `{id, pin, address, city, zip, yearBuilt, collectionIds, status, reviewFlags}` |
+| Details | Object by PIN: `{countyUrl, mapUrl, firstCompanyRecording, recordings, notes, addressStatus, builderStatus, connections}` |
+| Connection | `{collectionId, entityIds, firstCompanyRecording, recordings, notes, reviewFlags}` |
+| Geometry | `[latitude, longitude]` parcel centers by PIN, explicit exclusions, exact index hash, matching rule and source-batch hashes |
+| Entity policy | Exact reviewed corporate aliases, date windows, company sources and excluded scope |
+| Expansion audit | Candidate PIN totals, published totals and mutually exclusive terminal hold reasons for each new collection |
 
-`pin` is always a ten-digit string, including leading zeroes; `id` is `king-wa:` plus PIN. `address` is the street address; city and ZIP are separate. `yearBuilt` is the county construction year as a number, or `null` when unknown. A county year can precede the 1976–2026 recording-history research window; keep it unchanged. `collectionIds` is an array to permit future independently reviewed overlapping associations without inflating the distinct-property count.
+PINs remain ten-digit strings. The index status is `associated`; details use `addressStatus: verified` and `builderStatus: unconfirmed`. Each PIN appears once. Collection counts may overlap and must not be summed to infer unique homes. `firstCompanyRecording` comes from a supporting recording date, never a construction claim. Flat detail fields aggregate the connections for older readers; the current UI renders evidence separately for each connection. Index review flags are the union of all connections, and the review filter explicitly applies to any connection.
 
-The index `status` is `associated`. Detail `addressStatus` is `verified`, and `builderStatus` is `unconfirmed`. `firstCompanyRecording` is an ISO calendar date of the earliest verified company recording, not the construction date or sale document date. `recordings` contains recording-identifier strings only. Display them as references. Details link to the county property record and parcel map; no unreviewed recording links are included.
+The manifest exposes only reviewed corporate display names and their company-source URLs. Raw seller, buyer, co-seller, owner, grantor, grantee, legal text, prices, private notes and local source paths are excluded. Public notes come from fixed templates.
 
-`geometryAvailable` is true for the map release. Its `geometryUrl` is fetched only when the map opens. `mappedPropertyCount` is 2,975 and `unmappedPropertyCount` is zero. These are approximate official parcel centers matched by exact PIN, normalized street, and ZIP; they are not surveyed building locations. See [mapping.md](mapping.md) for the separate geometry build and validation. Property-list operation does not depend on maps.
+## Expansion publication rules
 
-## Evidence and chronology rules
+`data/entity-policy.json` defines the complete alias allowlist. Normalize case, whitespace, commas and periods; require the entire remaining name to match. No fuzzy matching, surname matching, inferred affiliate identity or acquisition-based brand assignment is allowed.
 
-| Flag | Source-backed meaning | Properties |
-| --- | --- | ---: |
-| `land-only-evidence` | A verified recording/PIN sale has `PropertyClass=7` (Res-Land only), and none has `PropertyClass=8` (Res-Improved property) | 52 |
-| `chronology-review` | County construction year is at least three years after the first company recording year | 18 |
-| `minor-chronology-gap` | County construction year is one or two years after the first company recording year | 162 |
-| `recording-crosswalk` | Assessor recording crosswalk differs from recorder-index PIN | 105 |
-| `legal-corroboration-missing` | Complete legal tuple was not independently corroborated; Assessor recording crosswalk used | 401 |
-| `multi-parcel-recording` | Assessor associates the supporting recording with multiple parcels | 15 |
+- Burnstead: three named LLCs, with supporting document and recording dates in 2010–September 4, 2026. The [company's builder documents](https://www.burnstead.com/builder-documents-1) support their present brand association. This does not establish retrospective legal succession from older corporations.
+- Quadrant: five reviewed corporate-name forms with both dates no later than December 31, 2020. The [company's history](https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest) identifies The Quadrant Corporation. Later Tri Pointe entries, misspellings and combined sellers await separate review.
+- Require valid county document dates and 12–14 digit recording identifiers with valid date prefixes. Only warranty/statutory warranty instruments (`SaleInstrument` 2/3) and residential land/improved classes (`PropertyClass` 7/8) qualify; lookup meanings are checked against the pinned county dictionary.
+- Require a current parcel, exactly one residential building with one living unit, and county construction year 1976–2026. This narrower cohort applies only to the new collections.
+- Require a nonempty Assessor street and five-digit ZIP, the exact PIN/street/ZIP in county GIS, one postal city and one valid WGS84 parcel centroid. Existing released address/year conflicts hold the new association.
+- Every new connection carries `assessor-sale-association`: the county Assessor sale directly links the company and PIN; the deed image and original builder remain unreviewed.
+- Apply land-only, one/two-year or larger chronology-gap flags per connection. Multi-parcel flags count every Assessor PIN on a supporting recording, including other-company and held parcels. Another parcel cannot contribute its classification.
 
-The first two sets overlap: **57 distinct properties** need priority attribution review. A one-year gap alone is not rebuilding evidence. Neither a longer gap nor a land-only classification establishes rebuilding. The flags preserve uncertainty; they do not change the address verification outcome or claim a builder.
+Candidate totals are keyword discovery universes, not verified inventory. Each candidate PIN is either published for that collection or held under one terminal reason. A missing result says nothing definitive about a company's involvement. Six other builder brands and the two Buchan attributions remain planned research, with no running background jobs implied.
 
-Land classification specifically uses the Assessor `PropertyClass` lookup family `4`, not `PropertyType` lookup family `1`. Those dimensions sometimes differ. Sales join on both the verified recording and PIN, so a multi-parcel recording cannot donate another parcel's classification. The 913 unique-legal-tuple address associations lack matching Assessor sales for that supporting route; absence of a land flag is not proof of improved-property construction.
+## Reproduction
 
-Public notes come only from fixed reviewed templates. Raw seller, buyer, co-seller, owner, grantor, grantee, legal descriptions, cookie headers, arbitrary source notes, and local source paths are never projected. The exporter builds every object from an explicit field allowlist.
+The Assessor sales, residential-building, parcel and lookup ZIPs are pinned to the September 4, 2026 snapshot hashes in the manifest. GIS response hashes and actual retrieval timestamps are recorded separately. Source caches must stay outside the public repository. Preserve the original base files and `tests/fixtures/buchan-manifest.json`.
 
-## Sources and release boundaries
-
-The county extracts are dated **September 4, 2026**, retrieved September 13. Postal verification uses its separately recorded source dates. `generatedAt` records this projection build, not a new county refresh. Official data downloads: [King County Assessor](https://info.kingcounty.gov/assessor/DataDownload/default.aspx). Specific source ZIP URLs, extract dates, retrieval dates, and SHA-256 hashes are in the manifest. The source snapshot hashes bind this exporter to the reviewed verification and independent-assessor evidence files.
-
-Only `final_verification.json.properties` is eligible for export. Original and recovered held candidates are rejected. The separate 362 GIS-ZIP recovery candidates remain unreleased. The full verified membership has a frozen SHA-256 fingerprint in the tests; replacing one property with an unreleased candidate fails even if the total remains 2,975. Candidate discovery counts, raw parties, and unreviewed proposed builder inventories are not public result rows.
-
-## Reproduce and verify
-
-Keep private evidence outside the public repository. Use Python 3.9 or later; no packages, network calls, or live county queries are required. `--verification` and `--assessor-evidence` must match the hashes pinned in the script. A new approved release requires a reviewed rule/snapshot update, not silently replacing these inputs.
-
-```bash
-python scripts/build-public-data.py \
-  --verification /path/to/verification_work/final_verification.json \
-  --assessor-evidence /path/to/verification_work/independent_assessor_evidence.json \
-  --catalog /path/to/proposed_collection_catalog.json \
-  --generated-at 2026-09-14T18:50:14Z
-
-python -m unittest discover -s tests -p 'data*_test.py'
+```sh
+python scripts/build-expanded-data.py \
+  --assessor-dir /path/to/assessor_exports \
+  --sales /path/to/Real_Property_Sales.zip \
+  --cache-dir /path/outside/repository/expanded-source-cache \
+  --generated-at 2026-09-15T21:40:00Z
+npm test
+python -m unittest discover -s tests -p 'data*.py'
 ```
 
-Reuse the same explicit generation timestamp to reproduce the base manifest byte for byte. The same inputs always produce the same sorted index, detail bytes, filenames, and counts. Run the separate map exporter afterward with the matching cached geometry snapshot to reproduce the map-enabled manifest. A base-only export deliberately sets geometry unavailable until that matching geometry is attached. The exporter checks count reconciliation, unique string PINs, held exclusions, known lookup meanings, proposed collection status, and source-grounded review totals before writing anything. Tests also cover privacy allowlisting, leading-zero identifiers, chronological edge cases, and cross-parcel classification isolation.
-
-Payloads are written before the manifest, whose local replacement is atomic. Publish the manifest and referenced assets in one deployment snapshot; changing the manifest alone is insufficient. Retain prior hashed payloads for rollback and in-flight readers. This script does not deploy the site or delete earlier releases.
+Reuse the actual recorded generation timestamp and cached source responses for deterministic output. The exporter writes all payloads before replacing the manifest. Publish them together in one tested deployment. The original `build-public-data.py` intentionally produces only the frozen Buchan release; it is not the expansion entrypoint. The map-only exporter preserves current membership and evidence.

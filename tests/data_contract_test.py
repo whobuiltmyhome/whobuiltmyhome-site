@@ -22,7 +22,7 @@ HELD_CALIBRATION_PINS = {
 class PublicReleaseTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = json.loads((ROOT / "data/manifest.json").read_text())
+        cls.manifest = json.loads((ROOT / "tests/fixtures/buchan-manifest.json").read_text())
         cls.index_bytes = (ROOT / cls.manifest["indexUrl"]).read_bytes()
         cls.detail_bytes = (ROOT / cls.manifest["detailsUrl"]).read_bytes()
         cls.rows = json.loads(cls.index_bytes)

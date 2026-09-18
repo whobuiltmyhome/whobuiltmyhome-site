@@ -1,0 +1,33 @@
+{
+  "ruleVersion": "reviewed-company-associations-v1",
+  "reviewedOn": "2026-09-15",
+  "entityPolicySha256": "155f0c40c128a1554177dbe16deba4a0e55621bb08ae2fdeaca214a926952df6",
+  "collections": {
+    "burnstead": {
+      "keywordCandidatePins": 3811,
+      "publishedPins": 173,
+      "heldPins": 3638,
+      "heldReasons": {
+        "address-mismatch": 3,
+        "construction-year-outside-cohort": 2,
+        "missing-assessor-address-or-zip": 223,
+        "no-eligible-reviewed-company-sale": 3406,
+        "not-current-single-building-single-unit": 4
+      },
+      "scope": "Initial collection covers three exact LLC names in 2010\u20132026 county transactions. Earlier corporations, Steven/Steve substitutions, truncated names, other affiliates and combined sellers await review. A current company document does not establish retrospective legal continuity."
+    },
+    "quadrant": {
+      "keywordCandidatePins": 9776,
+      "publishedPins": 5569,
+      "heldPins": 4207,
+      "heldReasons": {
+        "address-mismatch": 135,
+        "construction-year-outside-cohort": 2,
+        "missing-assessor-address-or-zip": 1956,
+        "no-eligible-reviewed-company-sale": 1966,
+        "not-current-single-building-single-unit": 148
+      },
+      "scope": "Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand."
+    }
+  }
+}

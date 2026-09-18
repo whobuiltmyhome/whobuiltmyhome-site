@@ -5,6 +5,16 @@ const MAX_QUERY_LENGTH = 160;
 const SORT_VALUES = new Set(['address', 'city', 'year-asc', 'year-desc']);
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
+async function responseJson(response) {
+  if (!response.ok) throw new Error('Resource unavailable');
+  if (typeof response.arrayBuffer !== 'function') return response.json();
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  const stream = bytes[0] === 0x1f && bytes[1] === 0x8b
+    ? new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
+    : new Blob([bytes]).stream();
+  return JSON.parse(await new Response(stream).text());
+}
+
 export function normalizeSearchText(value) {
   return String(value ?? '').normalize('NFKC').toLowerCase().replace(/[.,#]/g, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -255,10 +265,7 @@ async function bootstrap() {
 
   async function fetchDetails() {
     if (!detailsPromise) {
-      detailsPromise = fetch(detailsUrl, { credentials: 'same-origin' }).then(response => {
-        if (!response.ok) throw new Error('Evidence unavailable');
-        return response.json();
-      }).then(value => {
+      detailsPromise = fetch(detailsUrl, { credentials: 'same-origin' }).then(responseJson).then(value => {
         if (!value || Array.isArray(value) || typeof value !== 'object') throw new Error('Invalid evidence');
         return value;
       }).catch(error => { detailsPromise = null; throw error; });
@@ -309,39 +316,27 @@ async function bootstrap() {
       if (county) sources.append(county);
       if (map) sources.append(map);
       ui['detail-body'].append(sources);
-      if (property.reviewFlags.length) {
+      const connections = detail.connections || [{ ...detail, collectionId: property.collectionIds[0], entityIds: [], reviewFlags: property.reviewFlags }];
+      for (const connection of connections) {
         const section = node('section', 'detail-section');
-        section.append(node('h3', '', 'Evidence to review'));
-        const flags = node('ul');
-        for (const flag of property.reviewFlags) {
-          const label = manifest.evidenceLabels?.[flag] || 'Evidence review needed';
-          const explanation = manifest.reviewFlagDescriptions?.[flag];
-          flags.append(node('li', '', explanation ? `${label}: ${explanation}` : label));
-        }
-        section.append(flags);
-        ui['detail-body'].append(section);
-      } else {
-        const section = node('section', 'detail-section');
-        section.append(node('h3', '', 'Review status'), node('p', '', 'No listed review flags. This does not confirm the original builder.'));
-        ui['detail-body'].append(section);
-      }
-      if (detail.notes.length) {
-        const section = node('section', 'detail-section');
-        section.append(node('h3', '', 'Research notes'));
-        const notes = node('ul');
-        for (const note of detail.notes) notes.append(node('li', '', note));
-        section.append(notes);
-        ui['detail-body'].append(section);
-      }
-      const section = node('section', 'detail-section');
-      section.append(node('h3', '', 'Recording references'), node('p', '', 'These identifiers link the research to recorded documents. They are evidence of transactions, not a certification of construction.'));
-      if (detail.recordings.length) {
+        section.dataset.collection = connection.collectionId;
+        const collection = manifest.collections.find(c => c.id === connection.collectionId);
+        section.append(node('h3', '', collection?.name || 'Historical company connection'));
+        const entityNames = (connection.entityIds || []).map(id => manifest.entities?.find(e => e.id === id)?.name).filter(Boolean);
+        if (entityNames.length) section.append(node('p', '', `Company names in supporting sales: ${entityNames.join('; ')}`));
+        section.append(node('p', '', `Earliest supporting recording: ${formatDate(connection.firstCompanyRecording)}`));
+        if (connection.notes.length) {
+          const notes = node('ul');
+          for (const note of connection.notes) notes.append(node('li', '', note));
+          section.append(notes);
+        } else section.append(node('p', '', 'No listed review flags. This does not confirm the original builder.'));
+        section.append(node('h4', '', 'Recording references'), node('p', '', 'Supporting transactions for this connection. These references do not certify who built the current home.'));
         const list = node('ul', 'recording-list');
         list.setAttribute('aria-label', 'County recording identifiers');
-        for (const recording of detail.recordings) list.append(node('li', '', recording));
+        for (const recording of connection.recordings) list.append(node('li', '', recording));
         section.append(list);
-      } else section.append(node('p', '', 'No recording identifier is included in this release.'));
-      ui['detail-body'].append(section);
+        ui['detail-body'].append(section);
+      }
     } catch {
       if (request !== detailRequest || state.pin !== pin) return;
       loading.remove();
@@ -369,7 +364,13 @@ async function bootstrap() {
         const item = node('li');
         const isAvailable = available.some(candidate => candidate.id === collection.id);
         const pendingLabel = ['john-f-buchan', 'william-e-buchan'].includes(collection.id) ? 'Brand attribution awaiting evidence' : 'Awaiting evidence review';
-        item.append(node('span', 'collection-number', String(index + 1).padStart(2, '0')), node('h3', '', collection.name), node('p', '', isAvailable ? 'Available to explore' : pendingLabel));
+        item.append(node('span', 'collection-number', String(index + 1).padStart(2, '0')), node('h3', '', collection.name), node('p', '', isAvailable ? `${integer(collection.propertyCount)} verified addresses · Partial collection` : pendingLabel));
+        if (isAvailable) {
+          item.append(node('p', '', collection.description));
+          const explore = node('a', 'collection-link', 'Explore collection →');
+          explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
+          item.append(explore);
+        }
         return item;
       }));
     }
@@ -405,7 +406,7 @@ async function bootstrap() {
       if (indexUrl.origin !== window.location.origin || evidenceUrl.origin !== window.location.origin) throw new Error('Invalid release source');
       const indexResponse = await fetch(indexUrl, { credentials: 'same-origin' });
       if (!indexResponse.ok) throw new Error('Index unavailable');
-      const nextProperties = await indexResponse.json();
+      const nextProperties = await responseJson(indexResponse);
       if (!Array.isArray(nextProperties) || nextProperties.length !== nextManifest.verifiedPropertyCount || nextProperties.some(property => typeof property.pin !== 'string' || !/^\d{10}$/.test(property.pin) || typeof property.address !== 'string' || typeof property.city !== 'string' || typeof property.zip !== 'string' || !Array.isArray(property.collectionIds) || !Array.isArray(property.reviewFlags) || (property.yearBuilt !== null && !Number.isInteger(property.yearBuilt)))) throw new Error('Invalid property index');
       if (new Set(nextProperties.map(property => property.pin)).size !== nextProperties.length) throw new Error('Duplicate properties');
       manifest = nextManifest;

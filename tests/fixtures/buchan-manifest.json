@@ -24,12 +24,12 @@
       "status": "planned"
     },
     {
-      "description": "Initial collection covers three exact LLC names in 2010\u20132026 county transactions. Earlier corporations, Steven/Steve substitutions, truncated names, other affiliates and combined sellers await review. A current company document does not establish retrospective legal continuity.",
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
       "historySource": "https://www.burnstead.com/builder-documents-1",
       "id": "burnstead",
       "name": "Burnstead",
-      "propertyCount": 173,
-      "status": "available"
+      "propertyCount": 0,
+      "status": "planned"
     },
     {
       "description": "Planned research collection; no reviewed properties published under this brand yet.",
@@ -48,12 +48,12 @@
       "status": "planned"
     },
     {
-      "description": "Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand.",
+      "description": "Planned research collection; no reviewed properties published under this brand yet.",
       "historySource": "https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest",
       "id": "quadrant",
       "name": "Quadrant Homes",
-      "propertyCount": 5569,
-      "status": "available"
+      "propertyCount": 0,
+      "status": "planned"
     },
     {
       "description": "Planned research collection; no reviewed properties published under this brand yet.",
@@ -88,9 +88,9 @@
       "status": "planned"
     }
   ],
-  "coverage": "Partial King County collections for Buchan, Burnstead and Quadrant company associations. A missing result does not establish that a company was uninvolved. Other brands await evidence review.",
-  "detailsSha256": "98591ca5d80652750daaf336c909c193770381e585c6f159fb43572f11a8003f",
-  "detailsUrl": "data/details.98591ca5d8065275.json.gz",
+  "coverage": "A curated Buchan-associated release in King County, Washington. Missing results do not establish that a builder was uninvolved. The planned ten collections are not yet a countywide inventory.",
+  "detailsSha256": "a7cec1c52d36f0174abdc936696cf1f54c109ee07f5197274f96c59a6a6ff351",
+  "detailsUrl": "data/details.a7cec1c52d36f017.json",
   "evidenceLabels": {
     "associated": "Company association; builder unconfirmed",
     "chronology-review": "Construction chronology needs review",
@@ -98,37 +98,34 @@
     "legal-corroboration-missing": "Legal description not independently corroborated",
     "minor-chronology-gap": "One or two-year date difference",
     "multi-parcel-recording": "Recording covers multiple parcels",
-    "recording-crosswalk": "County recording crosswalk used",
-    "assessor-sale-association": "Assessor sale association; deed image unreviewed"
+    "recording-crosswalk": "County recording crosswalk used"
   },
   "evidenceScope": "Verified current addresses and historical company associations. Builder attribution for the current structures has not been confirmed.",
-  "generatedAt": "2026-09-15T21:40:00Z",
+  "generatedAt": "2026-09-14T18:50:14Z",
   "geometryAvailable": true,
   "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
   "heldRecoveryCandidateCount": 362,
   "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation.",
-  "indexSha256": "80b9523aaef5f9c1300ca01bdf28c19918c7f8d3ae94e1d52cdce2fa99505cf1",
-  "indexUrl": "data/index.80b9523aaef5f9c1.json.gz",
+  "indexSha256": "f38761569ab8e16ac3990be96ba2af9f1c4f0345280eb1161fe935253969b7bb",
+  "indexUrl": "data/index.f38761569ab8e16a.json",
   "postalSourceAsOf": [
     "2026-09-11",
-    "2026-09-13",
-    "2026-09-15"
+    "2026-09-13"
   ],
-  "priorityReviewPropertyCount": 1465,
-  "releaseId": "2026-09-15-burnstead-quadrant-associations-v1",
+  "priorityReviewPropertyCount": 57,
+  "releaseId": "2026-09-14-buchan-associations-map-v1",
   "researchWindow": [
     1976,
     2026
   ],
   "researchWindowDescription": "Recording-history research window, not continuous or complete historical coverage. County construction years are retained separately and can precede 1976.",
   "reviewCounts": {
+    "chronology-review": 18,
+    "land-only-evidence": 52,
     "legal-corroboration-missing": 401,
-    "recording-crosswalk": 105,
-    "minor-chronology-gap": 1659,
-    "land-only-evidence": 1456,
-    "assessor-sale-association": 5742,
-    "chronology-review": 145,
-    "multi-parcel-recording": 1355
+    "minor-chronology-gap": 162,
+    "multi-parcel-recording": 15,
+    "recording-crosswalk": 105
   },
   "reviewFlagDescriptions": {
     "chronology-review": "The county construction year is at least three years after the earliest verified company recording. Structure identity and construction history need review; rebuilding is not established.",
@@ -136,10 +133,9 @@
     "legal-corroboration-missing": "The complete plat, lot, and block combination was not independently corroborated. The verified association uses the Assessor recording-to-parcel crosswalk.",
     "minor-chronology-gap": "The county construction year is one or two years after the earliest verified company recording. This date difference alone does not establish rebuilding or a different builder.",
     "multi-parcel-recording": "The Assessor links a supporting recording to more than one parcel. Each public record remains a distinct verified PIN.",
-    "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk.",
-    "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed."
+    "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk."
   },
-  "ruleVersion": "reviewed-company-associations-v1",
+  "ruleVersion": "buchan-public-projection-1",
   "sourceAsOf": "2026-09-04",
   "sourceRetrievedOn": "2026-09-13",
   "sourceSnapshots": {
@@ -183,39 +179,12 @@
       "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
     }
   ],
-  "verifiedPropertyCount": 8717,
-  "version": 2,
-  "geometryUrl": "data/geometry.c1d450529634fc33.json.gz",
-  "geometrySha256": "c1d450529634fc332a22f0b40f4bdd42bd036e67b827cf3ea2bd485006a7c91d",
-  "mappedPropertyCount": 8717,
+  "verifiedPropertyCount": 2975,
+  "version": 1,
+  "geometryUrl": "data/geometry.ec5d694cf13a0bc1.json",
+  "geometrySha256": "ec5d694cf13a0bc1fd9725ffdfdfde19a8554d132961a92d60e163a9b81cbf99",
+  "mappedPropertyCount": 2975,
   "unmappedPropertyCount": 0,
   "geometrySource": "https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0",
-  "geometryRetrievedAt": "2026-09-15T21:34:37.363137+00:00",
-  "entities": [
-    {
-      "id": "burnstead-construction-llc",
-      "name": "Burnstead Construction LLC",
-      "collectionId": "burnstead",
-      "sourceUrl": "https://www.burnstead.com/builder-documents-1"
-    },
-    {
-      "id": "rick-burnstead-construction-llc",
-      "name": "Rick Burnstead Construction LLC",
-      "collectionId": "burnstead",
-      "sourceUrl": "https://www.burnstead.com/builder-documents-1"
-    },
-    {
-      "id": "steve-burnstead-construction-llc",
-      "name": "Steve Burnstead Construction LLC",
-      "collectionId": "burnstead",
-      "sourceUrl": "https://www.burnstead.com/builder-documents-1"
-    },
-    {
-      "id": "quadrant-corporation",
-      "name": "The Quadrant Corporation",
-      "collectionId": "quadrant",
-      "sourceUrl": "https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest"
-    }
-  ],
-  "expansionAuditUrl": "data/expansion-audit.json"
+  "geometryRetrievedAt": "2026-09-14T23:44:09.802011+00:00"
 }
