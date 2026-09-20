@@ -1,11 +1,12 @@
 {
-  "ruleVersion": "reviewed-company-associations-v3",
-  "reviewedOn": "2026-09-18",
-  "entityPolicySha256": "071248a6ceba5480e16aa3d705e92e30ca5a5930f30ec94040c49cc448a92211",
+  "ruleVersion": "reviewed-company-associations-v5",
+  "reviewedOn": "2026-09-20",
+  "entityPolicySha256": "7f6f0c8adebe15bc2d0d13427d258f869bad221ad9d69a5350e0664dd879287a",
   "collections": {
     "burnstead": {
       "keywordCandidatePins": 3811,
       "publishedPins": 2584,
+      "gisPrimaryAddressRecoveredPins": 0,
       "heldPins": 1227,
       "heldReasons": {
         "address-mismatch": 80,
@@ -16,13 +17,65 @@
       },
       "scope": "County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976\u2013September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home."
     },
+    "camwest": {
+      "keywordCandidatePins": 3022,
+      "publishedPins": 1667,
+      "gisPrimaryAddressRecoveredPins": 0,
+      "heldPins": 1355,
+      "heldReasons": {
+        "address-mismatch": 47,
+        "construction-year-outside-cohort": 8,
+        "missing-assessor-address-or-zip": 788,
+        "no-eligible-reviewed-company-sale": 476,
+        "not-current-single-building-single-unit": 36
+      },
+      "scope": "County sale associations for seller names containing CamWest or Cam West plus an explicit development, homes, incorporated, LLC, or named-project business term, through September 4, 2026. These associations do not certify the original builder."
+    },
+    "conner": {
+      "keywordCandidatePins": 2756,
+      "publishedPins": 1634,
+      "gisPrimaryAddressRecoveredPins": 0,
+      "heldPins": 1122,
+      "heldReasons": {
+        "address-mismatch": 35,
+        "construction-year-outside-cohort": 1,
+        "missing-assessor-address-or-zip": 682,
+        "no-eligible-reviewed-company-sale": 390,
+        "not-current-single-building-single-unit": 14
+      },
+      "scope": "County sale associations limited to explicit Conner Homes, Conner Development, or Conner-Jarvis seller names through September 4, 2026. Generic Conner surname matches are excluded."
+    },
+    "lennar": {
+      "keywordCandidatePins": 1229,
+      "publishedPins": 53,
+      "gisPrimaryAddressRecoveredPins": 0,
+      "heldPins": 1176,
+      "heldReasons": {
+        "address-mismatch": 5,
+        "missing-assessor-address-or-zip": 265,
+        "no-eligible-reviewed-company-sale": 892,
+        "not-current-single-building-single-unit": 14
+      },
+      "scope": "County sale associations limited to explicit Lennar Northwest seller names through September 4, 2026. Lennart and other surname lookalikes are excluded."
+    },
+    "mainvue": {
+      "keywordCandidatePins": 1050,
+      "publishedPins": 981,
+      "gisPrimaryAddressRecoveredPins": 723,
+      "heldPins": 69,
+      "heldReasons": {
+        "no-eligible-reviewed-company-sale": 66,
+        "not-current-single-building-single-unit": 3
+      },
+      "scope": "County sale associations for explicit MainVue or Main Vue seller names through September 4, 2026. These associations do not certify the original builder."
+    },
     "murray-franklyn": {
       "keywordCandidatePins": 211,
-      "publishedPins": 96,
-      "heldPins": 115,
+      "publishedPins": 204,
+      "gisPrimaryAddressRecoveredPins": 108,
+      "heldPins": 7,
       "heldReasons": {
-        "address-mismatch": 10,
-        "missing-assessor-address-or-zip": 99,
+        "missing-primary-address": 1,
         "no-eligible-reviewed-company-sale": 4,
         "not-current-single-building-single-unit": 2
       },
@@ -31,6 +84,7 @@
     "quadrant": {
       "keywordCandidatePins": 9776,
       "publishedPins": 5569,
+      "gisPrimaryAddressRecoveredPins": 0,
       "heldPins": 4207,
       "heldReasons": {
         "address-mismatch": 135,
@@ -40,6 +94,19 @@
         "not-current-single-building-single-unit": 148
       },
       "scope": "Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand."
+    },
+    "toll-brothers": {
+      "keywordCandidatePins": 1535,
+      "publishedPins": 488,
+      "gisPrimaryAddressRecoveredPins": 0,
+      "heldPins": 1047,
+      "heldReasons": {
+        "address-mismatch": 28,
+        "missing-assessor-address-or-zip": 625,
+        "no-eligible-reviewed-company-sale": 372,
+        "not-current-single-building-single-unit": 22
+      },
+      "scope": "County sale associations for explicit Toll Brothers or Toll Bros seller names through September 4, 2026. These associations do not certify the original builder."
     }
   }
 }

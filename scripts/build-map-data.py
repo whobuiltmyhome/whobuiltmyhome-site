@@ -9,6 +9,7 @@ byte-identical geometry. County centroids are approximate parcel locations.
 import argparse
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
+import gzip
 import hashlib
 import json
 import math
@@ -49,6 +50,42 @@ def select_location(property, features):
     if len(points) != 1:
         return None, 'ambiguous-geometry'
     return list(points.pop()), None
+
+
+def select_primary_address(pin, features):
+    """Return one complete county-designated primary address for a PIN.
+
+    This is intentionally stricter than merely taking the first GIS feature:
+    every usable primary feature must resolve to the same address, postal city,
+    ZIP and parcel centroid.  Callers may use the result to recover an address
+    missing or stale in another Assessor export without guessing.
+    """
+    matches = []
+    for feature in features:
+        attributes = feature.get('attributes') or {}
+        primary = attributes.get('PRIMARY_ADDR')
+        if attributes.get('PIN') != pin or primary not in (1, True, '1', 'Y', 'YES', 'TRUE'):
+            continue
+        address = normalize(attributes.get('ADDR_FULL'))
+        zipcode = str(attributes.get('ZIP5') or '')
+        city = normalize(attributes.get('POSTALCTYNAME'))
+        center = feature.get('centroid') or {}
+        lat, lon = center.get('y'), center.get('x')
+        if not address or not re.fullmatch(r'\d{5}', zipcode) or not city:
+            continue
+        if not all(type(v) in (int, float) and math.isfinite(v) for v in (lat, lon)):
+            continue
+        if not (47.0 <= lat <= 47.9 and -122.6 <= lon <= -121.0):
+            continue
+        matches.append((address, zipcode, city, round(lat, 6), round(lon, 6)))
+    distinct = set(matches)
+    if not distinct:
+        return None, 'missing-primary-address'
+    if len(distinct) != 1:
+        return None, 'ambiguous-primary-address'
+    address, zipcode, city, lat, lon = distinct.pop()
+    return {'address': address, 'zip': zipcode, 'city': city,
+            'location': [lat, lon]}, None
 
 
 def fetch_batch(pins, cache):
@@ -98,7 +135,8 @@ def main():
     args.cache_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = ROOT / 'data/manifest.json'
     manifest = json.loads(manifest_path.read_text())
-    raw_index = (ROOT / manifest['indexUrl']).read_bytes()
+    stored_index = (ROOT / manifest['indexUrl']).read_bytes()
+    raw_index = gzip.decompress(stored_index) if manifest['indexUrl'].endswith('.gz') else stored_index
     if hashlib.sha256(raw_index).hexdigest() != manifest['indexSha256']:
         raise ValueError('Index hash mismatch')
     properties = json.loads(raw_index)
@@ -126,8 +164,8 @@ def main():
                 'locations': locations, 'excluded': excluded, 'sourceBatches': batches}
     content = packed(geometry)
     digest = hashlib.sha256(content).hexdigest()
-    filename = f'geometry.{digest[:16]}.json'
-    (ROOT / 'data' / filename).write_bytes(content)
+    filename = f'geometry.{digest[:16]}.json.gz'
+    (ROOT / 'data' / filename).write_bytes(gzip.compress(content, compresslevel=9, mtime=0))
     manifest.update(geometryAvailable=bool(locations), geometryUrl='data/' + filename,
                     geometrySha256=digest, mappedPropertyCount=len(locations),
                     unmappedPropertyCount=len(excluded), geometrySource=SOURCE,

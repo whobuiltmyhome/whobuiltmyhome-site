@@ -28,9 +28,15 @@ COUNTY = 'https://blue.kingcounty.com/Assessor/eRealProperty/Detail.aspx?ParcelN
 MAP = 'https://gismaps.kingcounty.gov/parcelviewer2/?pin='
 COLLECTION_KEYWORDS = {
     'burnstead': ('BURNSTEAD',),
+    'camwest': ('CAMWEST', 'CAM WEST'),
+    'conner': ('CONNER HOMES', 'CONNER DEVELOPMENT', 'CONNER-JARVIS'),
+    'lennar': ('LENNAR NORTHWEST',),
+    'mainvue': ('MAINVUE', 'MAIN VUE'),
     'murray-franklyn': ('MURRAY FRANKLYN', 'MURRAY FRANKLIN'),
     'quadrant': ('QUADRANT',),
+    'toll-brothers': ('TOLL BROTHERS', 'TOLL BROS'),
 }
+GIS_PRIMARY_ADDRESS_RECOVERY = frozenset(('mainvue', 'murray-franklyn'))
 
 
 def digest(data):
@@ -56,6 +62,22 @@ def entity_for(seller, document_date, recording_date):
             any(term in normalized for term in ('HOMES', 'DEVELOPMENT', 'LAND ACQUISITIONS', 'WEST', 'INC')) and
             all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
         return historical['historical-murray-franklyn-company']
+    if (collection_matches('camwest', normalized) and
+            any(term in normalized for term in ('DEVELOPMENT', 'HOMES', 'LLC', 'INC', 'CAMWEST')) and
+            all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
+        return historical['camwest-named-company']
+    if (collection_matches('conner', normalized) and
+            all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
+        return historical['conner-homes-named-company']
+    if (collection_matches('toll-brothers', normalized) and
+            all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
+        return historical['toll-brothers-named-company']
+    if (collection_matches('mainvue', normalized) and
+            all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
+        return historical['mainvue-named-company']
+    if (collection_matches('lennar', normalized) and
+            all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
+        return historical['lennar-northwest-named-company']
     if ('BURNSTEAD' not in normalized or
             not any(term in normalized for term in ('CONST', 'CONSTR', 'HOMES')) or
             not all('1976-01-01' <= day <= '2026-09-04' for day in (document_date, recording_date))):
@@ -163,7 +185,7 @@ def main():
         if p in sales:
             buildings[p].append(row)
     current = {p for row in rows(parcels_path) if (p := pin(row)) in sales}
-    reasons, candidates = {}, {}
+    reasons, candidates, recovery_candidates = {}, {}, {}
     for p in sales:
         bs = buildings[p]
         if p not in current or len(bs) != 1 or bs[0]['NbrLivingUnits'] != '1':
@@ -175,7 +197,12 @@ def main():
             continue
         address, zipcode = building_address(b)
         if not address or not re.fullmatch(r'\d{5}', zipcode):
-            reasons[p] = 'missing-assessor-address-or-zip'
+            collections = {s['collectionId'] for s in sales[p]}
+            if collections & GIS_PRIMARY_ADDRESS_RECOVERY:
+                recovery_candidates[p] = {'id': 'king-wa:' + p, 'pin': p,
+                                          'yearBuilt': int(b['YrBuilt']), 'status': 'associated'}
+            else:
+                reasons[p] = 'missing-assessor-address-or-zip'
             continue
         candidates[p] = {'id': 'king-wa:' + p, 'pin': p, 'address': address, 'zip': zipcode,
                          'yearBuilt': int(b['YrBuilt']), 'status': 'associated'}
@@ -188,6 +215,16 @@ def main():
         batches.append({'sha256': sha, 'retrievedAt': result['retrievedAt'],
                         'requested': len(result['requestedPins']), 'returned': len(result['features'])})
         print(json.dumps({'countyBatch': len(batches), 'of': (len(pins) + 199) // 200}), flush=True)
+    recovery_pins = sorted(recovery_candidates)
+    for start in range(0, len(recovery_pins), 200):
+        result, sha = geo.fetch_batch(recovery_pins[start:start + 200], args.cache_dir)
+        for feature in result['features']:
+            grouped[feature['attributes']['PIN']].append(feature)
+        batches.append({'sha256': sha, 'retrievedAt': result['retrievedAt'],
+                        'requested': len(result['requestedPins']), 'returned': len(result['features'])})
+        print(json.dumps({'countyRecoveryBatch': start // 200 + 1,
+                          'of': (len(recovery_pins) + 199) // 200}), flush=True)
+    candidates.update(recovery_candidates)
     # Count every Assessor PIN on supporting recordings, including held/non-keyword parcels.
     recording_pins = {s['recording']: set() for ss in sales.values() for s in ss}
     for row in rows(sales_path):
@@ -203,18 +240,42 @@ def main():
                                  **{k: detail[k] for k in ('firstCompanyRecording', 'recordings', 'notes')},
                                  'reviewFlags': list(index[p]['reviewFlags'])}]
     released = {c: set() for c in universe}
+    recovered = {c: set() for c in universe}
     flags_text = BASE['reviewFlagDescriptions']
     flags_text['assessor-sale-association'] = 'The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.'
+    flags_text['gis-primary-address-recovery'] = 'The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match.'
     for p, row in sorted(candidates.items()):
         features = grouped[p]
-        location, reason = geo.select_location(row, features)
-        cities = {geo.normalize(f['attributes'].get('POSTALCTYNAME')) for f in features
-                  if geo.normalize(f['attributes'].get('ADDR_FULL')) == row['address']
-                  and f['attributes'].get('ZIP5') == row['zip']}
-        if reason or len(cities) != 1 or not next(iter(cities), ''):
-            reasons[p] = reason or 'ambiguous-or-missing-postal-city'
-            continue
-        row['city'] = cities.pop()
+        target_collections = ({s['collectionId'] for s in sales[p]} &
+                              GIS_PRIMARY_ADDRESS_RECOVERY)
+        recovered_address = p in recovery_candidates
+        if recovered_address:
+            primary, reason = geo.select_primary_address(p, features)
+            if reason:
+                reasons[p] = reason
+                continue
+            row.update({k: primary[k] for k in ('address', 'zip', 'city')})
+            location = primary['location']
+        else:
+            location, reason = geo.select_location(row, features)
+            cities = {geo.normalize(f['attributes'].get('POSTALCTYNAME')) for f in features
+                      if geo.normalize(f['attributes'].get('ADDR_FULL')) == row['address']
+                      and f['attributes'].get('ZIP5') == row['zip']}
+            if reason or len(cities) != 1 or not next(iter(cities), ''):
+                if reason == 'address-mismatch' and target_collections:
+                    primary, recovery_reason = geo.select_primary_address(p, features)
+                    if primary:
+                        row.update({k: primary[k] for k in ('address', 'zip', 'city')})
+                        location = primary['location']
+                        recovered_address = True
+                    else:
+                        reasons[p] = recovery_reason
+                        continue
+                else:
+                    reasons[p] = reason or 'ambiguous-or-missing-postal-city'
+                    continue
+            else:
+                row['city'] = cities.pop()
         if p in index and any((geo.normalize(index[p][k]) != geo.normalize(row[k]))
                               for k in ('address', 'zip', 'city', 'yearBuilt')):
             reasons[p] = 'conflict-with-existing-release'
@@ -230,6 +291,8 @@ def main():
                 continue
             first = min(s['recordedOn'] for s in ss)
             flags = ['assessor-sale-association']
+            if recovered_address:
+                flags.append('gis-primary-address-recovery')
             if all(s['propertyClass'] == '7' for s in ss):
                 flags.append('land-only-evidence')
             gap = row['yearBuilt'] - int(first[:4])
@@ -246,16 +309,25 @@ def main():
             index[p]['collectionIds'].append(collection)
             index[p]['reviewFlags'] = sorted(set(index[p]['reviewFlags']) | set(flags))
             released[collection].add(p)
+            if recovered_address:
+                recovered[collection].add(p)
     for detail in details.values():
         cs = detail['connections']
         detail.update(firstCompanyRecording=min(c['firstCompanyRecording'] for c in cs),
                       recordings=sorted({r for c in cs for r in c['recordings']}),
                       notes=sorted({n for c in cs for n in c['notes']}))
-    audit = {'ruleVersion': 'reviewed-company-associations-v3', 'reviewedOn': '2026-09-18',
+    audit = {'ruleVersion': 'reviewed-company-associations-v5', 'reviewedOn': '2026-09-20',
              'entityPolicySha256': digest((ROOT / 'data/entity-policy.json').read_bytes()), 'collections': {}}
     for collection, all_pins in universe.items():
-        held = Counter(reasons.get(p, 'no-eligible-reviewed-company-sale') for p in all_pins - released[collection])
+        held = Counter(
+            reasons.get(p, 'eligible-sale-not-released')
+            if any(s['collectionId'] == collection for s in sales.get(p, ()))
+            else 'no-eligible-reviewed-company-sale'
+            for p in all_pins - released[collection]
+        )
+        assert 'eligible-sale-not-released' not in held
         audit['collections'][collection] = {'keywordCandidatePins': len(all_pins), 'publishedPins': len(released[collection]),
+                                             'gisPrimaryAddressRecoveredPins': len(recovered[collection]),
                                              'heldPins': sum(held.values()), 'heldReasons': dict(sorted(held.items())),
                                              'scope': POLICY['limits'][collection]}
         assert len(all_pins) == len(released[collection]) + sum(held.values())
@@ -280,12 +352,14 @@ def main():
                     mappedPropertyCount=len(geometry['locations']), unmappedPropertyCount=0,
                     postalSourceAsOf=sorted(set(BASE['postalSourceAsOf']) | {b['retrievedAt'][:10] for b in batches}),
                     geometryRetrievedAt=max(b['retrievedAt'] for b in batches), generatedAt=args.generated_at,
-                    releaseId='2026-09-18-murray-franklyn-associations-v3', ruleVersion=audit['ruleVersion'],
+                    releaseId='2026-09-20-multi-builder-associations-v5', ruleVersion=audit['ruleVersion'],
                     verifiedPropertyCount=len(index), expansionAuditUrl='data/expansion-audit.json',
-                    coverage='Partial King County collections for Buchan, Burnstead and Quadrant company associations. A missing result does not establish that a company was uninvolved. Other brands await evidence review.',
+                    coverage='Partial King County company-association collections for nine builder brands. A missing result does not establish that a company was uninvolved, and no result certifies the original builder of the current home.',
                     reviewFlagDescriptions=flags_text, reviewCounts=dict(Counter(f for r in public_rows for f in r['reviewFlags'])),
                     priorityReviewPropertyCount=sum(bool(set(r['reviewFlags']) & {'land-only-evidence', 'chronology-review'}) for r in public_rows))
-    manifest['evidenceLabels'] = {**BASE['evidenceLabels'], 'assessor-sale-association': 'Assessor sale association; deed image unreviewed'}
+    manifest['evidenceLabels'] = {**BASE['evidenceLabels'],
+                                  'assessor-sale-association': 'Assessor sale association; deed image unreviewed',
+                                  'gis-primary-address-recovery': 'County primary-address recovery'}
     (ROOT / manifest['geometryUrl']).write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
     (ROOT / 'data/expansion-audit.json').write_text(json.dumps(audit, indent=2) + '\n')
     temporary = ROOT / 'data/manifest.tmp'

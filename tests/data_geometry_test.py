@@ -49,6 +49,24 @@ class GeometryTests(unittest.TestCase):
             self.assertIsNone(exporter.select_location(property, [dict(feature, centroid=center)])[0])
         self.assertEqual(exporter.select_location(property, [])[1], 'no-county-match')
 
+    def test_primary_address_recovery_requires_one_complete_primary_feature(self):
+        pin = '0012345678'
+        feature = {'attributes': {'PIN': pin, 'ADDR_FULL': '1 Example St.', 'ZIP5': '98004',
+                                  'POSTALCTYNAME': 'Bellevue', 'PRIMARY_ADDR': 1},
+                   'centroid': {'x': -122.1, 'y': 47.6}}
+        expected = {'address': '1 EXAMPLE ST', 'zip': '98004', 'city': 'BELLEVUE',
+                    'location': [47.6, -122.1]}
+        self.assertEqual(exporter.select_primary_address(pin, [feature]), (expected, None))
+        duplicate = json.loads(json.dumps(feature))
+        self.assertEqual(exporter.select_primary_address(pin, [feature, duplicate]), (expected, None))
+        nonprimary = json.loads(json.dumps(feature))
+        nonprimary['attributes']['PRIMARY_ADDR'] = 0
+        self.assertEqual(exporter.select_primary_address(pin, [nonprimary])[1], 'missing-primary-address')
+        conflicting = json.loads(json.dumps(feature))
+        conflicting['attributes']['ADDR_FULL'] = '2 Example St.'
+        self.assertEqual(exporter.select_primary_address(pin, [feature, conflicting])[1],
+                         'ambiguous-primary-address')
+
 
 if __name__ == '__main__':
     unittest.main()

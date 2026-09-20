@@ -52,10 +52,16 @@ class ExpansionTests(unittest.TestCase):
         self.assertEqual(builder.entity_for('BURNSTEAD HOMES INC', '1992-01-01', '1992-01-02')['id'], 'historical-burnstead-homes')
         self.assertEqual(builder.entity_for('MURRAY FRANKLYN HOMES LLC', '2024-01-01', '2024-01-02')['id'], 'murray-franklyn-homes-llc')
         self.assertEqual(builder.entity_for('MURRAY FRANKLIN WEST INC', '1988-01-01', '1988-01-02')['id'], 'historical-murray-franklyn-company')
+        self.assertEqual(builder.entity_for('CAMWEST DEVELOPMENT INC', '2005-01-01', '2005-01-02')['id'], 'camwest-named-company')
+        self.assertEqual(builder.entity_for('CONNER HOMES COMPANY', '2005-01-01', '2005-01-02')['id'], 'conner-homes-named-company')
+        self.assertEqual(builder.entity_for('TOLL BROS INC', '2022-01-01', '2022-01-02')['id'], 'toll-brothers-named-company')
+        self.assertEqual(builder.entity_for('MAINVUE WA LLC', '2022-01-01', '2022-01-02')['id'], 'mainvue-named-company')
+        self.assertEqual(builder.entity_for('LENNAR NORTHWEST INC', '2018-01-01', '2018-01-02')['id'], 'lennar-northwest-named-company')
         for name in ('QUADRANT REAL ESTATE LLC', 'QUADRANT CORPORAITON',
                      'TRI POINTE HOMES WASHINGTON INC +QUADRANT CORP',
                      'BURNSTEAD FREDERICK H', 'BURNSTEAD INVESTMENTS LLC',
-                     'MURRAY FRANKLYN FAMILY TRUST'):
+                     'MURRAY FRANKLYN FAMILY TRUST', 'CONNER FAMILY TRUST',
+                     'HENDRICKSON LENNARD', 'MAIN STREET VUE LLC'):
             self.assertIsNone(builder.entity_for(name, '2018-01-01', '2018-01-02'))
         self.assertIsNone(builder.entity_for('QUADRANT CORPORATION', '2021-01-01', '2021-01-02'))
         self.assertEqual(builder.entity_for('RICK BURNSTEAD CONSTRUCTION LLC', '2009-01-01', '2009-01-02')['id'], 'historical-rick-burnstead-construction')
@@ -119,6 +125,20 @@ class ExpansionTests(unittest.TestCase):
             self.assertEqual(a['keywordCandidatePins'], a['publishedPins'] + a['heldPins'])
             self.assertEqual(a['heldPins'], sum(a['heldReasons'].values()))
             self.assertEqual(a['publishedPins'], sum(c in r['collectionIds'] for r in self.index.values()))
+            self.assertLessEqual(a['gisPrimaryAddressRecoveredPins'], a['publishedPins'])
+        self.assertEqual(audit['collections']['mainvue']['publishedPins'], 981)
+        self.assertEqual(audit['collections']['mainvue']['gisPrimaryAddressRecoveredPins'], 723)
+        self.assertEqual(audit['collections']['murray-franklyn']['publishedPins'], 204)
+        self.assertEqual(audit['collections']['murray-franklyn']['gisPrimaryAddressRecoveredPins'], 108)
+        self.assertEqual(self.manifest['verifiedPropertyCount'], 16025)
+        self.assertEqual(self.manifest['reviewCounts']['gis-primary-address-recovery'], 831)
+        self.assertEqual(audit['collections']['mainvue']['heldReasons'],
+                         {'no-eligible-reviewed-company-sale': 66,
+                          'not-current-single-building-single-unit': 3})
+        self.assertEqual(audit['collections']['murray-franklyn']['heldReasons'],
+                         {'missing-primary-address': 1,
+                          'no-eligible-reviewed-company-sale': 4,
+                          'not-current-single-building-single-unit': 2})
 
 
 if __name__ == '__main__':
