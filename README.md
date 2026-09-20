@@ -1,22 +1,21 @@
 # Who Built My Home
 
-A free static King County property explorer with nine partial builder-company
-association collections. Current counts and source dates are in
-`data/manifest.json`. Every original builder remains unconfirmed, and John and
-William Buchan remain combined.
+A free static explorer of home builders across King County. The current view
+contains 13,056 homes linked to eight builders through county property and sale
+records. Coverage varies by builder, and a match does not by itself prove who
+built the current home.
 
 ## Run locally
 
-Requires Python 3 to serve locally. No package installation, hosted database,
-API service, or build step is needed to serve the site. The test suite uses
-Node 20 or later and a development-only DOM test dependency.
+The site has no production build step or hosted database. Serve it over HTTP so
+the browser can load its local data files:
 
 ```sh
 python3 -m http.server 8765
 ```
 
-Open http://localhost:8765. Use HTTP instead of opening index.html directly,
-because the browser fetches the local data files.
+Open http://localhost:8765. The test suite requires Node 20 or later and Python
+3.9 or later:
 
 ```sh
 npm ci
@@ -26,27 +25,25 @@ python3 -m unittest discover -s tests -p 'data*.py'
 
 ## Data
 
-The browser reads `data/manifest.json` and its immutable index, then fetches
-property evidence only when needed. The complete index participates in search.
-No raw grantor, grantee, private owner, or buyer fields are included.
+The browser reads `data/manifest.json` and the immutable search index first.
+Home details and map geometry load only when needed. No raw owner, buyer,
+grantor, grantee, or private seller fields are published.
 
-See [the data contract](docs/data-contract.md) for the deterministic export,
-provenance, review labels, and input paths. Keep raw source evidence outside this
-public repository. Do not replace a reviewed release with a keyword candidate scan.
+The eight builder counts, source dates, content hashes, and coverage limits are
+recorded in the manifest. See [the data contract](docs/data-contract.md) for the
+deterministic export and validation rules. Raw source exports and GIS caches
+must remain outside this public repository.
 
-Choose **Show map** above the list to explore all matching records as clustered
-parcel centers. Search and filters control both views; list pagination does not
-limit the map. Click a cluster to zoom and a dot to open the evidence record.
-Every published record has an exact PIN/street/ZIP match to county geometry.
-The map uses approximate parcel centers, not surveyed building positions.
-See [mapping.md](docs/mapping.md) for data provenance and tile-provider behavior.
+The optional map shows approximate parcel centers for every matching home.
+Search and filters control the list and map together; list pagination never
+limits the map. See [mapping.md](docs/mapping.md) for geometry and tile-provider
+details.
 
 ## Measurement and publishing
 
-The existing GA4 stream ID is retained. Measurement is disabled in previews and
-also disabled in production until the account settings described in
-[analytics.md](docs/analytics.md) are verified. This avoids collecting residential
-addresses through automatic URL/search events.
+The existing GA4 stream ID is retained, but measurement stays disabled until
+the account settings in [analytics.md](docs/analytics.md) are verified. This
+prevents automatic URL or search events from sending residential addresses.
 
-See the repository's pull request and deployment history for publication status,
-and [release.md](docs/release.md) for publishing and rollback.
+GitHub pull requests and Pages deployment history are authoritative for the
+published site. See [release.md](docs/release.md) for verification and rollback.

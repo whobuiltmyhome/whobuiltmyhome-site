@@ -104,8 +104,8 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
     if (!visible || !map || !locations) return;
     const { mapped, missing } = matchMapProperties(latest, locations);
     status.textContent = latest.length
-      ? `${integer(mapped.length)} of ${integer(latest.length)} matching records mapped${missing ? ` · ${integer(missing)} without a checked location remain in the list` : ''}.`
-      : 'No matching records. Change the search or filters to see parcel locations.';
+      ? `${integer(mapped.length)} of ${integer(latest.length)} matching homes mapped${missing ? ` · ${integer(missing)} without a checked location remain in the list` : ''}.`
+      : 'No matching homes. Change the search or filters to see parcel locations.';
     fit.disabled = mapped.length === 0;
     // Sorting or moving between list pages must not reset a user's map position.
     const nextSignature = mapped.map(property => property.pin).sort().join(',');

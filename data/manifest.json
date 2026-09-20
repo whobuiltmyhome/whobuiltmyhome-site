@@ -1,200 +1,5 @@
 {
-  "collections": [
-    {
-      "description": "Verified addresses with historical Buchan company sale or deed associations. Current-structure builders are unconfirmed; the John F. Buchan / William E. Buchan split remains unreviewed.",
-      "id": "buchan",
-      "name": "Buchan company associations",
-      "propertyCount": 2975,
-      "status": "available"
-    },
-    {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
-      "historySource": "https://www.buchan.com/about-us/",
-      "id": "john-f-buchan",
-      "name": "John F. Buchan / John Buchan Homes",
-      "propertyCount": 0,
-      "status": "planned"
-    },
-    {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
-      "historySource": "https://buchanhomes.com/about",
-      "id": "william-e-buchan",
-      "name": "William E. Buchan / William Buchan Homes",
-      "propertyCount": 0,
-      "status": "planned"
-    },
-    {
-      "description": "County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976\u2013September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home.",
-      "historySource": "https://www.burnstead.com/builder-documents-1",
-      "id": "burnstead",
-      "name": "Burnstead",
-      "propertyCount": 2584,
-      "status": "available"
-    },
-    {
-      "description": "County sale associations for seller names containing Murray Franklyn or the Murray Franklin spelling variant plus an explicit homes, development, land-acquisition, west, or incorporated business term, 1976\u2013September 4, 2026. These associations do not certify the original builder.",
-      "historySource": "https://www.murrayfranklyn.com/ourdifference",
-      "id": "murray-franklyn",
-      "name": "Murray Franklyn",
-      "propertyCount": 204,
-      "status": "available"
-    },
-    {
-      "description": "County sale associations for seller names containing CamWest or Cam West plus an explicit development, homes, incorporated, LLC, or named-project business term, through September 4, 2026. These associations do not certify the original builder.",
-      "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
-      "id": "camwest",
-      "name": "CamWest",
-      "propertyCount": 1667,
-      "status": "available"
-    },
-    {
-      "description": "Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand.",
-      "historySource": "https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest",
-      "id": "quadrant",
-      "name": "Quadrant Homes",
-      "propertyCount": 5569,
-      "status": "available"
-    },
-    {
-      "description": "County sale associations limited to explicit Conner Homes, Conner Development, or Conner-Jarvis seller names through September 4, 2026. Generic Conner surname matches are excluded.",
-      "historySource": "https://www.connerhomes.com/about/",
-      "id": "conner",
-      "name": "Conner Homes",
-      "propertyCount": 1634,
-      "status": "available"
-    },
-    {
-      "description": "County sale associations for explicit Toll Brothers or Toll Bros seller names through September 4, 2026. These associations do not certify the original builder.",
-      "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
-      "id": "toll-brothers",
-      "name": "Toll Brothers",
-      "propertyCount": 488,
-      "status": "available"
-    },
-    {
-      "description": "County sale associations for explicit MainVue or Main Vue seller names through September 4, 2026. These associations do not certify the original builder.",
-      "historySource": "https://www.mainvuehomes.com/wa/about-mainvue",
-      "id": "mainvue",
-      "name": "MainVue Homes",
-      "propertyCount": 981,
-      "status": "available"
-    },
-    {
-      "description": "County sale associations limited to explicit Lennar Northwest seller names through September 4, 2026. Lennart and other surname lookalikes are excluded.",
-      "historySource": "https://www.lennar.com/new-homes/washington/seattle",
-      "id": "lennar",
-      "name": "Lennar",
-      "propertyCount": 53,
-      "status": "available"
-    }
-  ],
-  "coverage": "Partial King County company-association collections for nine builder brands. A missing result does not establish that a company was uninvolved, and no result certifies the original builder of the current home.",
-  "detailsSha256": "03f780b244fa503e8b5038a2383885fb53b322ffebb580bfa5b38cb4d629a143",
-  "detailsUrl": "data/details.03f780b244fa503e.json.gz",
-  "evidenceLabels": {
-    "associated": "Company association; builder unconfirmed",
-    "chronology-review": "Construction chronology needs review",
-    "land-only-evidence": "Land-only classification in supporting sales",
-    "legal-corroboration-missing": "Legal description not independently corroborated",
-    "minor-chronology-gap": "One or two-year date difference",
-    "multi-parcel-recording": "Recording covers multiple parcels",
-    "recording-crosswalk": "County recording crosswalk used",
-    "assessor-sale-association": "Assessor sale association; deed image unreviewed",
-    "gis-primary-address-recovery": "County primary-address recovery"
-  },
-  "evidenceScope": "Verified current addresses and historical company associations. Builder attribution for the current structures has not been confirmed.",
-  "generatedAt": "2026-09-20T13:30:00Z",
-  "geometryAvailable": true,
-  "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
-  "heldRecoveryCandidateCount": 362,
-  "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation.",
-  "indexSha256": "b62b1b0171b80f66de2214352cf8cd21ca0edce54fa827a3ad05e6ecf040e0be",
-  "indexUrl": "data/index.b62b1b0171b80f66.json.gz",
-  "postalSourceAsOf": [
-    "2026-09-11",
-    "2026-09-13",
-    "2026-09-18",
-    "2026-09-19"
-  ],
-  "priorityReviewPropertyCount": 1814,
-  "releaseId": "2026-09-20-multi-builder-associations-v5",
-  "researchWindow": [
-    1976,
-    2026
-  ],
-  "researchWindowDescription": "Recording-history research window, not continuous or complete historical coverage. County construction years are retained separately and can precede 1976.",
-  "reviewCounts": {
-    "assessor-sale-association": 13056,
-    "minor-chronology-gap": 2341,
-    "multi-parcel-recording": 1915,
-    "land-only-evidence": 1766,
-    "chronology-review": 214,
-    "legal-corroboration-missing": 401,
-    "recording-crosswalk": 105,
-    "gis-primary-address-recovery": 831
-  },
-  "reviewFlagDescriptions": {
-    "chronology-review": "The county construction year is at least three years after the earliest verified company recording. Structure identity and construction history need review; rebuilding is not established.",
-    "land-only-evidence": "Supporting Assessor sales include residential land-only classifications and no residential improved-property classification. This does not establish who built the current structure.",
-    "legal-corroboration-missing": "The complete plat, lot, and block combination was not independently corroborated. The verified association uses the Assessor recording-to-parcel crosswalk.",
-    "minor-chronology-gap": "The county construction year is one or two years after the earliest verified company recording. This date difference alone does not establish rebuilding or a different builder.",
-    "multi-parcel-recording": "The Assessor links a supporting recording to more than one parcel. Each public record remains a distinct verified PIN.",
-    "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk.",
-    "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.",
-    "gis-primary-address-recovery": "The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match."
-  },
-  "ruleVersion": "reviewed-company-associations-v5",
-  "sourceAsOf": "2026-09-04",
-  "sourceRetrievedOn": "2026-09-13",
-  "sourceSnapshots": {
-    "finalVerificationSha256": "1f06d5b3a931e4b0cb70eba281027595676b6893e552025063f595c7ef38b45a",
-    "independentAssessorEvidenceSha256": "c51d53e80ae134e368030bd4b879c23a8df46ad56ab96774682fc07aad722941"
-  },
-  "sources": [
-    {
-      "asOf": "2026-09-04",
-      "name": "Legal",
-      "retrievedOn": "2026-09-13",
-      "sha256": "f3dda171edd47110bfa717266bc22f599d2ad801d6511eca419eb7c75dfa05aa",
-      "url": "https://aqua.kingcounty.gov/extranet/assessor/Legal.zip"
-    },
-    {
-      "asOf": "2026-09-04",
-      "name": "Lookup",
-      "retrievedOn": "2026-09-13",
-      "sha256": "27b5d492021bfdbd6b245f4890e068af1dda6a165bcaea3860616a11c468489e",
-      "url": "https://aqua.kingcounty.gov/extranet/assessor/Lookup.zip"
-    },
-    {
-      "asOf": "2026-09-04",
-      "name": "Parcel",
-      "retrievedOn": "2026-09-13",
-      "sha256": "e60e188614671eeeda303e30dac2a2608c7fc7930cb1d4e768f4bc0626e60316",
-      "url": "https://aqua.kingcounty.gov/extranet/assessor/Parcel.zip"
-    },
-    {
-      "asOf": "2026-09-04",
-      "name": "Real Property Sales",
-      "retrievedOn": "2026-09-13",
-      "sha256": "efd110440e9bde37186ca3751bb81a9e3253e8389c9486e02b1d8ec53d0c7c88",
-      "url": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
-    },
-    {
-      "asOf": "2026-09-04",
-      "name": "Residential Building",
-      "retrievedOn": "2026-09-13",
-      "sha256": "2ee8fca58b6b436c27188fedcca1132230b085ec24312f34cd2a6d4067f5291d",
-      "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
-    }
-  ],
-  "verifiedPropertyCount": 16025,
   "version": 2,
-  "geometryUrl": "data/geometry.5f1d348c4c80c031.json.gz",
-  "geometrySha256": "5f1d348c4c80c031ce8c72d5a884fd04e9212b878caffba88da4c4c4679cca7a",
-  "mappedPropertyCount": 16025,
-  "unmappedPropertyCount": 0,
-  "geometrySource": "https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0",
-  "geometryRetrievedAt": "2026-09-19T21:35:41.396108+00:00",
   "entities": [
     {
       "id": "burnstead-construction-llc",
@@ -287,5 +92,155 @@
       "sourceUrl": "https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest"
     }
   ],
-  "expansionAuditUrl": "data/expansion-audit.json"
+  "collections": [
+    {
+      "id": "burnstead",
+      "name": "Burnstead",
+      "historySource": "https://www.burnstead.com/builder-documents-1",
+      "status": "available",
+      "propertyCount": 2584,
+      "description": "County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976\u2013September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home."
+    },
+    {
+      "id": "murray-franklyn",
+      "name": "Murray Franklyn",
+      "historySource": "https://www.murrayfranklyn.com/ourdifference",
+      "status": "available",
+      "propertyCount": 204,
+      "description": "County sale associations for seller names containing Murray Franklyn or the Murray Franklin spelling variant plus an explicit homes, development, land-acquisition, west, or incorporated business term, 1976\u2013September 4, 2026. These associations do not certify the original builder."
+    },
+    {
+      "id": "camwest",
+      "name": "CamWest",
+      "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
+      "status": "available",
+      "propertyCount": 1667,
+      "description": "County sale associations for seller names containing CamWest or Cam West plus an explicit development, homes, incorporated, LLC, or named-project business term, through September 4, 2026. These associations do not certify the original builder."
+    },
+    {
+      "id": "quadrant",
+      "name": "Quadrant Homes",
+      "historySource": "https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest",
+      "status": "available",
+      "propertyCount": 5569,
+      "description": "Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand."
+    },
+    {
+      "id": "conner",
+      "name": "Conner Homes",
+      "historySource": "https://www.connerhomes.com/about/",
+      "status": "available",
+      "propertyCount": 1634,
+      "description": "County sale associations limited to explicit Conner Homes, Conner Development, or Conner-Jarvis seller names through September 4, 2026. Generic Conner surname matches are excluded."
+    },
+    {
+      "id": "toll-brothers",
+      "name": "Toll Brothers",
+      "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
+      "status": "available",
+      "propertyCount": 488,
+      "description": "County sale associations for explicit Toll Brothers or Toll Bros seller names through September 4, 2026. These associations do not certify the original builder."
+    },
+    {
+      "id": "mainvue",
+      "name": "MainVue Homes",
+      "historySource": "https://www.mainvuehomes.com/wa/about-mainvue",
+      "status": "available",
+      "propertyCount": 981,
+      "description": "County sale associations for explicit MainVue or Main Vue seller names through September 4, 2026. These associations do not certify the original builder."
+    },
+    {
+      "id": "lennar",
+      "name": "Lennar",
+      "historySource": "https://www.lennar.com/new-homes/washington/seattle",
+      "status": "available",
+      "propertyCount": 53,
+      "description": "County sale associations limited to explicit Lennar Northwest seller names through September 4, 2026. Lennart and other surname lookalikes are excluded."
+    }
+  ],
+  "coverage": "A partial view of homes linked to eight builders across King County. Coverage varies by builder, and a match does not confirm who built the current structure.",
+  "evidenceScope": "King County homes linked to reviewed builder-company names in county sale records. A match does not confirm who built the current structure.",
+  "geometryAvailable": true,
+  "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
+  "researchWindow": [
+    1976,
+    2026
+  ],
+  "researchWindowDescription": "County sale records reviewed from 1976 through September 4, 2026. The 2026 period is incomplete.",
+  "sourceAsOf": "2026-09-04",
+  "sourceRetrievedOn": "2026-09-13",
+  "sources": [
+    {
+      "asOf": "2026-09-04",
+      "name": "Lookup",
+      "retrievedOn": "2026-09-13",
+      "sha256": "27b5d492021bfdbd6b245f4890e068af1dda6a165bcaea3860616a11c468489e",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Lookup.zip"
+    },
+    {
+      "asOf": "2026-09-04",
+      "name": "Parcel",
+      "retrievedOn": "2026-09-13",
+      "sha256": "e60e188614671eeeda303e30dac2a2608c7fc7930cb1d4e768f4bc0626e60316",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Parcel.zip"
+    },
+    {
+      "asOf": "2026-09-04",
+      "name": "Real Property Sales",
+      "retrievedOn": "2026-09-13",
+      "sha256": "efd110440e9bde37186ca3751bb81a9e3253e8389c9486e02b1d8ec53d0c7c88",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "asOf": "2026-09-04",
+      "name": "Residential Building",
+      "retrievedOn": "2026-09-13",
+      "sha256": "2ee8fca58b6b436c27188fedcca1132230b085ec24312f34cd2a6d4067f5291d",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
+    }
+  ],
+  "indexUrl": "data/index.d6eb7a193bb62676.json.gz",
+  "indexSha256": "d6eb7a193bb62676377856a3a25f48bebc7f32e65b8394902b78f10ed4f2e459",
+  "detailsUrl": "data/details.f5cdb0116f3b738a.json.gz",
+  "detailsSha256": "f5cdb0116f3b738a67874a3a1fd4628bb6715ab74fb6726af5e0201ec97d4dda",
+  "geometryUrl": "data/geometry.bfd2f9a2b1913444.json.gz",
+  "geometrySha256": "bfd2f9a2b1913444f308803e9080012f788e036a38be66fc3893ac786ea210e2",
+  "mappedPropertyCount": 13056,
+  "unmappedPropertyCount": 0,
+  "postalSourceAsOf": [
+    "2026-09-18",
+    "2026-09-19"
+  ],
+  "geometryRetrievedAt": "2026-09-19T21:35:41.396108+00:00",
+  "generatedAt": "2026-09-20T21:56:03Z",
+  "releaseId": "2026-09-20-king-county-builder-view-v6",
+  "ruleVersion": "reviewed-company-associations-v6",
+  "verifiedPropertyCount": 13056,
+  "expansionAuditUrl": "data/expansion-audit.json",
+  "reviewCounts": {
+    "assessor-sale-association": 13056,
+    "minor-chronology-gap": 2179,
+    "multi-parcel-recording": 1900,
+    "land-only-evidence": 1714,
+    "chronology-review": 196,
+    "gis-primary-address-recovery": 831
+  },
+  "priorityReviewPropertyCount": 1757,
+  "reviewFlagDescriptions": {
+    "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.",
+    "gis-primary-address-recovery": "The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match.",
+    "chronology-review": "The county construction year is at least three years after the earliest matching company recording. Structure identity and construction history need review; rebuilding is not established.",
+    "land-only-evidence": "Supporting Assessor sales include residential land-only classifications and no residential improved-property classification. This does not establish who built the current structure.",
+    "minor-chronology-gap": "The county construction year is one or two years after the earliest matching company recording. This date difference alone does not establish rebuilding or a different builder.",
+    "multi-parcel-recording": "The Assessor links a supporting recording to more than one parcel. Each home remains a distinct PIN."
+  },
+  "evidenceLabels": {
+    "associated": "Builder-company match; builder unconfirmed",
+    "assessor-sale-association": "County sale-record match",
+    "gis-primary-address-recovery": "County primary-address match",
+    "chronology-review": "Construction chronology needs review",
+    "land-only-evidence": "Land-only classification in supporting sales",
+    "minor-chronology-gap": "One or two-year date difference",
+    "multi-parcel-recording": "Recording covers multiple parcels"
+  }
 }

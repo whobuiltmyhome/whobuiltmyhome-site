@@ -5,7 +5,7 @@ const PAGE_TITLE = 'Who Built My Home? | King County';
 const queryTypes = new Set(['empty', 'zip', 'address_or_text', 'city', 'text', 'address', 'postal', 'mixed']);
 const filters = new Set(['city', 'collection', 'yearFrom', 'yearTo', 'from', 'to', 'review', 'sort', 'reset']);
 let cities = new Set();
-let collections = new Set(['buchan']);
+let collections = new Set();
 
 export function configureAnalyticsCatalog(catalog = {}) {
   cities = new Set((catalog.cities || []).map(value => String(value).toLowerCase()));
@@ -41,7 +41,7 @@ export function eventPayload(name, input = {}) {
   } else if (name === 'property_open') {
     params = { evidence_status: 'company_association' };
   } else if (name === 'source_click') {
-    const sources = new Set(['county', 'county_record', 'parcel_map', 'map']);
+    const sources = new Set(['county', 'county_record']);
     params = { source: sources.has(input.source) ? input.source : 'county_record' };
   } else if (name === 'filter_changed') {
     params = { filter: filters.has(input.filter) ? input.filter : 'other' };

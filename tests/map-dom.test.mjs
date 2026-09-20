@@ -76,20 +76,24 @@ test('real app and map recover from geometry failure, share filters, open eviden
     const beforeZoom = canvas.querySelector('.leaflet-marker-pane').innerHTML;
     canvas.querySelector('.property-map-cluster').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
     await until(() => canvas.querySelector('.leaflet-marker-pane').innerHTML !== beforeZoom);
-    change('collection', 'buchan'); change('city', 'BELLEVUE'); change('year-from', '1980'); change('year-to', '1990');
-    await until(() => byId('map-status').textContent.startsWith('58 of 58'));
+    change('collection', 'mainvue'); change('city', 'RENTON'); change('year-from', '2020'); change('year-to', '2021');
+    await until(() => byId('map-status').textContent.startsWith('86 of 86'));
     const markersBeforePage = canvas.querySelector('.leaflet-marker-pane').innerHTML;
     byId('next-page').click();
-    assert.equal(document.querySelectorAll('.property-item').length, 8);
+    assert.equal(document.querySelectorAll('.property-item').length, 36);
     await new Promise(resolve => setTimeout(resolve, 250));
-    assert.equal(byId('map-status').textContent.startsWith('58 of 58'), true);
+    assert.equal(byId('map-status').textContent.startsWith('86 of 86'), true);
     assert.equal(canvas.querySelector('.leaflet-marker-pane').innerHTML, markersBeforePage);
     byId('clear-filters').click();
-    change('search', '0098000130', 'input');
+    change('search', '0292000050', 'input');
     await until(() => byId('map-status').textContent.startsWith('1 of 1'));
     canvas.querySelector('.property-map-pin').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
-    await until(() => byId('detail-body').textContent.includes('Recording references'));
-    assert.equal(byId('detail-title').textContent, '2432 279TH DR SE');
+    await until(() => byId('detail-body').textContent.includes('County record references'));
+    assert.equal(byId('detail-title').textContent, '1071 102ND PL SE');
+    const countyLinks = [...byId('detail-body').querySelectorAll('.detail-source-links a')];
+    assert.equal(countyLinks.length, 1);
+    assert.equal(countyLinks[0].textContent, 'View King County property details ↗');
+    assert.equal(countyLinks[0].href, 'https://blue.kingcounty.com/Assessor/eRealProperty/Detail.aspx?ParcelNbr=0292000050');
     assert.equal(byId('property-dialog').open, true);
     byId('close-detail').click();
     for (const collection of manifest.collections.filter(c => ['burnstead', 'quadrant'].includes(c.id))) {
@@ -99,12 +103,12 @@ test('real app and map recover from geometry failure, share filters, open eviden
       await until(() => byId('map-status').textContent.startsWith(`${count} of ${count}`));
       document.querySelector('.property-item button').click();
       await until(() => byId('detail-body').querySelector(`[data-collection=${collection.id}]`));
-      assert.ok(byId('detail-body').textContent.includes('Company names in supporting sales:'));
-      assert.ok(byId('detail-body').textContent.includes('deed image and original builder have not been independently confirmed'));
+      assert.ok(byId('detail-body').textContent.includes('Matched company names:'));
+      assert.ok(byId('detail-body').textContent.includes('View King County property details'));
       byId('close-detail').click();
     }
     change('search', 'no-such-address-ever', 'input');
-    await until(() => byId('map-status').textContent.startsWith('No matching records'));
+    await until(() => byId('map-status').textContent.startsWith('No matching homes'));
     assert.equal(canvas.querySelectorAll('.leaflet-marker-icon').length, 0);
     assert.equal(byId('empty-state').hidden, false);
     assert.equal(byId('fit-map').disabled, true);

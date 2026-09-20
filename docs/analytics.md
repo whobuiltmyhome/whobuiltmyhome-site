@@ -8,7 +8,7 @@ forwards these fields. It constructs only the events below from an allowlist.
 | --- | --- | --- |
 | `search_performed` | Settled nonempty search or explicit submitted search | query type and length, result count, has-results, selected city/collection, county-year range, review filter |
 | `property_open` | Open supporting property evidence | constant evidence status |
-| `source_click` | Follow an official source | county record or parcel map category |
+| `source_click` | Follow an official source | King County property-details category |
 | `filter_changed` | Change a filter | filter name only |
 
 All manual events use the fixed canonical page URL and title. Referrers retain

@@ -3,17 +3,17 @@ import assert from 'node:assert/strict';
 import { eventPayload, configureAnalyticsCatalog, productionAllowed, initializeAnalytics } from '../analytics.js';
 
 test('only coarse allowlisted search metadata can enter an event', () => {
-  configureAnalyticsCatalog({ cities: ['BELLEVUE'], collections: [{id: 'buchan'}] });
+  configureAnalyticsCatalog({ cities: ['BELLEVUE'], collections: [{id: 'mainvue'}] });
   const result = eventPayload('search_performed', {
     queryType: 'address', queryLength: 32, resultCount: 0,
-    city: 'Bellevue', collection: 'buchan', yearFrom: 1976, yearTo: 2026,
+    city: 'Bellevue', collection: 'mainvue', yearFrom: 1976, yearTo: 2026,
     query: '123 Private St', query_sample: '123 Private St', address: '123 Private St',
     pin: '0123456789', page_location: 'https://whobuiltmyhome.com/?q=123+Private+St',
   });
   assert.equal(result.result_count, 0);
   assert.equal(result.has_results, false);
   assert.equal(result.city, 'bellevue');
-  assert.equal(result.collection, 'buchan');
+  assert.equal(result.collection, 'mainvue');
   assert.ok(!/Private|0123456789|page_location|query_sample/.test(JSON.stringify(result)));
   const hostile = eventPayload('search_performed', { city: '123 Private St', collection: 'person@example.com', queryType: '123 Private St', resultCount: Infinity });
   assert.equal(hostile.city, 'all');
@@ -24,7 +24,7 @@ test('only coarse allowlisted search metadata can enter an event', () => {
 
 test('property and source clicks never contain property identifiers', () => {
   assert.deepEqual(eventPayload('property_open', {pin:'0123456789',address:'Private'}), {evidence_status:'company_association'});
-  assert.deepEqual(eventPayload('source_click', {source:'parcel_map',url:'https://example.com/?pin=0123456789'}), {source:'parcel_map'});
+  assert.deepEqual(eventPayload('source_click', {source:'county_record',url:'https://example.com/?pin=0123456789'}), {source:'county_record'});
   assert.equal(eventPayload('arbitrary', {query:'Private'}), null);
 });
 

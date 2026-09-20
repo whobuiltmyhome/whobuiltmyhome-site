@@ -1,4 +1,4 @@
-"""Expansion gates: preserve the frozen cohort and reject unsupported associations."""
+"""Builder-view publication gates and unsupported-association checks."""
 from collections import Counter
 import gzip
 import hashlib
@@ -30,19 +30,13 @@ class ExpansionTests(unittest.TestCase):
         cls.index = {r['pin']: r for r in read(cls.manifest['indexUrl'])}
         cls.details = read(cls.manifest['detailsUrl'])
 
-    def test_entire_buchan_cohort_and_its_evidence_are_preserved(self):
-        base = builder.BASE
-        original = read(base['detailsUrl'])
-        actual = {p for p, r in self.index.items() if 'buchan' in r['collectionIds']}
-        self.assertEqual(actual, set(original))
-        for row in read(base['indexUrl']):
-            p = row['pin']
-            for field in ('id', 'pin', 'address', 'city', 'zip', 'yearBuilt', 'status'):
-                self.assertEqual(self.index[p][field], row[field])
-            c, = [c for c in self.details[p]['connections'] if c['collectionId'] == 'buchan']
-            self.assertEqual(c['reviewFlags'], row['reviewFlags'])
-            for field in ('firstCompanyRecording', 'recordings', 'notes'):
-                self.assertEqual(c[field], original[p][field])
+    def test_release_contains_only_the_eight_active_builders(self):
+        expected = {'burnstead', 'murray-franklyn', 'camwest', 'quadrant', 'conner',
+                    'toll-brothers', 'mainvue', 'lennar'}
+        self.assertEqual({c['id'] for c in self.manifest['collections']}, expected)
+        self.assertEqual({c for row in self.index.values() for c in row['collectionIds']}, expected)
+        self.assertTrue(all(row['collectionIds'] for row in self.index.values()))
+        self.assertTrue(all(detail['connections'] for detail in self.details.values()))
 
     def test_reviewed_aliases_and_historical_business_names_reject_false_matches(self):
         self.assertEqual(builder.entity_for('The Quadrant Corp.', '2018-01-01', '2018-01-02')['id'], 'quadrant-corporation')
@@ -106,11 +100,10 @@ class ExpansionTests(unittest.TestCase):
                 self.assertTrue(c['recordings'])
                 for recording in c['recordings']:
                     self.assertRegex(recording, r'^\d{12,14}$')
-                if c['collectionId'] != 'buchan':
-                    self.assertTrue(c['entityIds'])
-                    self.assertIn('assessor-sale-association', c['reviewFlags'])
-                    self.assertTrue(all(entities[e]['collectionId'] == c['collectionId'] for e in c['entityIds']))
-                    self.assertTrue(1976 <= row['yearBuilt'] <= 2026)
+                self.assertTrue(c['entityIds'])
+                self.assertIn('assessor-sale-association', c['reviewFlags'])
+                self.assertTrue(all(entities[e]['collectionId'] == c['collectionId'] for e in c['entityIds']))
+                self.assertTrue(1976 <= row['yearBuilt'] <= 2026)
             self.assertEqual(set(row['reviewFlags']), flags)
             self.assertEqual(set(detail['recordings']), {r for c in detail['connections'] for r in c['recordings']})
         flags = Counter(f for r in self.index.values() for f in r['reviewFlags'])
@@ -118,7 +111,7 @@ class ExpansionTests(unittest.TestCase):
         for c in self.manifest['collections']:
             count = sum(c['id'] in r['collectionIds'] for r in self.index.values())
             self.assertEqual(count, c['propertyCount'])
-            self.assertEqual(c['status'], 'available' if count else 'planned')
+            self.assertEqual(c['status'], 'available')
         audit = read(self.manifest['expansionAuditUrl'])
         self.assertEqual(audit['entityPolicySha256'], hashlib.sha256((ROOT / 'data/entity-policy.json').read_bytes()).hexdigest())
         for c, a in audit['collections'].items():
@@ -130,8 +123,21 @@ class ExpansionTests(unittest.TestCase):
         self.assertEqual(audit['collections']['mainvue']['gisPrimaryAddressRecoveredPins'], 723)
         self.assertEqual(audit['collections']['murray-franklyn']['publishedPins'], 204)
         self.assertEqual(audit['collections']['murray-franklyn']['gisPrimaryAddressRecoveredPins'], 108)
-        self.assertEqual(self.manifest['verifiedPropertyCount'], 16025)
+        self.assertEqual(self.manifest['verifiedPropertyCount'], 13056)
+        self.assertEqual(len(self.manifest['collections']), 8)
+        self.assertEqual(set(self.manifest['reviewCounts']),
+                         {'assessor-sale-association', 'minor-chronology-gap',
+                          'multi-parcel-recording', 'land-only-evidence',
+                          'chronology-review', 'gis-primary-address-recovery'})
+        self.assertEqual(self.manifest['reviewCounts']['assessor-sale-association'], 13056)
+        self.assertEqual(self.manifest['reviewCounts']['minor-chronology-gap'], 2179)
+        self.assertEqual(self.manifest['reviewCounts']['multi-parcel-recording'], 1900)
+        self.assertEqual(self.manifest['reviewCounts']['land-only-evidence'], 1714)
+        self.assertEqual(self.manifest['reviewCounts']['chronology-review'], 196)
         self.assertEqual(self.manifest['reviewCounts']['gis-primary-address-recovery'], 831)
+        self.assertEqual(self.manifest['priorityReviewPropertyCount'], 1757)
+        self.assertEqual({source['name'] for source in self.manifest['sources']},
+                         {'Lookup', 'Parcel', 'Real Property Sales', 'Residential Building'})
         self.assertEqual(audit['collections']['mainvue']['heldReasons'],
                          {'no-eligible-reviewed-company-sale': 66,
                           'not-current-single-building-single-unit': 3})

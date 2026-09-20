@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproducible, conservative company-connection expansion of the frozen release.
+"""Reproducible, conservative King County builder-company release.
 
 Inputs and GIS response caches stay outside this public repository. Corporate
 names are selected by the reviewed exact allowlist; no raw parties are exported.
@@ -23,9 +23,49 @@ spec = importlib.util.spec_from_file_location('map_data', ROOT / 'scripts/build-
 geo = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(geo)
 POLICY = json.loads((ROOT / 'data/entity-policy.json').read_text())
-BASE = json.loads((ROOT / 'tests/fixtures/buchan-manifest.json').read_text())
 COUNTY = 'https://blue.kingcounty.com/Assessor/eRealProperty/Detail.aspx?ParcelNbr='
 MAP = 'https://gismaps.kingcounty.gov/parcelviewer2/?pin='
+SOURCE_CATALOG = [
+    {'asOf': '2026-09-04', 'name': 'Lookup', 'retrievedOn': '2026-09-13',
+     'sha256': '27b5d492021bfdbd6b245f4890e068af1dda6a165bcaea3860616a11c468489e',
+     'url': 'https://aqua.kingcounty.gov/extranet/assessor/Lookup.zip'},
+    {'asOf': '2026-09-04', 'name': 'Parcel', 'retrievedOn': '2026-09-13',
+     'sha256': 'e60e188614671eeeda303e30dac2a2608c7fc7930cb1d4e768f4bc0626e60316',
+     'url': 'https://aqua.kingcounty.gov/extranet/assessor/Parcel.zip'},
+    {'asOf': '2026-09-04', 'name': 'Real Property Sales', 'retrievedOn': '2026-09-13',
+     'sha256': 'efd110440e9bde37186ca3751bb81a9e3253e8389c9486e02b1d8ec53d0c7c88',
+     'url': 'https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip'},
+    {'asOf': '2026-09-04', 'name': 'Residential Building', 'retrievedOn': '2026-09-13',
+     'sha256': '2ee8fca58b6b436c27188fedcca1132230b085ec24312f34cd2a6d4067f5291d',
+     'url': 'https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip'},
+]
+COLLECTION_CATALOG = {
+    'burnstead': ('Burnstead', 'https://www.burnstead.com/builder-documents-1'),
+    'murray-franklyn': ('Murray Franklyn', 'https://www.murrayfranklyn.com/ourdifference'),
+    'camwest': ('CamWest', 'https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf'),
+    'quadrant': ('Quadrant Homes', 'https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest'),
+    'conner': ('Conner Homes', 'https://www.connerhomes.com/about/'),
+    'toll-brothers': ('Toll Brothers', 'https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf'),
+    'mainvue': ('MainVue Homes', 'https://www.mainvuehomes.com/wa/about-mainvue'),
+    'lennar': ('Lennar', 'https://www.lennar.com/new-homes/washington/seattle'),
+}
+REVIEW_FLAG_DESCRIPTIONS = {
+    'assessor-sale-association': 'The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.',
+    'gis-primary-address-recovery': 'The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match.',
+    'chronology-review': 'The county construction year is at least three years after the earliest matching company recording. Structure identity and construction history need review; rebuilding is not established.',
+    'land-only-evidence': 'Supporting Assessor sales include residential land-only classifications and no residential improved-property classification. This does not establish who built the current structure.',
+    'minor-chronology-gap': 'The county construction year is one or two years after the earliest matching company recording. This date difference alone does not establish rebuilding or a different builder.',
+    'multi-parcel-recording': 'The Assessor links a supporting recording to more than one parcel. Each home remains a distinct PIN.',
+}
+EVIDENCE_LABELS = {
+    'associated': 'Builder-company match; builder unconfirmed',
+    'assessor-sale-association': 'County sale-record match',
+    'gis-primary-address-recovery': 'County primary-address match',
+    'chronology-review': 'Construction chronology needs review',
+    'land-only-evidence': 'Land-only classification in supporting sales',
+    'minor-chronology-gap': 'One or two-year date difference',
+    'multi-parcel-recording': 'Recording covers multiple parcels',
+}
 COLLECTION_KEYWORDS = {
     'burnstead': ('BURNSTEAD',),
     'camwest': ('CAMWEST', 'CAM WEST'),
@@ -134,7 +174,7 @@ def building_address(building):
 
 
 def source_file(path, source_name):
-    expected = next(s['sha256'] for s in BASE['sources'] if s['name'] == source_name)
+    expected = next(s['sha256'] for s in SOURCE_CATALOG if s['name'] == source_name)
     if digest(path.read_bytes()) != expected:
         raise ValueError('Unreviewed source snapshot: ' + source_name)
     return path
@@ -230,20 +270,13 @@ def main():
     for row in rows(sales_path):
         if row['RecordingNbr'] in recording_pins and (p := pin(row)):
             recording_pins[row['RecordingNbr']].add(p)
-    base_rows = json.loads((ROOT / BASE['indexUrl']).read_bytes())
-    details = json.loads((ROOT / BASE['detailsUrl']).read_bytes())
-    index = {r['pin']: r for r in base_rows}
-    geometry = json.loads((ROOT / BASE['geometryUrl']).read_bytes())
-    # Keep the original collection's complete evidence, independent of other sellers.
-    for p, detail in details.items():
-        detail['connections'] = [{'collectionId': 'buchan', 'entityIds': [],
-                                 **{k: detail[k] for k in ('firstCompanyRecording', 'recordings', 'notes')},
-                                 'reviewFlags': list(index[p]['reviewFlags'])}]
+    index, details = {}, {}
+    geometry = {'version': 1, 'source': geo.SOURCE, 'coordinateOrder': 'latitude,longitude',
+                'locationType': 'parcel-centroid', 'ruleVersion': geo.RULE,
+                'locations': {}, 'excluded': {}, 'sourceBatches': []}
     released = {c: set() for c in universe}
     recovered = {c: set() for c in universe}
-    flags_text = BASE['reviewFlagDescriptions']
-    flags_text['assessor-sale-association'] = 'The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.'
-    flags_text['gis-primary-address-recovery'] = 'The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match.'
+    flags_text = dict(REVIEW_FLAG_DESCRIPTIONS)
     for p, row in sorted(candidates.items()):
         features = grouped[p]
         target_collections = ({s['collectionId'] for s in sales[p]} &
@@ -276,15 +309,12 @@ def main():
                     continue
             else:
                 row['city'] = cities.pop()
-        if p in index and any((geo.normalize(index[p][k]) != geo.normalize(row[k]))
-                              for k in ('address', 'zip', 'city', 'yearBuilt')):
-            reasons[p] = 'conflict-with-existing-release'
-            continue
         if p not in index:
             index[p] = {**row, 'collectionIds': [], 'reviewFlags': []}
             details[p] = {'countyUrl': COUNTY + p, 'mapUrl': MAP + p, 'addressStatus': 'verified',
                           'builderStatus': 'unconfirmed', 'connections': []}
-            geometry['locations'][p] = location
+        # Every active builder row uses geometry reviewed in this build.
+        geometry['locations'][p] = location
         for collection in universe:
             ss = [s for s in sales[p] if s['collectionId'] == collection]
             if not ss:
@@ -316,7 +346,7 @@ def main():
         detail.update(firstCompanyRecording=min(c['firstCompanyRecording'] for c in cs),
                       recordings=sorted({r for c in cs for r in c['recordings']}),
                       notes=sorted({n for c in cs for n in c['notes']}))
-    audit = {'ruleVersion': 'reviewed-company-associations-v5', 'reviewedOn': '2026-09-20',
+    audit = {'ruleVersion': 'reviewed-company-associations-v6', 'reviewedOn': '2026-09-20',
              'entityPolicySha256': digest((ROOT / 'data/entity-policy.json').read_bytes()), 'collections': {}}
     for collection, all_pins in universe.items():
         held = Counter(
@@ -331,13 +361,27 @@ def main():
                                              'heldPins': sum(held.values()), 'heldReasons': dict(sorted(held.items())),
                                              'scope': POLICY['limits'][collection]}
         assert len(all_pins) == len(released[collection]) + sum(held.values())
-    manifest = dict(BASE)
-    manifest['version'] = 2
-    manifest['entities'] = [{k: e[k] for k in ('id', 'name', 'collectionId', 'sourceUrl')} for e in POLICY['entities']]
-    manifest['collections'] = [dict(c) for c in BASE['collections']]
-    for c in manifest['collections']:
-        if c['id'] in released:
-            c.update(status='available', propertyCount=len(released[c['id']]), description=POLICY['limits'][c['id']])
+    manifest = {
+        'version': 2,
+        'entities': [{k: e[k] for k in ('id', 'name', 'collectionId', 'sourceUrl')}
+                     for e in POLICY['entities']],
+        'collections': [
+            {'id': collection, 'name': COLLECTION_CATALOG[collection][0],
+             'historySource': COLLECTION_CATALOG[collection][1], 'status': 'available',
+             'propertyCount': len(released[collection]),
+             'description': POLICY['limits'][collection]}
+            for collection in COLLECTION_CATALOG
+        ],
+        'coverage': 'A partial view of homes linked to eight builders across King County. Coverage varies by builder, and a match does not confirm who built the current structure.',
+        'evidenceScope': 'King County homes linked to reviewed builder-company names in county sale records. A match does not confirm who built the current structure.',
+        'geometryAvailable': True,
+        'geometryDescription': 'Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.',
+        'researchWindow': [1976, 2026],
+        'researchWindowDescription': 'County sale records reviewed from 1976 through September 4, 2026. The 2026 period is incomplete.',
+        'sourceAsOf': '2026-09-04',
+        'sourceRetrievedOn': '2026-09-13',
+        'sources': SOURCE_CATALOG,
+    }
     public_rows = [index[p] for p in sorted(index)]
     for label, value in [('index', public_rows), ('details', details)]:
         raw = geo.packed(value)
@@ -345,21 +389,22 @@ def main():
         url = f'data/{label}.{sha[:16]}.json.gz'
         (ROOT / url).write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
         manifest[label + 'Url'], manifest[label + 'Sha256'] = url, sha
-    geometry.update(indexSha256=manifest['indexSha256'], sourceBatches=geometry['sourceBatches'] + batches)
+    geometry.update(indexSha256=manifest['indexSha256'], sourceBatches=batches)
     raw = geo.packed(geometry)
     sha = digest(raw)
     manifest.update(geometryUrl=f'data/geometry.{sha[:16]}.json.gz', geometrySha256=sha,
                     mappedPropertyCount=len(geometry['locations']), unmappedPropertyCount=0,
-                    postalSourceAsOf=sorted(set(BASE['postalSourceAsOf']) | {b['retrievedAt'][:10] for b in batches}),
+                    postalSourceAsOf=sorted({b['retrievedAt'][:10] for b in batches}),
                     geometryRetrievedAt=max(b['retrievedAt'] for b in batches), generatedAt=args.generated_at,
-                    releaseId='2026-09-20-multi-builder-associations-v5', ruleVersion=audit['ruleVersion'],
+                    releaseId='2026-09-20-king-county-builder-view-v6', ruleVersion=audit['ruleVersion'],
                     verifiedPropertyCount=len(index), expansionAuditUrl='data/expansion-audit.json',
-                    coverage='Partial King County company-association collections for nine builder brands. A missing result does not establish that a company was uninvolved, and no result certifies the original builder of the current home.',
-                    reviewFlagDescriptions=flags_text, reviewCounts=dict(Counter(f for r in public_rows for f in r['reviewFlags'])),
+                    reviewCounts=dict(Counter(f for r in public_rows for f in r['reviewFlags'])),
                     priorityReviewPropertyCount=sum(bool(set(r['reviewFlags']) & {'land-only-evidence', 'chronology-review'}) for r in public_rows))
-    manifest['evidenceLabels'] = {**BASE['evidenceLabels'],
-                                  'assessor-sale-association': 'Assessor sale association; deed image unreviewed',
-                                  'gis-primary-address-recovery': 'County primary-address recovery'}
+    used_flags = set(manifest['reviewCounts'])
+    manifest['reviewFlagDescriptions'] = {key: value for key, value in flags_text.items()
+                                          if key in used_flags}
+    manifest['evidenceLabels'] = {key: value for key, value in EVIDENCE_LABELS.items()
+                                  if key == 'associated' or key in used_flags}
     (ROOT / manifest['geometryUrl']).write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
     (ROOT / 'data/expansion-audit.json').write_text(json.dumps(audit, indent=2) + '\n')
     temporary = ROOT / 'data/manifest.tmp'

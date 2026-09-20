@@ -1,7 +1,7 @@
 {
   "version": 2,
   "reviewedOn": "2026-09-18",
-  "scope": "Reviewed exact entities plus narrowly defined historical business-name patterns for eight expansion collections. Neither legal succession nor construction of the current home is inferred.",
+  "scope": "Reviewed exact entities plus narrowly defined historical business-name patterns for eight builder collections. Neither legal succession nor construction of the current home is inferred.",
   "normalization": "Uppercase, collapse whitespace, remove periods and commas. Exact aliases are preferred. Pattern collections require the explicit brand spellings and business terms documented in limits; surname-only, lookalike, investment-only and successor-brand matches are excluded.",
   "entities": [
     {"id":"burnstead-construction-llc","collectionId":"burnstead","name":"Burnstead Construction LLC","aliases":["BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
