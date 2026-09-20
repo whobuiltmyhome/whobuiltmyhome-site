@@ -1,8 +1,8 @@
 {
   "version": 2,
   "reviewedOn": "2026-09-18",
-  "scope": "Reviewed exact entities plus historical county seller names that contain Burnstead and an explicit construction or homes business term. Neither legal succession nor construction of the current home is inferred.",
-  "normalization": "Uppercase, collapse whitespace, remove periods and commas. Exact aliases are preferred. Historical Burnstead matches must also contain a construction stem (CONST or CONSTR) or HOMES; personal-name-only and investment-only matches are excluded.",
+  "scope": "Reviewed exact entities plus narrowly defined historical business-name patterns for eight expansion collections. Neither legal succession nor construction of the current home is inferred.",
+  "normalization": "Uppercase, collapse whitespace, remove periods and commas. Exact aliases are preferred. Pattern collections require the explicit brand spellings and business terms documented in limits; surname-only, lookalike, investment-only and successor-brand matches are excluded.",
   "entities": [
     {"id":"burnstead-construction-llc","collectionId":"burnstead","name":"Burnstead Construction LLC","aliases":["BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
     {"id":"rick-burnstead-construction-llc","collectionId":"burnstead","name":"Rick Burnstead Construction LLC","aliases":["RICK BURNSTEAD CONSTRUCTION LLC"],"from":"2010-01-01","through":"2026-09-04","sourceUrl":"https://www.burnstead.com/builder-documents-1"},
@@ -13,11 +13,21 @@
     {"id":"historical-burnstead-homes","collectionId":"burnstead","name":"Historical Burnstead Homes-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
     {"id":"murray-franklyn-homes-llc","collectionId":"murray-franklyn","name":"Murray Franklyn Homes LLC","aliases":["MURRAY FRANKLYN HOMES LLC","MURRAY FRANKLIN HOMES LLC"],"from":"2019-01-01","through":"2026-09-04","sourceUrl":"https://www.murrayfranklyn.com/ourdifference"},
     {"id":"historical-murray-franklyn-company","collectionId":"murray-franklyn","name":"Historical Murray Franklyn-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"camwest-named-company","collectionId":"camwest","name":"CamWest-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"conner-homes-named-company","collectionId":"conner","name":"Conner Homes or Conner Development-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"toll-brothers-named-company","collectionId":"toll-brothers","name":"Toll Brothers-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"mainvue-named-company","collectionId":"mainvue","name":"MainVue-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
+    {"id":"lennar-northwest-named-company","collectionId":"lennar","name":"Lennar Northwest-named company","aliases":[],"from":"1976-01-01","through":"2026-09-04","sourceUrl":"https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"},
     {"id":"quadrant-corporation","collectionId":"quadrant","name":"The Quadrant Corporation","aliases":["THE QUADRANT CORPORATION","QUADRANT CORPORATION","QUADRANT CORPORATION THE","THE QUADRANT CORP","QUADRANT CORP"],"from":"1976-01-01","through":"2020-12-31","sourceUrl":"https://www.tripointehomes.com/blog/celebrating-55-years-of-homebuilding-in-the-pacific-northwest"}
   ],
   "limits": {
     "burnstead":"County sale associations for the three documented current LLCs plus historical seller names containing Burnstead and an explicit construction or homes business term, 1976–September 4, 2026. The historical names are grouped for discovery without asserting legal succession or that the named company built the current home.",
     "murray-franklyn":"County sale associations for seller names containing Murray Franklyn or the Murray Franklin spelling variant plus an explicit homes, development, land-acquisition, west, or incorporated business term, 1976–September 4, 2026. These associations do not certify the original builder.",
+    "camwest":"County sale associations for seller names containing CamWest or Cam West plus an explicit development, homes, incorporated, LLC, or named-project business term, through September 4, 2026. These associations do not certify the original builder.",
+    "conner":"County sale associations limited to explicit Conner Homes, Conner Development, or Conner-Jarvis seller names through September 4, 2026. Generic Conner surname matches are excluded.",
+    "toll-brothers":"County sale associations for explicit Toll Brothers or Toll Bros seller names through September 4, 2026. These associations do not certify the original builder.",
+    "mainvue":"County sale associations for explicit MainVue or Main Vue seller names through September 4, 2026. These associations do not certify the original builder.",
+    "lennar":"County sale associations limited to explicit Lennar Northwest seller names through September 4, 2026. Lennart and other surname lookalikes are excluded.",
     "quadrant":"Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand."
   },
   "additionalSources": [

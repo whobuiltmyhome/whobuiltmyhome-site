@@ -36,16 +36,16 @@
       "historySource": "https://www.murrayfranklyn.com/ourdifference",
       "id": "murray-franklyn",
       "name": "Murray Franklyn",
-      "propertyCount": 96,
+      "propertyCount": 204,
       "status": "available"
     },
     {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "description": "County sale associations for seller names containing CamWest or Cam West plus an explicit development, homes, incorporated, LLC, or named-project business term, through September 4, 2026. These associations do not certify the original builder.",
       "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
       "id": "camwest",
       "name": "CamWest",
-      "propertyCount": 0,
-      "status": "planned"
+      "propertyCount": 1667,
+      "status": "available"
     },
     {
       "description": "Initial collection covers five reviewed corporate-name forms through 2020. Misspellings, other entities, combined sellers and 2021 onward transactions await review. Tri Pointe successor transactions are not automatically attributed to the historical Quadrant brand.",
@@ -56,41 +56,41 @@
       "status": "available"
     },
     {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "description": "County sale associations limited to explicit Conner Homes, Conner Development, or Conner-Jarvis seller names through September 4, 2026. Generic Conner surname matches are excluded.",
       "historySource": "https://www.connerhomes.com/about/",
       "id": "conner",
       "name": "Conner Homes",
-      "propertyCount": 0,
-      "status": "planned"
+      "propertyCount": 1634,
+      "status": "available"
     },
     {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "description": "County sale associations for explicit Toll Brothers or Toll Bros seller names through September 4, 2026. These associations do not certify the original builder.",
       "historySource": "https://www.annualreports.com/HostedData/AnnualReportArchive/t/NYSE_TOL_2012.pdf",
       "id": "toll-brothers",
       "name": "Toll Brothers",
-      "propertyCount": 0,
-      "status": "planned"
+      "propertyCount": 488,
+      "status": "available"
     },
     {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "description": "County sale associations for explicit MainVue or Main Vue seller names through September 4, 2026. These associations do not certify the original builder.",
       "historySource": "https://www.mainvuehomes.com/wa/about-mainvue",
       "id": "mainvue",
       "name": "MainVue Homes",
-      "propertyCount": 0,
-      "status": "planned"
+      "propertyCount": 981,
+      "status": "available"
     },
     {
-      "description": "Planned research collection; no reviewed properties published under this brand yet.",
+      "description": "County sale associations limited to explicit Lennar Northwest seller names through September 4, 2026. Lennart and other surname lookalikes are excluded.",
       "historySource": "https://www.lennar.com/new-homes/washington/seattle",
       "id": "lennar",
       "name": "Lennar",
-      "propertyCount": 0,
-      "status": "planned"
+      "propertyCount": 53,
+      "status": "available"
     }
   ],
-  "coverage": "Partial King County collections for Buchan, Burnstead and Quadrant company associations. A missing result does not establish that a company was uninvolved. Other brands await evidence review.",
-  "detailsSha256": "438210841e554ce7462261a0037e6ee765f39f1e6377b6ede5329a5396e8cd9b",
-  "detailsUrl": "data/details.438210841e554ce7.json.gz",
+  "coverage": "Partial King County company-association collections for nine builder brands. A missing result does not establish that a company was uninvolved, and no result certifies the original builder of the current home.",
+  "detailsSha256": "03f780b244fa503e8b5038a2383885fb53b322ffebb580bfa5b38cb4d629a143",
+  "detailsUrl": "data/details.03f780b244fa503e.json.gz",
   "evidenceLabels": {
     "associated": "Company association; builder unconfirmed",
     "chronology-review": "Construction chronology needs review",
@@ -99,36 +99,39 @@
     "minor-chronology-gap": "One or two-year date difference",
     "multi-parcel-recording": "Recording covers multiple parcels",
     "recording-crosswalk": "County recording crosswalk used",
-    "assessor-sale-association": "Assessor sale association; deed image unreviewed"
+    "assessor-sale-association": "Assessor sale association; deed image unreviewed",
+    "gis-primary-address-recovery": "County primary-address recovery"
   },
   "evidenceScope": "Verified current addresses and historical company associations. Builder attribution for the current structures has not been confirmed.",
-  "generatedAt": "2026-09-18T13:00:00Z",
+  "generatedAt": "2026-09-20T13:30:00Z",
   "geometryAvailable": true,
   "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
   "heldRecoveryCandidateCount": 362,
   "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation.",
-  "indexSha256": "94902edb814a62f29b75554ca310f445d12a8ea4ff688d614a08cacbe3a4b505",
-  "indexUrl": "data/index.94902edb814a62f2.json.gz",
+  "indexSha256": "b62b1b0171b80f66de2214352cf8cd21ca0edce54fa827a3ad05e6ecf040e0be",
+  "indexUrl": "data/index.b62b1b0171b80f66.json.gz",
   "postalSourceAsOf": [
     "2026-09-11",
     "2026-09-13",
-    "2026-09-18"
+    "2026-09-18",
+    "2026-09-19"
   ],
-  "priorityReviewPropertyCount": 1621,
-  "releaseId": "2026-09-18-murray-franklyn-associations-v3",
+  "priorityReviewPropertyCount": 1814,
+  "releaseId": "2026-09-20-multi-builder-associations-v5",
   "researchWindow": [
     1976,
     2026
   ],
   "researchWindowDescription": "Recording-history research window, not continuous or complete historical coverage. County construction years are retained separately and can precede 1976.",
   "reviewCounts": {
-    "assessor-sale-association": 8249,
-    "minor-chronology-gap": 2000,
-    "multi-parcel-recording": 1773,
-    "land-only-evidence": 1573,
-    "chronology-review": 209,
+    "assessor-sale-association": 13056,
+    "minor-chronology-gap": 2341,
+    "multi-parcel-recording": 1915,
+    "land-only-evidence": 1766,
+    "chronology-review": 214,
     "legal-corroboration-missing": 401,
-    "recording-crosswalk": 105
+    "recording-crosswalk": 105,
+    "gis-primary-address-recovery": 831
   },
   "reviewFlagDescriptions": {
     "chronology-review": "The county construction year is at least three years after the earliest verified company recording. Structure identity and construction history need review; rebuilding is not established.",
@@ -137,9 +140,10 @@
     "minor-chronology-gap": "The county construction year is one or two years after the earliest verified company recording. This date difference alone does not establish rebuilding or a different builder.",
     "multi-parcel-recording": "The Assessor links a supporting recording to more than one parcel. Each public record remains a distinct verified PIN.",
     "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk.",
-    "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed."
+    "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.",
+    "gis-primary-address-recovery": "The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match."
   },
-  "ruleVersion": "reviewed-company-associations-v3",
+  "ruleVersion": "reviewed-company-associations-v5",
   "sourceAsOf": "2026-09-04",
   "sourceRetrievedOn": "2026-09-13",
   "sourceSnapshots": {
@@ -183,14 +187,14 @@
       "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
     }
   ],
-  "verifiedPropertyCount": 11219,
+  "verifiedPropertyCount": 16025,
   "version": 2,
-  "geometryUrl": "data/geometry.9344f6352e8bfc38.json.gz",
-  "geometrySha256": "9344f6352e8bfc38bb0518511d75d5dd529b5ebd62398c0156cba7dcf52331ba",
-  "mappedPropertyCount": 11219,
+  "geometryUrl": "data/geometry.5f1d348c4c80c031.json.gz",
+  "geometrySha256": "5f1d348c4c80c031ce8c72d5a884fd04e9212b878caffba88da4c4c4679cca7a",
+  "mappedPropertyCount": 16025,
   "unmappedPropertyCount": 0,
   "geometrySource": "https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0",
-  "geometryRetrievedAt": "2026-09-18T14:41:45.890272+00:00",
+  "geometryRetrievedAt": "2026-09-19T21:35:41.396108+00:00",
   "entities": [
     {
       "id": "burnstead-construction-llc",
@@ -244,6 +248,36 @@
       "id": "historical-murray-franklyn-company",
       "name": "Historical Murray Franklyn-named company",
       "collectionId": "murray-franklyn",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "camwest-named-company",
+      "name": "CamWest-named company",
+      "collectionId": "camwest",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "conner-homes-named-company",
+      "name": "Conner Homes or Conner Development-named company",
+      "collectionId": "conner",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "toll-brothers-named-company",
+      "name": "Toll Brothers-named company",
+      "collectionId": "toll-brothers",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "mainvue-named-company",
+      "name": "MainVue-named company",
+      "collectionId": "mainvue",
+      "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
+    },
+    {
+      "id": "lennar-northwest-named-company",
+      "name": "Lennar Northwest-named company",
+      "collectionId": "lennar",
       "sourceUrl": "https://aqua.kingcounty.gov/extranet/assessor/Real%20Property%20Sales.zip"
     },
     {

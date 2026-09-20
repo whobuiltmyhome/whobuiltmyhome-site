@@ -1,9 +1,9 @@
 # Who Built My Home
 
-A free static King County property explorer with partial Buchan, Burnstead and
-Quadrant company-association collections. Current counts and source dates are
-in `data/manifest.json`. Every original builder remains unconfirmed. John and
-William Buchan remain combined; the other brands await evidence review.
+A free static King County property explorer with nine partial builder-company
+association collections. Current counts and source dates are in
+`data/manifest.json`. Every original builder remains unconfirmed, and John and
+William Buchan remain combined.
 
 ## Run locally
 
