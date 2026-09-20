@@ -3,6 +3,7 @@ import { configureAnalyticsCatalog, trackSearch, trackPropertyOpen, trackSourceC
 export const PAGE_SIZE = 50;
 const MAX_QUERY_LENGTH = 160;
 const SORT_VALUES = new Set(['address', 'city', 'year-asc', 'year-desc']);
+const ROUTINE_DATA_FLAGS = new Set(['assessor-sale-association', 'gis-primary-address-recovery']);
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 async function responseJson(response) {
@@ -63,8 +64,9 @@ export function filterProperties(properties, state) {
     if (from !== null && (property.yearBuilt === null || property.yearBuilt < from)) return false;
     if (to !== null && (property.yearBuilt === null || property.yearBuilt > to)) return false;
     const flags = property.reviewFlags || [];
-    if (state.review === 'flagged' && !flags.length) return false;
-    if (state.review === 'none' && flags.length) return false;
+    const additionalFlags = flags.filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
+    if (state.review === 'flagged' && !additionalFlags.length) return false;
+    if (state.review === 'none' && additionalFlags.length) return false;
     if (state.review && !['flagged', 'none'].includes(state.review) && !flags.includes(state.review)) return false;
     if (tokens.length) {
       const haystack = normalizeSearchText(`${property.address} ${property.city} ${property.zip} ${property.pin}`);
@@ -104,7 +106,8 @@ export function getQueryType(query, cities = []) {
 export function safeCountyUrl(value) {
   try {
     const url = new URL(value);
-    if (url.protocol !== 'https:' || !(url.hostname === 'kingcounty.gov' || url.hostname.endsWith('.kingcounty.gov'))) return null;
+    const allowed = url.hostname === 'blue.kingcounty.com' || url.hostname === 'kingcounty.gov' || url.hostname.endsWith('.kingcounty.gov');
+    if (url.protocol !== 'https:' || !allowed) return null;
     return url.href;
   } catch { return null; }
 }
@@ -190,14 +193,15 @@ async function bootstrap() {
     const item = node('li', 'property-item');
     const button = node('button', 'property-button');
     button.type = 'button';
-    button.setAttribute('aria-label', `View record for ${property.address}, ${property.city} ${property.zip}`);
+    button.setAttribute('aria-label', `View home at ${property.address}, ${property.city} ${property.zip}`);
     const main = node('span', 'property-main');
     main.append(node('span', 'property-address', property.address), node('span', 'property-locality', `${property.city}, WA ${property.zip}`));
     const meta = node('span', 'property-meta');
     meta.append(node('span', 'property-year', property.yearBuilt === null ? 'Year not listed' : `County year ${property.yearBuilt}`));
-    const label = property.collectionIds.map(id => id === 'buchan' ? 'Buchan connection' : manifest.collections.find(collection => collection.id === id)?.name).filter(Boolean).join(' · ');
-    meta.append(node('span', '', label || 'Historical company connection'));
-    if (property.reviewFlags.length) meta.append(node('span', 'property-review', `${property.reviewFlags.length} review ${property.reviewFlags.length === 1 ? 'flag' : 'flags'}`));
+    const label = property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name).filter(Boolean).join(' · ');
+    meta.append(node('span', '', label || 'Builder match'));
+    const additionalFlags = property.reviewFlags.filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
+    if (additionalFlags.length) meta.append(node('span', 'property-review', `${additionalFlags.length} data ${additionalFlags.length === 1 ? 'note' : 'notes'}`));
     main.append(meta);
     const arrow = node('span', 'property-arrow', '↗');
     arrow.setAttribute('aria-hidden', 'true');
@@ -222,8 +226,8 @@ async function bootstrap() {
     ui['load-state'].hidden = true;
     ui['pagination'].hidden = page.pageCount <= 1;
     ui['clear-filters'].hidden = !hasFilters();
-    ui['results-title'].textContent = invalidYears ? 'Check the year range' : hasFilters() ? `${integer(filtered.length)} matching ${filtered.length === 1 ? 'record' : 'records'}` : 'Explore the records';
-    ui['result-summary'].textContent = invalidYears ? 'Adjust the years above to see matching records.' : filtered.length ? `Showing ${integer(page.start + 1)}–${integer(page.end)} of ${integer(filtered.length)} ${hasFilters() ? 'matching records' : 'published addresses'}` : `0 matches in ${integer(properties.length)} published addresses`;
+    ui['results-title'].textContent = invalidYears ? 'Check the year range' : hasFilters() ? `${integer(filtered.length)} matching ${filtered.length === 1 ? 'home' : 'homes'}` : 'Explore homes';
+    ui['result-summary'].textContent = invalidYears ? 'Adjust the years above to see matching homes.' : filtered.length ? `Showing ${integer(page.start + 1)}–${integer(page.end)} of ${integer(filtered.length)} ${hasFilters() ? 'matching homes' : 'homes'}` : `0 matches in ${integer(properties.length)} homes`;
     ui['page-label'].textContent = `Page ${integer(page.page)} of ${integer(page.pageCount)}`;
     ui['previous-page'].disabled = page.page === 1;
     ui['next-page'].disabled = page.page === page.pageCount;
@@ -281,7 +285,7 @@ async function bootstrap() {
     ui['detail-body'].replaceChildren();
     ui['copy-status'].textContent = '';
     ui['copy-property-link'].disabled = !property;
-    const title = node('h2', '', property ? property.address : 'Record not in this release');
+    const title = node('h2', '', property ? property.address : 'Home not in this view');
     title.id = 'detail-title';
     ui['detail-body'].append(title);
     if (!ui['property-dialog'].open) {
@@ -289,19 +293,19 @@ async function bootstrap() {
       document.body.classList.add('dialog-open');
     }
     if (!property) {
-      ui['detail-body'].append(node('p', 'detail-notice', 'This shared parcel number is not in the current published collection. Close this record to search the available addresses.'));
+      ui['detail-body'].append(node('p', 'detail-notice', 'This shared parcel number is not in the current builder view. Close this window to search the included homes.'));
       return;
     }
     if (track) trackPropertyOpen();
     ui['detail-body'].append(node('p', 'detail-locality', `${property.city}, WA ${property.zip}`));
     const badges = node('div', 'detail-badges');
-    badges.append(node('span', 'badge badge-green', 'Address verified'), node('span', 'badge badge-neutral', 'Historical connection'), node('span', 'badge badge-gold', 'Builder unconfirmed'));
-    const connectionNotice = 'This parcel has a historical company connection. The evidence does not establish who built the current structure.';
-    ui['detail-body'].append(badges, node('p', 'detail-notice', property.collectionIds.includes('buchan') ? `${connectionNotice} The John Buchan / William Buchan attribution remains unresolved.` : connectionNotice));
+    badges.append(node('span', 'badge badge-green', 'Address matched'), node('span', 'badge badge-neutral', 'County-record match'), node('span', 'badge badge-gold', 'Builder not confirmed'));
+    const connectionNotice = 'King County sale records connect this property to the builder company shown below. That connection may reflect a home sale, land sale, or parcel transfer, so it does not by itself prove who built the current home.';
+    ui['detail-body'].append(badges, node('p', 'detail-notice', connectionNotice));
     const facts = node('dl', 'detail-facts');
-    facts.append(fact('King County parcel number', property.pin), fact('County year built', property.yearBuilt ?? 'Not listed'), fact('Collection', property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name || 'Historical company connection').join('; ')));
+    facts.append(fact('King County parcel number', property.pin), fact('Year built', property.yearBuilt ?? 'Not listed'), fact('Builder', property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name || 'Builder match').join('; ')));
     ui['detail-body'].append(facts);
-    const loading = node('p', 'detail-loading', 'Loading the evidence for this record…');
+    const loading = node('p', 'detail-loading', 'Loading county details…');
     ui['detail-body'].append(loading);
     try {
       const allDetails = await fetchDetails();
@@ -309,28 +313,28 @@ async function bootstrap() {
       const detail = allDetails[pin];
       if (!detail || !Array.isArray(detail.recordings) || !Array.isArray(detail.notes)) throw new Error('Evidence unavailable');
       loading.remove();
-      facts.append(fact('Earliest observed company recording', formatDate(detail.firstCompanyRecording)));
+      facts.append(fact('First matching county record', formatDate(detail.firstCompanyRecording)));
       const sources = node('div', 'detail-source-links');
-      const county = sourceLink('County property record', detail.countyUrl, 'county_record');
-      const map = sourceLink('County parcel map', detail.mapUrl, 'parcel_map');
+      const county = sourceLink('View King County property details', detail.countyUrl, 'county_record');
       if (county) sources.append(county);
-      if (map) sources.append(map);
       ui['detail-body'].append(sources);
       const connections = detail.connections || [{ ...detail, collectionId: property.collectionIds[0], entityIds: [], reviewFlags: property.reviewFlags }];
       for (const connection of connections) {
         const section = node('section', 'detail-section');
         section.dataset.collection = connection.collectionId;
         const collection = manifest.collections.find(c => c.id === connection.collectionId);
-        section.append(node('h3', '', collection?.name || 'Historical company connection'));
+        section.append(node('h3', '', collection?.name || 'Builder match'));
         const entityNames = (connection.entityIds || []).map(id => manifest.entities?.find(e => e.id === id)?.name).filter(Boolean);
-        if (entityNames.length) section.append(node('p', '', `Company names in supporting sales: ${entityNames.join('; ')}`));
-        section.append(node('p', '', `Earliest supporting recording: ${formatDate(connection.firstCompanyRecording)}`));
-        if (connection.notes.length) {
+        if (entityNames.length) section.append(node('p', '', `Matched company names: ${entityNames.join('; ')}`));
+        section.append(node('p', '', `First matching record: ${formatDate(connection.firstCompanyRecording)}`));
+        const reviewNotes = (connection.reviewFlags || []).filter(flag => !ROUTINE_DATA_FLAGS.has(flag))
+          .map(flag => manifest.reviewFlagDescriptions?.[flag]).filter(Boolean);
+        if (reviewNotes.length) {
           const notes = node('ul');
-          for (const note of connection.notes) notes.append(node('li', '', note));
+          for (const note of reviewNotes) notes.append(node('li', '', note));
           section.append(notes);
-        } else section.append(node('p', '', 'No listed review flags. This does not confirm the original builder.'));
-        section.append(node('h4', '', 'Recording references'), node('p', '', 'Supporting transactions for this connection. These references do not certify who built the current home.'));
+        } else section.append(node('p', '', 'No additional data notes are listed. This does not confirm the original builder.'));
+        section.append(node('h4', '', 'County record references'), node('p', '', 'These supporting transaction references do not certify who built the current home.'));
         const list = node('ul', 'recording-list');
         list.setAttribute('aria-label', 'County recording identifiers');
         for (const recording of connection.recordings) list.append(node('li', '', recording));
@@ -340,8 +344,8 @@ async function bootstrap() {
     } catch {
       if (request !== detailRequest || state.pin !== pin) return;
       loading.remove();
-      ui['detail-body'].append(node('p', 'detail-error', 'The evidence file could not be loaded. Your search results are still available.'));
-      const retry = node('button', 'button button-secondary', 'Retry evidence');
+      ui['detail-body'].append(node('p', 'detail-error', 'The county-detail file could not be loaded. Your search results are still available.'));
+      const retry = node('button', 'button button-secondary', 'Try details again');
       retry.type = 'button';
       retry.addEventListener('click', () => openProperty(pin));
       ui['detail-body'].append(retry);
@@ -358,44 +362,38 @@ async function bootstrap() {
 
   function renderCollectionCatalog() {
     const available = manifest.collections.filter(collection => ['ready', 'released', 'available'].includes(collection.status));
-    const roadmap = manifest.collections.filter(collection => collection.id !== 'buchan');
-    if (roadmap.length) {
-      byId('collection-grid').replaceChildren(...roadmap.map((collection, index) => {
+    if (available.length) {
+      byId('collection-grid').replaceChildren(...available.map((collection, index) => {
         const item = node('li');
-        const isAvailable = available.some(candidate => candidate.id === collection.id);
-        const pendingLabel = ['john-f-buchan', 'william-e-buchan'].includes(collection.id) ? 'Brand attribution awaiting evidence' : 'Awaiting evidence review';
-        item.append(node('span', 'collection-number', String(index + 1).padStart(2, '0')), node('h3', '', collection.name), node('p', '', isAvailable ? `${integer(collection.propertyCount)} verified addresses · Partial collection` : pendingLabel));
-        if (isAvailable) {
-          item.append(node('p', '', collection.description));
-          const explore = node('a', 'collection-link', 'Explore collection →');
-          explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
-          item.append(explore);
-        }
+        item.append(node('span', 'collection-number', String(index + 1).padStart(2, '0')), node('h3', '', collection.name), node('p', '', `${integer(collection.propertyCount)} homes in this view`));
+        const explore = node('a', 'collection-link', 'View homes →');
+        explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
+        item.append(explore);
         return item;
       }));
     }
     if (available.length > 1) {
-      byId('coverage-label').textContent = `${available.length} available historical company collections`;
-      byId('available-title').textContent = `${available.length} historical company collections`;
-      byId('available-description').textContent = 'Choose an available collection in the search filters. Properties can have more than one historical connection.';
+      byId('coverage-label').textContent = `${available.length} builders`;
+      byId('available-title').textContent = `${available.length} builders in this view`;
+      byId('available-description').textContent = 'Choose a builder to see its matching homes and map locations. Some homes may match more than one builder.';
     }
   }
 
   function showLoadError() {
     isReady = false;
     ui['load-state'].hidden = false;
-    ui['load-state'].replaceChildren(node('h3', '', 'The collection could not be loaded'), node('p', '', 'Check your connection, then try again. No search results have been loaded.'));
+    ui['load-state'].replaceChildren(node('h3', '', 'The builder view could not be loaded'), node('p', '', 'Check your connection, then try again. No homes have been loaded.'));
     const retry = node('button', 'button button-secondary', 'Try again');
     retry.type = 'button';
     retry.addEventListener('click', loadCollection);
     ui['load-state'].append(retry);
-    ui['result-summary'].textContent = 'Property records are temporarily unavailable.';
+    ui['result-summary'].textContent = 'Homes are temporarily unavailable.';
   }
 
   async function loadCollection() {
     ui['load-state'].hidden = false;
-    ui['load-state'].replaceChildren(node('div', 'loader'), node('p', '', 'Loading property records…'));
-    ui['result-summary'].textContent = 'Loading the published collection…';
+    ui['load-state'].replaceChildren(node('div', 'loader'), node('p', '', 'Loading homes…'));
+    ui['result-summary'].textContent = 'Loading homes…';
     try {
       const response = await fetch(new URL('./data/manifest.json', document.baseURI), { credentials: 'same-origin', cache: 'no-cache' });
       if (!response.ok) throw new Error('Manifest unavailable');
@@ -424,18 +422,19 @@ async function bootstrap() {
         const option = node('option', '', collection.name);
         option.value = collection.id;
         option.disabled = !['ready', 'released', 'available'].includes(collection.status);
-        if (option.disabled) option.textContent += ' — awaiting evidence';
+        if (option.disabled) option.textContent += ' — unavailable';
         ui.collection.append(option);
       }
-      const flags = [...new Set(properties.flatMap(property => property.reviewFlags))];
+      const flags = [...new Set(properties.flatMap(property => property.reviewFlags))]
+        .filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
       for (const flag of flags) {
         const option = node('option', '', manifest.evidenceLabels?.[flag] || flag.replace(/-/g, ' '));
         option.value = flag;
         ui.review.append(option);
       }
       byId('coverage-count').textContent = integer(properties.length);
-      byId('collection-count').textContent = `${integer(properties.length)} verified addresses`;
-      byId('release-info').textContent = `Source snapshot: ${formatDate(manifest.sourceAsOf)} · Release ${manifest.version} · Prepared ${formatDate(manifest.generatedAt)}`;
+      byId('collection-count').textContent = `${integer(properties.length)} homes included`;
+      byId('release-info').textContent = `King County data through ${formatDate(manifest.sourceAsOf)} · Updated ${formatDate(manifest.generatedAt)}`;
       renderCollectionCatalog();
       reconcileState();
       syncControls();
@@ -507,7 +506,7 @@ async function bootstrap() {
     try {
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
       await navigator.clipboard.writeText(link.href);
-      ui['copy-status'].textContent = 'Record link copied.';
+      ui['copy-status'].textContent = 'Home link copied.';
     } catch {
       ui['copy-status'].textContent = 'Copy the link from your browser’s address bar.';
     }

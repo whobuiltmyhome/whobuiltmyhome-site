@@ -11,10 +11,10 @@ const state = changes => ({...readUrlState(), ...changes});
 
 test('global search covers all released records and composes city/year/collection filters', () => {
   assert.equal(filterProperties(properties, state()).length, manifest.verifiedPropertyCount);
-  const result = filterProperties(properties, state({city:'BELLEVUE',from:'1980',to:'1990',collection:'buchan'}));
-  assert.equal(result.length, 58);
-  assert.ok(result.every(p=>p.city==='BELLEVUE' && p.yearBuilt>=1980 && p.yearBuilt<=1990));
-  assert.equal(filterProperties(properties, state({q:'2432 279th, Sammamish 98075'}))[0].pin, '0098000130');
+  const result = filterProperties(properties, state({city:'RENTON',from:'2020',to:'2021',collection:'mainvue'}));
+  assert.equal(result.length, 86);
+  assert.ok(result.every(p=>p.city==='RENTON' && p.yearBuilt>=2020 && p.yearBuilt<=2021));
+  assert.equal(filterProperties(properties, state({q:'1071 102nd pl se, Bellevue 98004'}))[0].pin, '0292000050');
   assert.equal(filterProperties(properties, state({q:'no such address anywhere'})).length, 0);
   for (const collection of manifest.collections) assert.equal(filterProperties(properties, state({collection:collection.id})).length, collection.propertyCount);
 });
@@ -28,7 +28,7 @@ test('review filters retain exact caution cohorts', () => {
 });
 
 test('shared filter and property state survives round-trip without numeric PIN conversion', () => {
-  const original = state({q:'2432 279TH DR SE',city:'SAMMAMISH',collection:'buchan',from:'2000',to:'2010',review:'none',sort:'year-desc',page:3,pin:'0098000130'});
+  const original = state({q:'1071 102ND PL SE',city:'BELLEVUE',collection:'murray-franklyn',from:'2019',to:'2021',review:'none',sort:'year-desc',page:3,pin:'0292000050'});
   assert.deepEqual(readUrlState(buildUrlSearch(original)), original);
   const invalid = readUrlState('?from=oops&to=99999&page=-9&pin=123&sort=hack');
   assert.equal(invalid.page, 1);
@@ -50,6 +50,7 @@ test('pagination exposes every property exactly once and clamps stale pages', ()
 test('outbound evidence links remain HTTPS county sources', () => {
   assert.equal(safeCountyUrl('javascript:alert(1)'), null);
   assert.equal(safeCountyUrl('https://kingcounty.gov.example.com/a'), null);
-  assert.equal(safeCountyUrl('http://blue.kingcounty.gov/a'), null);
-  assert.equal(safeCountyUrl('https://blue.kingcounty.gov/Assessor/eRealProperty/Detail.aspx?ParcelNbr=0098000130'), 'https://blue.kingcounty.gov/Assessor/eRealProperty/Detail.aspx?ParcelNbr=0098000130');
+  assert.equal(safeCountyUrl('http://blue.kingcounty.com/a'), null);
+  assert.equal(safeCountyUrl('https://blue.kingcounty.com.evil.example/a'), null);
+  assert.equal(safeCountyUrl('https://blue.kingcounty.com/Assessor/eRealProperty/Detail.aspx?ParcelNbr=0292000050'), 'https://blue.kingcounty.com/Assessor/eRealProperty/Detail.aspx?ParcelNbr=0292000050');
 });

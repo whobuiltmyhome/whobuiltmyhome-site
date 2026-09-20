@@ -1,7 +1,7 @@
 {
-  "ruleVersion": "reviewed-company-associations-v5",
+  "ruleVersion": "reviewed-company-associations-v6",
   "reviewedOn": "2026-09-20",
-  "entityPolicySha256": "7f6f0c8adebe15bc2d0d13427d258f869bad221ad9d69a5350e0664dd879287a",
+  "entityPolicySha256": "83f452cfd3e998ef3d201ac117452e355ec564c7b6726f193207ce7362bb83f2",
   "collections": {
     "burnstead": {
       "keywordCandidatePins": 3811,

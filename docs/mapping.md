@@ -6,9 +6,8 @@ The list always works independently, including when map data fails to load.
 
 ## Geometry and coverage
 
-The September 15, 2026 expansion retains the original 2,975 Buchan parcel
-centers and adds reviewed Burnstead and Quadrant connections. Counts come from
-the manifest; every published PIN has a matching centroid, with zero exclusions.
+The current builder view contains 13,056 parcel centers. Counts come from the
+manifest; every included PIN has a matching centroid, with zero exclusions.
 Each address matches its ten-digit PIN, normalized street and five-digit ZIP in
 the official [King County parcel service](https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0).
 The query returns polygon centroids in WGS84 (`returnCentroid=true`,
@@ -34,7 +33,7 @@ writes geometry first, and updates the manifest last. It does not deploy.
 
 ## Interaction
 
-- Search, city, collection, year and evidence filters feed the same complete
+- Search, city, builder, year, and data-note filters feed the same complete
   filtered property array to the map and list.
 - The map includes matching records across all pages. Pagination and sorting
   preserve the map position. A changed matching set fits its bounds.
@@ -62,7 +61,8 @@ Tile images use `referrerPolicy: 'origin'`, so the provider receives the site's
 origin, not search text, parcel identifiers or query parameters. The document's
 no-referrer policy remains for other resources. Like any external tile service,
 the provider receives ordinary network information and the requested map area.
-Map browsing and filtering do not call the county API. Explicit county-source links still open the requested parcel at the county website.
+Map browsing and filtering do not call the county API. A home's explicit county
+link opens its official eReal Property details table.
 GA4 stays disabled pending the existing account-settings review.
 
 ## Verification

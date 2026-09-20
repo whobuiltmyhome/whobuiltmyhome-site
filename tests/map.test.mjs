@@ -16,13 +16,13 @@ const geometry = read(manifest.geometryUrl);
 
 test('map uses all filtered IDs across pages, including empty and combined searches', () => {
   const locations = validateGeometry(geometry, manifest, properties);
-  for (const query of ['', '?city=BELLEVUE&from=1980&to=1990&collection=buchan', '?city=SAMMAMISH&review=flagged', '?q=not-a-real-address']) {
+  for (const query of ['', '?city=RENTON&from=2020&to=2021&collection=mainvue', '?city=SAMMAMISH&review=flagged', '?q=not-a-real-address']) {
     const filtered = filterProperties(properties, readUrlState(query));
     const result = matchMapProperties(filtered, locations);
     assert.deepEqual(result.mapped.map(p => p.pin), filtered.map(p => p.pin));
     assert.equal(result.missing, 0);
-    if (query.includes('BELLEVUE')) {
-      assert.equal(result.mapped.length, 58);
+    if (query.includes('RENTON')) {
+      assert.equal(result.mapped.length, 86);
       assert.equal(paginateProperties(filtered, 1).items.length, 50);
     }
   }

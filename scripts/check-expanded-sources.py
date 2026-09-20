@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check every new public reference and location against pinned source records.
+"""Check every public reference and location against pinned source records.
 
 This separate check reads the finished artifacts. It never exports raw parties.
 """
@@ -75,12 +75,10 @@ def main():
     expected = next(s['sha256'] for s in manifest['sources'] if s['name'] == 'Real Property Sales')
     assert hashlib.sha256(args.sales.read_bytes()).hexdigest() == expected
     needed, matched = {}, set()
-    new_pins = set()
+    public_pins = set()
     for p, detail in details.items():
         for c in detail['connections']:
-            if c['collectionId'] == 'buchan':
-                continue
-            new_pins.add(p)
+            public_pins.add(p)
             for recording in c['recordings']:
                 needed[p, recording, c['collectionId']] = c['entityIds']
     recordings = {r for _, r, _ in needed}
@@ -118,7 +116,7 @@ def main():
             features[feature['attributes']['PIN']].append(feature)
     normalize = lambda value: re.sub(r'\s+', ' ', re.sub(r'[.,#]', ' ', str(value or '').upper())).strip()
     recovered = 0
-    for p in new_pins:
+    for p in public_pins:
         row = index[p]
         matches = [f for f in features[p] if normalize(f['attributes']['ADDR_FULL']) == normalize(row['address'])
                    and f['attributes']['ZIP5'] == row['zip']]
@@ -136,8 +134,8 @@ def main():
         assert {normalize(f['attributes']['POSTALCTYNAME']) for f in matches} == {normalize(row['city'])}
     audit = read(manifest['expansionAuditUrl'])
     assert recovered == sum(c['gisPrimaryAddressRecoveredPins'] for c in audit['collections'].values())
-    print(json.dumps({'newPropertiesChecked': len(new_pins), 'companyRecordingParcelReferencesChecked': len(needed),
-                      'countyLocationsChecked': len(new_pins), 'gisPrimaryAddressesChecked': recovered,
+    print(json.dumps({'propertiesChecked': len(public_pins), 'companyRecordingParcelReferencesChecked': len(needed),
+                      'countyLocationsChecked': len(public_pins), 'gisPrimaryAddressesChecked': recovered,
                       'mismatches': 0}))
 
 
