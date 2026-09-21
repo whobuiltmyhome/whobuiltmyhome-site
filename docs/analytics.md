@@ -6,7 +6,7 @@ forwards these fields. It constructs only the events below from an allowlist.
 
 | Event | Purpose | Custom fields |
 | --- | --- | --- |
-| `search_performed` | Settled nonempty search or explicit submitted search | query type and length, result count, has-results, selected city/collection, county-year range, review filter |
+| `search_performed` | Settled nonempty search or explicit submitted search | query type and length, result count, has-results, selected city/collection, county-year range |
 | `property_open` | Open supporting property evidence | constant evidence status |
 | `source_click` | Follow an official source | King County property-details category |
 | `filter_changed` | Change a filter | filter name only |
@@ -53,7 +53,7 @@ traffic have not been inspected. This change does not remove previously collecte
 analytics data. The production switch should not be turned on based on unit tests alone.
 
 To report custom fields beyond the event counts, register event-scoped dimensions
-for `query_type`, `city`, `collection`, `review_filter`, and `source`, plus an
+for `query_type`, `city`, `collection`, and `source`, plus an
 event-scoped custom metric for `result_count`, as needed. A useful report is
 searching sessions → property-opening sessions → source-clicking sessions.
 Event counts are repeat actions and must not be presented as unique people.

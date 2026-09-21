@@ -3,7 +3,7 @@ import { ANALYTICS_CONFIG } from './analytics-config.js';
 const CANONICAL_URL = 'https://whobuiltmyhome.com/';
 const PAGE_TITLE = 'Who Built My Home? | King County';
 const queryTypes = new Set(['empty', 'zip', 'address_or_text', 'city', 'text', 'address', 'postal', 'mixed']);
-const filters = new Set(['city', 'collection', 'yearFrom', 'yearTo', 'from', 'to', 'review', 'sort', 'reset']);
+const filters = new Set(['city', 'collection', 'yearFrom', 'yearTo', 'from', 'to', 'sort', 'reset']);
 let cities = new Set();
 let collections = new Set();
 
@@ -34,9 +34,6 @@ export function eventPayload(name, input = {}) {
       collection: collections.has(collection) ? collection : 'all',
       year_from: integer(input.yearFrom, 1800, 2100),
       year_to: integer(input.yearTo, 1800, 2100),
-      review_filter: ['all', 'flagged', 'none', 'priority', 'chronology', 'land_only', 'any', 'clear',
-        'chronology-review', 'land-only-evidence', 'legal-corroboration-missing',
-        'minor-chronology-gap', 'multi-parcel-recording', 'recording-crosswalk'].includes(input.review) ? input.review : 'all',
     };
   } else if (name === 'property_open') {
     params = { evidence_status: 'company_association' };

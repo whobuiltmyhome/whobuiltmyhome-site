@@ -33,7 +33,7 @@ writes geometry first, and updates the manifest last. It does not deploy.
 
 ## Interaction
 
-- Search, city, builder, year, and data-note filters feed the same complete
+- Search, city, builder, and year filters feed the same complete
   filtered property array to the map and list.
 - The map includes matching records across all pages. Pagination and sorting
   preserve the map position. A changed matching set fits its bounds.

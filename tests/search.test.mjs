@@ -19,23 +19,16 @@ test('global search covers all released records and composes city/year/collectio
   for (const collection of manifest.collections) assert.equal(filterProperties(properties, state({collection:collection.id})).length, collection.propertyCount);
 });
 
-test('review filters retain exact caution cohorts', () => {
-  assert.equal(filterProperties(properties, state({review:'land-only-evidence'})).length, manifest.reviewCounts['land-only-evidence']);
-  assert.equal(filterProperties(properties, state({review:'chronology-review'})).length, manifest.reviewCounts['chronology-review']);
-  const clear = filterProperties(properties, state({review:'none'}));
-  const flagged = filterProperties(properties, state({review:'flagged'}));
-  assert.equal(clear.length + flagged.length, properties.length);
-});
-
 test('shared filter and property state survives round-trip without numeric PIN conversion', () => {
-  const original = state({q:'1071 102ND PL SE',city:'BELLEVUE',collection:'murray-franklyn',from:'2019',to:'2021',review:'none',sort:'year-desc',page:3,pin:'0292000050'});
+  const original = state({q:'1071 102ND PL SE',city:'BELLEVUE',collection:'murray-franklyn',from:'2019',to:'2021',sort:'year-desc',page:3,pin:'0292000050'});
   assert.deepEqual(readUrlState(buildUrlSearch(original)), original);
-  const invalid = readUrlState('?from=oops&to=99999&page=-9&pin=123&sort=hack');
+  const invalid = readUrlState('?from=oops&to=99999&page=-9&pin=123&sort=hack&review=flagged');
   assert.equal(invalid.page, 1);
   assert.equal(invalid.pin, '');
   assert.equal(invalid.from, '');
   assert.equal(invalid.to, '');
   assert.equal(invalid.sort, 'address');
+  assert.equal('review' in invalid, false);
 });
 
 test('pagination exposes every property exactly once and clamps stale pages', () => {
