@@ -12,7 +12,7 @@ test('real app and map recover from geometry failure, share filters, open eviden
   const manifest = JSON.parse(readFileSync(new URL('data/manifest.json', root), 'utf8'));
   const total = manifest.verifiedPropertyCount.toLocaleString('en-US');
   const dom = new JSDOM(readFileSync(new URL('index.html', root), 'utf8'), {
-    url: 'http://localhost:8765/', runScripts: 'outside-only', pretendToBeVisual: true,
+    url: 'http://localhost:8765/?from=1900&review=flagged', runScripts: 'outside-only', pretendToBeVisual: true,
   });
   const { window } = dom;
   const { document } = window;
@@ -73,6 +73,13 @@ test('real app and map recover from geometry failure, share filters, open eviden
     assert.ok(canvas.querySelector('.leaflet-control-attribution').textContent.includes('OpenStreetMap'));
     assert.equal(byId('collection').querySelector('option[value=burnstead]').disabled, false);
     assert.equal(byId('collection').querySelector('option[value=quadrant]').disabled, false);
+    assert.equal(byId('review'), null, 'data-note review is not a primary search filter');
+    assert.equal(byId('year-from').options.length, 49);
+    assert.equal(byId('year-to').options.length, 49);
+    assert.equal(byId('year-from').options[1].value, '2026');
+    assert.equal(byId('year-from').options[48].value, '1979');
+    assert.equal(window.location.search, '', 'legacy review and unavailable year parameters are cleared');
+    assert.equal(document.querySelector('details.source-note').open, false, 'county source details start collapsed');
     const beforeZoom = canvas.querySelector('.leaflet-marker-pane').innerHTML;
     canvas.querySelector('.property-map-cluster').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
     await until(() => canvas.querySelector('.leaflet-marker-pane').innerHTML !== beforeZoom);

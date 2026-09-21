@@ -9,6 +9,7 @@
   <title>Who Built My Home? | King County Home Builders</title>
   <link rel="canonical" href="https://whobuiltmyhome.com/" />
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./filter-controls.css" />
   <script type="module" src="./app.js"></script>
 </head>
 <body>
@@ -43,8 +44,7 @@
           <legend class="visually-hidden">Narrow the property results</legend>
           <div class="field city-field"><label for="city">City</label><select id="city"><option value="">All cities</option></select></div>
           <div class="field collection-field"><label for="collection">Builder</label><select id="collection"><option value="">All builders</option></select></div>
-          <div class="field year-field"><label for="year-from">County year built</label><div class="year-range"><input id="year-from" type="number" min="1600" max="2100" step="1" placeholder="From" aria-label="County year built, from" /><span aria-hidden="true">–</span><input id="year-to" type="number" min="1600" max="2100" step="1" placeholder="To" aria-label="County year built, through" /></div></div>
-          <div class="field review-field"><label for="review">Data notes</label><select id="review"><option value="">All homes</option><option value="flagged">Needs additional review</option><option value="none">No additional notes</option></select></div>
+          <div class="field year-field" role="group" aria-labelledby="year-label"><span class="field-label" id="year-label">County year built</span><div class="year-range"><select id="year-from" aria-label="County year built, from"><option value="">From any year</option></select><span aria-hidden="true">–</span><select id="year-to" aria-label="County year built, through"><option value="">Through any year</option></select></div></div>
         </fieldset>
         <p id="filter-error" class="filter-error" role="alert" hidden></p>
       </div>
@@ -92,7 +92,7 @@
     <section class="about-section wrap" id="about" aria-labelledby="about-title">
       <div><p class="eyebrow">About the data</p><h2 id="about-title">How builder matches are identified</h2><p>This view matches King County home addresses to builder-related company names in county sales records. A match can reflect a home sale, land sale, or parcel transfer, so it may not identify the builder of the current structure.</p></div>
       <dl class="evidence-definitions"><div><dt>Matched address</dt><dd>The address and parcel number match King County property data.</dd></div><div><dt>Builder match</dt><dd>A reviewed builder-company name appears in a county sale associated with the parcel.</dd></div><div><dt>Year built</dt><dd>The construction year listed by King County; it is not the date of the builder-company match.</dd></div><div><dt>Data notes</dt><dd>Date, classification, or multi-parcel details that may need a closer look.</dd></div></dl>
-      <div class="source-note"><p><strong>County records included: 1976–September 4, 2026.</strong> Coverage varies by builder, and 2026 is incomplete.</p><p id="release-info">Data dates will appear when the homes load.</p><a href="https://info.kingcounty.gov/assessor/DataDownload/default.aspx" target="_blank" rel="noopener noreferrer" data-source="county">King County data source <span aria-hidden="true">↗</span></a></div>
+      <details class="source-note"><summary>County data and coverage</summary><div class="source-note-content"><p><strong>County records included: 1976–September 4, 2026.</strong> Coverage varies by builder, and 2026 is incomplete.</p><p id="release-info">Data dates will appear when the homes load.</p><a href="https://info.kingcounty.gov/assessor/DataDownload/default.aspx" target="_blank" rel="noopener noreferrer" data-source="county">King County data source <span aria-hidden="true">↗</span></a></div></details>
     </section>
   </main>
   <footer class="site-footer wrap"><span>Who Built My Home?</span><p>Explore King County home builders.</p><a href="#explorer">Back to search ↑</a></footer>

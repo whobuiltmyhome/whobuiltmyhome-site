@@ -35,7 +35,6 @@ export function readUrlState(search = '') {
     collection: (params.get('collection') || '').slice(0, 80),
     from: parseYear(params.get('from')),
     to: parseYear(params.get('to')),
-    review: (params.get('review') || '').slice(0, 80),
     sort: SORT_VALUES.has(params.get('sort')) ? params.get('sort') : 'address',
     page: Number.isSafeInteger(page) && page > 0 ? page : 1,
     pin: /^\d{10}$/.test(params.get('pin') || '') ? params.get('pin') : '',
@@ -44,7 +43,7 @@ export function readUrlState(search = '') {
 
 export function buildUrlSearch(state) {
   const params = new URLSearchParams();
-  for (const key of ['q', 'city', 'collection', 'from', 'to', 'review']) {
+  for (const key of ['q', 'city', 'collection', 'from', 'to']) {
     if (state[key]) params.set(key, String(state[key]));
   }
   if (SORT_VALUES.has(state.sort) && state.sort !== 'address') params.set('sort', state.sort);
@@ -63,11 +62,6 @@ export function filterProperties(properties, state) {
     if (state.collection && !property.collectionIds.includes(state.collection)) return false;
     if (from !== null && (property.yearBuilt === null || property.yearBuilt < from)) return false;
     if (to !== null && (property.yearBuilt === null || property.yearBuilt > to)) return false;
-    const flags = property.reviewFlags || [];
-    const additionalFlags = flags.filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
-    if (state.review === 'flagged' && !additionalFlags.length) return false;
-    if (state.review === 'none' && additionalFlags.length) return false;
-    if (state.review && !['flagged', 'none'].includes(state.review) && !flags.includes(state.review)) return false;
     if (tokens.length) {
       const haystack = normalizeSearchText(`${property.address} ${property.city} ${property.zip} ${property.pin}`);
       if (!tokens.every(token => haystack.includes(token))) return false;
@@ -127,7 +121,7 @@ function formatDate(value) {
 
 async function bootstrap() {
   const byId = id => document.getElementById(id);
-  const ui = Object.fromEntries(['search-form', 'search', 'search-button', 'filters', 'city', 'collection', 'year-from', 'year-to', 'review', 'sort', 'filter-error', 'clear-filters', 'result-summary', 'results-title', 'load-state', 'property-list', 'empty-state', 'reset-empty', 'pagination', 'previous-page', 'next-page', 'page-label', 'property-dialog', 'detail-body', 'close-detail', 'copy-property-link', 'copy-status'].map(id => [id, byId(id)]));
+  const ui = Object.fromEntries(['search-form', 'search', 'search-button', 'filters', 'city', 'collection', 'year-from', 'year-to', 'sort', 'filter-error', 'clear-filters', 'result-summary', 'results-title', 'load-state', 'property-list', 'empty-state', 'reset-empty', 'pagination', 'previous-page', 'next-page', 'page-label', 'property-dialog', 'detail-body', 'close-detail', 'copy-property-link', 'copy-status'].map(id => [id, byId(id)]));
   if (!ui['search-form']) return;
   let state = readUrlState(window.location.search);
   let properties = [];
@@ -175,18 +169,18 @@ async function bootstrap() {
   }
 
   function syncControls() {
-    for (const [control, key] of [['search', 'q'], ['city', 'city'], ['collection', 'collection'], ['year-from', 'from'], ['year-to', 'to'], ['review', 'review'], ['sort', 'sort']]) ui[control].value = state[key];
+    for (const [control, key] of [['search', 'q'], ['city', 'city'], ['collection', 'collection'], ['year-from', 'from'], ['year-to', 'to'], ['sort', 'sort']]) ui[control].value = state[key];
   }
 
-  function hasFilters() { return ['q', 'city', 'collection', 'from', 'to', 'review'].some(key => state[key]); }
+  function hasFilters() { return ['q', 'city', 'collection', 'from', 'to'].some(key => state[key]); }
 
   function emitSearch() {
     clearTimeout(searchTimer);
     if (!isReady || (state.from && state.to && Number(state.from) > Number(state.to))) return;
-    const signature = JSON.stringify([state.q, state.city, state.collection, state.from, state.to, state.review]);
+    const signature = JSON.stringify([state.q, state.city, state.collection, state.from, state.to]);
     if (lastTrackedSearch === signature) return;
     lastTrackedSearch = signature;
-    trackSearch({ queryType: getQueryType(state.q, cities), queryLength: state.q.length, resultCount: filtered.length, city: state.city, collection: state.collection, yearFrom: Number(state.from) || undefined, yearTo: Number(state.to) || undefined, review: state.review });
+    trackSearch({ queryType: getQueryType(state.q, cities), queryLength: state.q.length, resultCount: filtered.length, city: state.city, collection: state.collection, yearFrom: Number(state.from) || undefined, yearTo: Number(state.to) || undefined });
   }
 
   function propertyRow(property) {
@@ -356,8 +350,9 @@ async function bootstrap() {
     const matchingCity = cities.find(city => normalizeSearchText(city) === normalizeSearchText(state.city));
     state.city = matchingCity || '';
     if (!manifest.collections.some(collection => collection.id === state.collection && ['ready', 'released', 'available'].includes(collection.status))) state.collection = '';
-    const flags = new Set(properties.flatMap(property => property.reviewFlags));
-    if (state.review && !['flagged', 'none'].includes(state.review) && !flags.has(state.review)) state.review = '';
+    const availableYears = new Set(properties.map(property => property.yearBuilt).filter(Number.isInteger));
+    if (state.from && !availableYears.has(Number(state.from))) state.from = '';
+    if (state.to && !availableYears.has(Number(state.to))) state.to = '';
   }
 
   function renderCollectionCatalog() {
@@ -425,12 +420,14 @@ async function bootstrap() {
         if (option.disabled) option.textContent += ' — unavailable';
         ui.collection.append(option);
       }
-      const flags = [...new Set(properties.flatMap(property => property.reviewFlags))]
-        .filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
-      for (const flag of flags) {
-        const option = node('option', '', manifest.evidenceLabels?.[flag] || flag.replace(/-/g, ' '));
-        option.value = flag;
-        ui.review.append(option);
+      const years = [...new Set(properties.map(property => property.yearBuilt).filter(Number.isInteger))]
+        .sort((a, b) => b - a);
+      for (const year of years) {
+        for (const control of [ui['year-from'], ui['year-to']]) {
+          const option = node('option', '', year);
+          option.value = String(year);
+          control.append(option);
+        }
       }
       byId('coverage-count').textContent = integer(properties.length);
       byId('collection-count').textContent = `${integer(properties.length)} homes included`;
@@ -474,7 +471,7 @@ async function bootstrap() {
     render();
     if (state.q) searchTimer = setTimeout(emitSearch, 1100);
   });
-  for (const [control, key, analyticName] of [['city', 'city', 'city'], ['collection', 'collection', 'collection'], ['year-from', 'from', 'yearFrom'], ['year-to', 'to', 'yearTo'], ['review', 'review', 'review'], ['sort', 'sort', 'sort']]) {
+  for (const [control, key, analyticName] of [['city', 'city', 'city'], ['collection', 'collection', 'collection'], ['year-from', 'from', 'yearFrom'], ['year-to', 'to', 'yearTo'], ['sort', 'sort', 'sort']]) {
     ui[control].addEventListener('change', () => {
       state[key] = ['from', 'to'].includes(key) ? parseYear(ui[control].value) : ui[control].value;
       if (['from', 'to'].includes(key)) ui[control].value = state[key];
