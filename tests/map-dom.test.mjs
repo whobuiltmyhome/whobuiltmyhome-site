@@ -60,11 +60,11 @@ test('real app and map recover from geometry failure, share filters, open eviden
   try {
     await import('../app.js');
     await until(() => !byId('toggle-map').disabled);
-    assert.equal(document.querySelectorAll('.property-item').length, 50);
+    assert.equal(document.querySelectorAll('.property-item').length, 20);
     assert.equal(requested.some(path => path.includes('geometry.')), false, 'geometry stays lazy');
     byId('toggle-map').click();
     await until(() => !byId('retry-map').hidden);
-    assert.equal(document.querySelectorAll('.property-item').length, 50, 'map failure preserves list');
+    assert.equal(document.querySelectorAll('.property-item').length, 20, 'map failure preserves list');
     failGeometry = false;
     byId('retry-map').click();
     await until(() => byId('map-status').textContent.startsWith(`${total} of ${total}`));
@@ -74,11 +74,10 @@ test('real app and map recover from geometry failure, share filters, open eviden
     assert.equal(byId('collection').querySelector('option[value=burnstead]').disabled, false);
     assert.equal(byId('collection').querySelector('option[value=quadrant]').disabled, false);
     assert.equal(byId('review'), null, 'data-note review is not a primary search filter');
-    assert.equal(byId('year-from').options.length, 49);
-    assert.equal(byId('year-to').options.length, 49);
-    assert.equal(byId('year-from').options[1].value, '2026');
-    assert.equal(byId('year-from').options[48].value, '1979');
-    assert.equal(window.location.search, '', 'legacy review and unavailable year parameters are cleared');
+    assert.equal(byId('year-options').options.length, 48);
+    assert.equal(byId('year-options').options[0].value, '2026');
+    assert.equal(byId('year-options').options[47].value, '1979');
+    assert.equal(window.location.search, '?from=1900', 'valid typed year boundaries survive even when no home was built in that year');
     assert.equal(document.querySelector('details.source-note').open, false, 'county source details start collapsed');
     const beforeZoom = canvas.querySelector('.leaflet-marker-pane').innerHTML;
     canvas.querySelector('.property-map-cluster').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
@@ -87,7 +86,7 @@ test('real app and map recover from geometry failure, share filters, open eviden
     await until(() => byId('map-status').textContent.startsWith('86 of 86'));
     const markersBeforePage = canvas.querySelector('.leaflet-marker-pane').innerHTML;
     byId('next-page').click();
-    assert.equal(document.querySelectorAll('.property-item').length, 36);
+    assert.equal(document.querySelectorAll('.property-item').length, 20);
     await new Promise(resolve => setTimeout(resolve, 250));
     assert.equal(byId('map-status').textContent.startsWith('86 of 86'), true);
     assert.equal(canvas.querySelector('.leaflet-marker-pane').innerHTML, markersBeforePage);
@@ -96,7 +95,7 @@ test('real app and map recover from geometry failure, share filters, open eviden
     await until(() => byId('map-status').textContent.startsWith('1 of 1'));
     canvas.querySelector('.property-map-pin').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
     await until(() => byId('detail-body').textContent.includes('County record references'));
-    assert.equal(byId('detail-title').textContent, '1071 102ND PL SE');
+    assert.equal(byId('detail-title').textContent, '1071 102nd Pl SE');
     const countyLinks = [...byId('detail-body').querySelectorAll('.detail-source-links a')];
     assert.equal(countyLinks.length, 1);
     assert.equal(countyLinks[0].textContent, 'View King County property details ↗');
@@ -110,7 +109,7 @@ test('real app and map recover from geometry failure, share filters, open eviden
       await until(() => byId('map-status').textContent.startsWith(`${count} of ${count}`));
       document.querySelector('.property-item button').click();
       await until(() => byId('detail-body').querySelector(`[data-collection=${collection.id}]`));
-      assert.ok(byId('detail-body').textContent.includes('Matched company names:'));
+      assert.ok(byId('detail-body').textContent.includes('Company match group:'));
       assert.ok(byId('detail-body').textContent.includes('View King County property details'));
       byId('close-detail').click();
     }
@@ -123,7 +122,32 @@ test('real app and map recover from geometry failure, share filters, open eviden
     assert.equal(byId('map-content').hidden, true);
     assert.equal(canvas.querySelectorAll('img.leaflet-tile').length, 0, 'hidden map removes tile layer');
     byId('reset-empty').click();
-    assert.equal(document.querySelectorAll('.property-item').length, 50);
+    assert.equal(document.querySelectorAll('.property-item').length, 20);
+    assert.equal(byId('show-list').getAttribute('aria-pressed'), 'true');
+    change('search', '25 92nd Avenue NE, Bellevue, WA 98004', 'input');
+    assert.equal(document.querySelectorAll('.property-item').length, 1);
+    assert.ok(byId('address-options').options[0].value.includes('Bellevue, WA'));
+    change('collection', 'burnstead');
+    assert.ok(byId('search-recovery').textContent.includes('1 match'));
+    byId('search-recovery').querySelector('button').click();
+    assert.equal(document.querySelectorAll('.property-item').length, 1);
+    change('search', '25 92nd Ave NE Belleuve', 'input');
+    assert.ok(byId('search-recovery').textContent.includes('Possible address matches'));
+    byId('search-recovery').querySelector('button').click();
+    await until(() => byId('detail-body').querySelector('.detail-evidence'));
+    assert.equal(byId('detail-title').textContent, '25 92nd Ave NE');
+    assert.equal(byId('detail-body').querySelector('.detail-evidence').open, false);
+    assert.ok(byId('detail-body').textContent.includes('Builder association'));
+    assert.ok(byId('detail-body').textContent.includes('Original builder unconfirmed'));
+    byId('close-detail').click();
+    byId('reset-empty').click();
+    change('year-from', 'abcd');
+    assert.equal(byId('filter-error').hidden, false);
+    assert.ok(byId('filter-error').textContent.includes('four-digit'));
+    document.querySelector('[data-year-from="2000"]').click();
+    assert.equal(byId('year-from').value, '2000');
+    assert.equal(byId('year-to').value, '2009');
+    assert.equal(byId('filter-error').hidden, true);
     assert.equal(requested.every(path => path.startsWith('data/')), true, 'search makes no geocoding requests');
   } finally {
     dom.window.close();

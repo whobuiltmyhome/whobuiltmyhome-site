@@ -22,13 +22,14 @@
     <section class="intro wrap" aria-labelledby="page-title">
       <div class="intro-copy">
         <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Home builders across King County</p>
-        <h1 id="page-title">Explore home builders.<br /><em>Across King County.</em></h1>
-        <p class="intro-description">Search an address or browse builders to see homes linked through King County property and sales records.</p>
+        <h1 id="page-title">Discover your home's<br /><em>builder connections.</em></h1>
+        <p class="intro-description">Search King County homes and explore the county records behind each builder association.</p>
       </div>
       <div class="coverage-summary" aria-label="Current builder coverage">
         <span class="coverage-count" id="coverage-count">—</span>
         <span class="coverage-caption">homes included</span>
         <span class="coverage-label" id="coverage-label">8 builders</span>
+        <span class="coverage-date" id="coverage-date"></span>
         <a href="#about">How are builders identified? <span aria-hidden="true">↗</span></a>
       </div>
     </section>
@@ -37,45 +38,49 @@
       <div class="search-panel">
         <form id="search-form" role="search">
           <label class="search-label" for="search">Find an address</label>
-          <div class="search-row"><span class="search-icon" aria-hidden="true"></span><input id="search" type="search" name="q" maxlength="160" placeholder="Address, city, ZIP, or parcel number" autocomplete="off" spellcheck="false" aria-describedby="search-help" disabled /><button class="button button-primary" type="submit" id="search-button" disabled>Search</button></div>
-          <p class="search-help" id="search-help">Search the homes currently included. Coverage varies by builder and does not include every King County home.</p>
+          <div class="search-row"><span class="search-icon" aria-hidden="true"></span><input id="search" type="search" name="q" maxlength="160" placeholder="Enter an address, city, ZIP, or parcel" list="address-options" autocomplete="off" spellcheck="false" aria-describedby="search-help" disabled /><button class="button button-primary" type="submit" id="search-button" disabled>Search</button></div>
+          <datalist id="address-options"></datalist>
+          <p class="search-help" id="search-help">Paste a full address or start typing. Coverage is limited to the <a href="#collections">eight builders below</a>.</p>
         </form>
         <fieldset id="filters" class="filters" disabled>
           <legend class="visually-hidden">Narrow the property results</legend>
           <div class="field city-field"><label for="city">City</label><select id="city"><option value="">All cities</option></select></div>
           <div class="field collection-field"><label for="collection">Builder</label><select id="collection"><option value="">All builders</option></select></div>
-          <div class="field year-field" role="group" aria-labelledby="year-label"><span class="field-label" id="year-label">County year built</span><div class="year-range"><select id="year-from" aria-label="County year built, from"><option value="">From any year</option></select><span aria-hidden="true">–</span><select id="year-to" aria-label="County year built, through"><option value="">Through any year</option></select></div></div>
+          <div class="field year-field" role="group" aria-labelledby="year-label"><span class="field-label" id="year-label">Year built</span><div class="year-range"><input id="year-from" type="text" inputmode="numeric" maxlength="4" list="year-options" placeholder="From any year" aria-label="County year built, from" /><span aria-hidden="true">–</span><input id="year-to" type="text" inputmode="numeric" maxlength="4" list="year-options" placeholder="Through any year" aria-label="County year built, through" /></div><datalist id="year-options"></datalist><div class="year-presets" aria-label="Year shortcuts"><button type="button" data-year-from="1990" data-year-to="1999">1990s</button><button type="button" data-year-from="2000" data-year-to="2009">2000s</button><button type="button" data-year-from="2010" data-year-to="2019">2010s</button><button type="button" data-year-from="2020">2020+</button></div></div>
         </fieldset>
         <p id="filter-error" class="filter-error" role="alert" hidden></p>
       </div>
 
-      <div class="evidence-notice"><span class="notice-mark" aria-hidden="true">i</span><p><strong>Builder matches come from county records.</strong> A match can reflect a home sale, land sale, or parcel transfer, so it may not identify who built the current home.</p></div>
+      <div class="evidence-notice"><span class="notice-mark" aria-hidden="true">i</span><p><strong>County-record associations, not confirmed builders.</strong> Open a home to see the evidence. <a href="#about">How matching works</a></p></div>
 
       <div class="results-toolbar">
         <div><h2 id="results-title" tabindex="-1">Explore homes</h2><p id="result-summary" role="status" aria-live="polite" aria-atomic="true">Loading homes…</p></div>
-        <div class="result-tools"><button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button><label class="sort-label" for="sort">Sort</label><select id="sort" aria-label="Sort properties" disabled><option value="address">Address</option><option value="city">City</option><option value="year-asc">Year: oldest first</option><option value="year-desc">Year: newest first</option></select></div>
+        <div class="result-tools"><button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button><div class="view-switch" role="group" aria-label="Result view"><button id="show-list" type="button" aria-pressed="true">List</button><button id="toggle-map" type="button" aria-pressed="false" aria-expanded="false" aria-controls="map-panel" disabled>Map + list</button></div><label class="sort-label" for="sort">Sort</label><select id="sort" aria-label="Sort properties" disabled><option value="address">Address</option><option value="city">City</option><option value="year-asc">Year: oldest first</option><option value="year-desc">Year: newest first</option></select></div>
       </div>
-      <section class="map-panel" aria-labelledby="map-title">
-        <div class="map-heading"><div><h3 id="map-title">Explore on the map</h3><p>See matching homes across King County.</p></div><button id="toggle-map" class="button button-secondary" type="button" aria-expanded="false" aria-controls="map-content" disabled>Show map</button></div>
+      <div class="results-layout" id="results-layout">
+      <section class="map-panel" id="map-panel" aria-labelledby="map-title" hidden>
+        <div class="map-heading"><h3 id="map-title">Explore on the map</h3></div>
         <div id="map-content" hidden>
           <div class="map-tools"><p id="map-status" role="status" aria-live="polite">Loading parcel locations…</p><button id="fit-map" class="button button-secondary" type="button" disabled>Fit results</button></div>
           <div id="map-error" class="map-error" hidden><p>The map could not be loaded. You can keep searching the list below.</p><button id="retry-map" class="button button-secondary" type="button" hidden>Retry map</button></div>
           <p id="map-tile-notice" class="map-error" role="status" hidden></p>
           <div id="property-map" class="property-map" role="region" aria-label="Map of matching parcel locations" aria-describedby="map-help" tabindex="0"></div>
-          <p id="map-help" class="map-help">Select a numbered cluster to zoom in, then select a dot to open a home. Dots show approximate parcel centers, not surveyed building locations. The map includes every match, even when the list has multiple pages.</p>
+          <p id="map-help" class="map-help">Select a cluster to zoom, or a dot for home details. Approximate parcel centers; all matching homes are mapped.</p>
           <div class="map-credit"><span>Parcel locations: <a href="https://services.arcgis.com/Ej0PsM5Aw677QF1W/arcgis/rest/services/PARCEL_ADDRESS_PUB_AREA_3069/FeatureServer/0" target="_blank" rel="noopener noreferrer">King County GIS</a></span><a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener noreferrer">Report a background map issue ↗</a></div>
         </div>
       </section>
+      <div class="results-list">
       <div id="load-state" class="state-panel" aria-live="polite"><div class="loader" aria-hidden="true"></div><p>Loading homes…</p></div>
       <ul id="property-list" class="property-list" aria-label="Matching homes" hidden></ul>
-      <div id="empty-state" class="state-panel" hidden><span class="empty-icon" aria-hidden="true">⌕</span><h3>No matching homes</h3><p>Try a shorter address or fewer filters. A missing result means the home is not in the current builder view.</p><button class="button button-secondary" id="reset-empty" type="button">Clear search and filters</button></div>
+      <div id="empty-state" class="state-panel" hidden><span class="empty-icon" aria-hidden="true">⌕</span><h3>No matching homes</h3><p>Check the address or try fewer filters. We cover only some King County homes, so a missing result does not tell you who built it.</p><div id="search-recovery"></div><div class="empty-actions"><button class="button button-secondary" id="reset-empty" type="button">Clear search and filters</button><a href="https://blue.kingcounty.com/Assessor/eRealProperty/default.aspx" target="_blank" rel="noopener noreferrer">Look up county records ↗</a></div></div>
       <nav id="pagination" class="pagination" aria-label="Result pages" hidden><button id="previous-page" class="button button-secondary" type="button">← Previous</button><span id="page-label"></span><button id="next-page" class="button button-secondary" type="button">Next →</button></nav>
+      </div></div>
       <p class="map-note">Open a home to view its official King County property-details table.</p>
       <noscript><div class="state-panel"><h2>JavaScript is needed for this explorer</h2><p>Search runs in your browser. You can also look up a property directly in <a href="https://blue.kingcounty.com/Assessor/eRealProperty/default.aspx" rel="noreferrer">King County eReal Property</a>.</p></div></noscript>
     </section>
 
     <section class="collections-section wrap" id="collections" aria-labelledby="collections-title">
-      <div class="section-heading"><div><p class="eyebrow">Builder overview</p><h2 id="collections-title">Builders in this view</h2></div><p>Choose a builder to see matching homes and map locations.</p></div>
+      <div class="section-heading"><div><p class="eyebrow">Explore by builder</p><h2 id="collections-title">Browse builders</h2></div><p>Construction years and cities describe the homes currently included.</p></div>
       <div class="available-collection"><div><span class="badge badge-green">Available to explore</span><h3 id="available-title">8 builders in this view</h3><p id="available-description">Coverage varies by builder. Some homes may match more than one builder.</p></div><span id="collection-count" class="available-count">Homes loading</span></div>
       <ol id="collection-grid" class="collection-grid">
         <li><span class="collection-number">01</span><h3>Burnstead</h3><p>2,584 homes in this view</p></li>
@@ -95,7 +100,8 @@
       <details class="source-note"><summary>County data and coverage</summary><div class="source-note-content"><p><strong>County records included: 1976–September 4, 2026.</strong> Coverage varies by builder, and 2026 is incomplete.</p><p id="release-info">Data dates will appear when the homes load.</p><a href="https://info.kingcounty.gov/assessor/DataDownload/default.aspx" target="_blank" rel="noopener noreferrer" data-source="county">King County data source <span aria-hidden="true">↗</span></a></div></details>
     </section>
   </main>
-  <footer class="site-footer wrap"><span>Who Built My Home?</span><p>Explore King County home builders.</p><a href="#explorer">Back to search ↑</a></footer>
+  <section class="project-info wrap" aria-label="Project information"><details id="project"><summary>About this project &amp; contact</summary><p>Who Built My Home? is an independent project maintained by <a href="https://github.com/whobuiltmyhome" target="_blank" rel="noopener noreferrer">whobuiltmyhome on GitHub</a>. It is not affiliated with King County or the builders listed here.</p><p><a href="https://github.com/whobuiltmyhome/whobuiltmyhome-site/issues/new" target="_blank" rel="noopener noreferrer">Report a data issue or contact the project ↗</a>. GitHub sign-in is required and reports are public. Please do not include private documents or personal contact details.</p></details><details id="privacy"><summary>Privacy</summary><p>Address searches and filters run in your browser against the site's downloaded data. Google Analytics is currently disabled. Searches can appear in your browser's URL and history; the Copy home link button shares only the selected parcel.</p><p>Hosting providers may receive ordinary request information. Opening the map loads tiles from OpenStreetMap, which receives requests for the area displayed. External links open third-party services with their own privacy policies.</p></details></section>
+  <footer class="site-footer wrap"><span>Who Built My Home?</span><p>Independent research · King County, Washington</p><a href="#explorer">Back to search ↑</a></footer>
 
   <dialog id="property-dialog" class="property-dialog" aria-labelledby="detail-title"><div class="dialog-header"><span class="eyebrow">Home details</span><button id="close-detail" class="close-button" type="button" aria-label="Close home details">×</button></div><div id="detail-body"></div><div class="dialog-footer"><button id="copy-property-link" class="button button-secondary" type="button">Copy home link</button><span id="copy-status" role="status" aria-live="polite"></span></div></dialog>
 </body>

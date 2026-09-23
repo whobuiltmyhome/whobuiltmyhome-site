@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
-import { filterProperties, paginateProperties, readUrlState } from '../app.js';
+import { PAGE_SIZE, filterProperties, paginateProperties, readUrlState } from '../app.js';
 import { validateGeometry, matchMapProperties } from '../property-map.js';
 
 const root = new URL('../', import.meta.url);
@@ -23,7 +23,7 @@ test('map uses all filtered IDs across pages, including empty and combined searc
     assert.equal(result.missing, 0);
     if (query.includes('RENTON')) {
       assert.equal(result.mapped.length, 86);
-      assert.equal(paginateProperties(filtered, 1).items.length, 50);
+      assert.equal(paginateProperties(filtered, 1).items.length, PAGE_SIZE);
     }
   }
 });
