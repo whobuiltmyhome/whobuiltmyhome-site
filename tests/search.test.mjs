@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
-import { filterProperties, readUrlState, buildUrlSearch, paginateProperties, safeCountyUrl } from '../app.js';
+import { PAGE_SIZE, filterProperties, readUrlState, buildUrlSearch, paginateProperties, safeCountyUrl, suggestProperties } from '../app.js';
 
 const manifest = JSON.parse(await readFile(new URL('../data/manifest.json', import.meta.url)));
 const indexBytes = await readFile(new URL('../' + manifest.indexUrl, import.meta.url));
@@ -32,12 +32,30 @@ test('shared filter and property state survives round-trip without numeric PIN c
 });
 
 test('pagination exposes every property exactly once and clamps stale pages', () => {
-  const count = Math.ceil(properties.length / 50);
+  const count = Math.ceil(properties.length / PAGE_SIZE);
   const pages = Array.from({length:count}, (_,i)=>paginateProperties(properties,i+1).items);
-  assert.equal(pages.at(-1).length, properties.length % 50 || 50);
+  assert.equal(pages.at(-1).length, properties.length % PAGE_SIZE || PAGE_SIZE);
   assert.equal(new Set(pages.flat().map(p=>p.pin)).size, properties.length);
   assert.equal(paginateProperties(properties,999).page,count);
   assert.equal(paginateProperties([],999).items.length,0);
+});
+
+test('copied full addresses, street names, state names, and ZIP+4 resolve to the same parcel', () => {
+  for (const q of ['25 92nd Ave NE', '25 92nd Ave NE, Bellevue, WA 98004', '25 92nd Avenue Northeast, Bellevue, Washington 98004-1234', '25 92nd Avenue North East Bellevue']) {
+    assert.deepEqual(filterProperties(properties, state({q})).map(p => p.pin), ['1872900047'], q);
+  }
+  assert.equal(filterProperties(properties, state({q:'1872900047'}))[0].pin, '1872900047');
+  assert.equal(filterProperties(properties, state({q:'25 92nd Avenue NE Seattle'})).length, 0, 'a contradictory city is not discarded');
+  const samples = [{...properties[0], address:'25 92ND AVE NE'}, {...properties[0], pin:'9999999999', address:'125 92ND AVE NE'}];
+  assert.equal(filterProperties(samples, state({q:'25 92nd'})).length, 1, 'house number must be a complete token');
+});
+
+test('near matches are suggestions only, keeping the entered house number', () => {
+  const q = '25 92nd Ave NE Belleuve';
+  assert.equal(filterProperties(properties, state({q})).length, 0);
+  assert.equal(suggestProperties(properties, q)[0].pin, '1872900047');
+  assert.ok(suggestProperties(properties, q).every(p => p.address.startsWith('25 ')));
+  assert.equal(suggestProperties(properties, 'no such address anywhere').length, 0);
 });
 
 test('outbound evidence links remain HTTPS county sources', () => {

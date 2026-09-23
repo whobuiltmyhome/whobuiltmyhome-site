@@ -1,6 +1,6 @@
 import { configureAnalyticsCatalog, trackSearch, trackPropertyOpen, trackSourceClick, trackFilter } from './analytics.js';
 
-export const PAGE_SIZE = 50;
+export const PAGE_SIZE = 20;
 const MAX_QUERY_LENGTH = 160;
 const SORT_VALUES = new Set(['address', 'city', 'year-asc', 'year-desc']);
 const ROUTINE_DATA_FLAGS = new Set(['assessor-sale-association', 'gis-primary-address-recovery']);
@@ -16,8 +16,39 @@ async function responseJson(response) {
   return JSON.parse(await new Response(stream).text());
 }
 
+const ADDRESS_WORDS = { avenue: 'ave', street: 'st', place: 'pl', court: 'ct', drive: 'dr', road: 'rd', boulevard: 'blvd', lane: 'ln', circle: 'cir', terrace: 'ter', highway: 'hwy', parkway: 'pkwy', northeast: 'ne', northwest: 'nw', southeast: 'se', southwest: 'sw', north: 'n', south: 's', east: 'e', west: 'w', washington: 'wa' };
+
 export function normalizeSearchText(value) {
-  return String(value ?? '').normalize('NFKC').toLowerCase().replace(/[.,#]/g, ' ').replace(/\s+/g, ' ').trim();
+  return String(value ?? '').normalize('NFKC').toLowerCase()
+    .replace(/\b(\d{5})-\d{4}\b/g, '$1')
+    .replace(/[.,#]/g, ' ').replace(/\s+/g, ' ').trim()
+    .replace(/\b(north|south) (east|west)\b/g, '$1$2')
+    .replace(/\b[a-z]+\b/g, word => ADDRESS_WORDS[word] || word);
+}
+
+export function formatAddress(value) {
+  return String(value ?? '').toLowerCase().split(' ').map(word =>
+    /^(ne|nw|se|sw|n|s|e|w|wa)$/.test(word) ? word.toUpperCase() : word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+}
+
+function matchesQuery(property, tokens) {
+  const words = normalizeSearchText(`${property.address} ${property.city} WA ${property.zip} ${property.pin}`).split(' ');
+  return tokens.every(token => /^\d+$/.test(token)
+    ? words.includes(token) || (token.length >= 6 && property.pin.startsWith(token))
+    : words.some(word => word.startsWith(token)));
+}
+
+// Suggestions are explicitly offered for inspection; never silently substitute a home.
+export function suggestProperties(properties, query) {
+  const tokens = normalizeSearchText(query).split(' ').filter(token => token && token !== 'wa');
+  if (tokens.length < 2 || !/^\d+$/.test(tokens[0])) return [];
+  return properties.map(property => {
+    const words = normalizeSearchText(`${property.address} ${property.city} ${property.zip}`).split(' ');
+    if (words[0] !== tokens[0]) return { property, score: 0 };
+    const score = tokens.slice(1).filter(token => words.includes(token)).length;
+    return { property, score: score >= 2 ? score : 0 };
+  }).filter(item => item.score > 0).sort((a, b) => b.score - a.score || collator.compare(a.property.address, b.property.address)).slice(0, 3).map(item => item.property);
 }
 
 function parseYear(value) {
@@ -63,8 +94,7 @@ export function filterProperties(properties, state) {
     if (from !== null && (property.yearBuilt === null || property.yearBuilt < from)) return false;
     if (to !== null && (property.yearBuilt === null || property.yearBuilt > to)) return false;
     if (tokens.length) {
-      const haystack = normalizeSearchText(`${property.address} ${property.city} ${property.zip} ${property.pin}`);
-      if (!tokens.every(token => haystack.includes(token))) return false;
+      if (!matchesQuery(property, tokens)) return false;
     }
     return true;
   });
@@ -189,15 +219,15 @@ async function bootstrap() {
     button.type = 'button';
     button.setAttribute('aria-label', `View home at ${property.address}, ${property.city} ${property.zip}`);
     const main = node('span', 'property-main');
-    main.append(node('span', 'property-address', property.address), node('span', 'property-locality', `${property.city}, WA ${property.zip}`));
+    main.append(node('span', 'property-address', formatAddress(property.address)), node('span', 'property-locality', `${formatAddress(property.city)}, WA ${property.zip}`));
     const meta = node('span', 'property-meta');
-    meta.append(node('span', 'property-year', property.yearBuilt === null ? 'Year not listed' : `County year ${property.yearBuilt}`));
+    meta.append(node('span', 'property-year', property.yearBuilt === null ? 'Year not listed' : `Built ${property.yearBuilt}`));
     const label = property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name).filter(Boolean).join(' · ');
-    meta.append(node('span', '', label || 'Builder match'));
+    meta.append(node('span', '', label ? `${label} association` : 'Builder association'));
     const additionalFlags = property.reviewFlags.filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
     if (additionalFlags.length) meta.append(node('span', 'property-review', `${additionalFlags.length} data ${additionalFlags.length === 1 ? 'note' : 'notes'}`));
     main.append(meta);
-    const arrow = node('span', 'property-arrow', '↗');
+    const arrow = node('span', 'property-arrow', '›');
     arrow.setAttribute('aria-hidden', 'true');
     button.append(main, arrow);
     button.addEventListener('click', () => openProperty(property.pin, true));
@@ -207,10 +237,11 @@ async function bootstrap() {
 
   function render(updateUrl = true) {
     if (!isReady) return;
-    const invalidYears = state.from && state.to && Number(state.from) > Number(state.to);
+    const malformedYear = [ui['year-from'], ui['year-to']].some(control => control.value && !parseYear(control.value));
+    const invalidYears = malformedYear || (state.from && state.to && Number(state.from) > Number(state.to));
     ui['filter-error'].hidden = !invalidYears;
-    ui['filter-error'].textContent = invalidYears ? 'The “from” year must be earlier than or equal to the “to” year.' : '';
-    filtered = filterProperties(properties, state);
+    ui['filter-error'].textContent = malformedYear ? 'Enter a four-digit year between 1600 and 2100, or leave it blank.' : invalidYears ? 'The “from” year must be earlier than or equal to the “to” year.' : '';
+    filtered = invalidYears ? [] : filterProperties(properties, state);
     mapController?.setProperties(filtered);
     const page = paginateProperties(filtered, state.page);
     state.page = page.page;
@@ -225,6 +256,36 @@ async function bootstrap() {
     ui['page-label'].textContent = `Page ${integer(page.page)} of ${integer(page.pageCount)}`;
     ui['previous-page'].disabled = page.page === 1;
     ui['next-page'].disabled = page.page === page.pageCount;
+    byId('address-options').replaceChildren(...(state.q.length >= 3 ? filtered.slice(0, 6).map(property => {
+      const option = node('option');
+      option.value = `${formatAddress(property.address)}, ${formatAddress(property.city)}, WA ${property.zip}`;
+      return option;
+    }) : []));
+    const recovery = byId('search-recovery');
+    recovery.replaceChildren();
+    if (!filtered.length && !invalidYears && state.q) {
+      const broader = filterProperties(properties, { ...readUrlState(), q: state.q });
+      if (broader.length) {
+        const button = node('button', 'button button-secondary', `Search all builders and years (${integer(broader.length)} ${broader.length === 1 ? 'match' : 'matches'})`);
+        button.type = 'button';
+        button.addEventListener('click', () => { state = { ...readUrlState(), q: state.q }; syncControls(); render(); });
+        recovery.append(button);
+      } else {
+        const suggestions = suggestProperties(properties, state.q);
+        if (suggestions.length) {
+          recovery.append(node('p', '', 'Possible address matches — check the address before choosing:'));
+          const list = node('ul', 'suggestion-list');
+          for (const property of suggestions) {
+            const item = node('li');
+            const button = node('button', 'text-button', `${formatAddress(property.address)}, ${formatAddress(property.city)}`);
+            button.type = 'button';
+            button.addEventListener('click', () => openProperty(property.pin, true));
+            item.append(button); list.append(item);
+          }
+          recovery.append(list);
+        }
+      }
+    }
     if (updateUrl) syncUrl();
   }
 
@@ -279,7 +340,7 @@ async function bootstrap() {
     ui['detail-body'].replaceChildren();
     ui['copy-status'].textContent = '';
     ui['copy-property-link'].disabled = !property;
-    const title = node('h2', '', property ? property.address : 'Home not in this view');
+    const title = node('h2', '', property ? formatAddress(property.address) : 'Home not included');
     title.id = 'detail-title';
     ui['detail-body'].append(title);
     if (!ui['property-dialog'].open) {
@@ -291,13 +352,13 @@ async function bootstrap() {
       return;
     }
     if (track) trackPropertyOpen();
-    ui['detail-body'].append(node('p', 'detail-locality', `${property.city}, WA ${property.zip}`));
+    ui['detail-body'].append(node('p', 'detail-locality', `${formatAddress(property.city)}, WA ${property.zip}`));
     const badges = node('div', 'detail-badges');
-    badges.append(node('span', 'badge badge-green', 'Address matched'), node('span', 'badge badge-neutral', 'County-record match'), node('span', 'badge badge-gold', 'Builder not confirmed'));
-    const connectionNotice = 'King County sale records connect this property to the builder company shown below. That connection may reflect a home sale, land sale, or parcel transfer, so it does not by itself prove who built the current home.';
+    badges.append(node('span', 'badge badge-gold', 'Original builder unconfirmed'));
+    const connectionNotice = 'A builder-related company appears in a county sale for this parcel. The record may concern the home, land, or a parcel transfer; it does not establish who built the current home.';
     ui['detail-body'].append(badges, node('p', 'detail-notice', connectionNotice));
     const facts = node('dl', 'detail-facts');
-    facts.append(fact('King County parcel number', property.pin), fact('Year built', property.yearBuilt ?? 'Not listed'), fact('Builder', property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name || 'Builder match').join('; ')));
+    facts.append(fact('Builder association', property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name || 'Builder association').join('; ')), fact('Year built · county record', property.yearBuilt ?? 'Not listed'), fact('King County parcel', property.pin));
     ui['detail-body'].append(facts);
     const loading = node('p', 'detail-loading', 'Loading county details…');
     ui['detail-body'].append(loading);
@@ -312,6 +373,19 @@ async function bootstrap() {
       const county = sourceLink('View King County property details', detail.countyUrl, 'county_record');
       if (county) sources.append(county);
       ui['detail-body'].append(sources);
+      const actions = node('div', 'detail-actions');
+      const explore = node('a', '', `More matching homes in ${formatAddress(property.city)}`);
+      explore.href = `${buildUrlSearch({ ...readUrlState(), city: property.city, collection: property.collectionIds[0] })}#explorer`;
+      const report = node('a', '', 'Report a data issue ↗');
+      report.href = `https://github.com/whobuiltmyhome/whobuiltmyhome-site/issues/new?${new URLSearchParams({ title: `Property data: ${property.pin}`, body: `Parcel: ${property.pin}\nHome: ${formatAddress(property.address)}, ${formatAddress(property.city)}\n\nWhat seems incorrect?\n\nSupporting public source (optional):\n\nPlease do not include personal contact details or private documents. This report will be public.` })}`;
+      report.target = '_blank'; report.rel = 'noopener noreferrer';
+      actions.append(explore, report);
+      ui['detail-body'].append(actions);
+      const evidence = node('details', 'detail-evidence');
+      evidence.append(node('summary', '', 'Why this match?'));
+      evidence.open = property.reviewFlags.some(flag => !ROUTINE_DATA_FLAGS.has(flag));
+      evidence.append(node('p', '', 'The address and parcel match county property data. The company groups below identify sale associations, not independently verified construction.'));
+      ui['detail-body'].append(evidence);
       const connections = detail.connections || [{ ...detail, collectionId: property.collectionIds[0], entityIds: [], reviewFlags: property.reviewFlags }];
       for (const connection of connections) {
         const section = node('section', 'detail-section');
@@ -319,7 +393,8 @@ async function bootstrap() {
         const collection = manifest.collections.find(c => c.id === connection.collectionId);
         section.append(node('h3', '', collection?.name || 'Builder match'));
         const entityNames = (connection.entityIds || []).map(id => manifest.entities?.find(e => e.id === id)?.name).filter(Boolean);
-        if (entityNames.length) section.append(node('p', '', `Matched company names: ${entityNames.join('; ')}`));
+        if (entityNames.length) section.append(node('p', '', `Company match group: ${entityNames.join('; ')}`));
+        section.append(node('p', '', 'These are reviewed company labels; some group several historical company names. Use the county property details and recording references below to investigate the association.'));
         section.append(node('p', '', `First matching record: ${formatDate(connection.firstCompanyRecording)}`));
         const reviewNotes = (connection.reviewFlags || []).filter(flag => !ROUTINE_DATA_FLAGS.has(flag))
           .map(flag => manifest.reviewFlagDescriptions?.[flag]).filter(Boolean);
@@ -327,13 +402,13 @@ async function bootstrap() {
           const notes = node('ul');
           for (const note of reviewNotes) notes.append(node('li', '', note));
           section.append(notes);
-        } else section.append(node('p', '', 'No additional data notes are listed. This does not confirm the original builder.'));
-        section.append(node('h4', '', 'County record references'), node('p', '', 'These supporting transaction references do not certify who built the current home.'));
+        } else section.append(node('p', '', 'No additional data notes listed.'));
+        section.append(node('h4', '', 'County record references'));
         const list = node('ul', 'recording-list');
         list.setAttribute('aria-label', 'County recording identifiers');
         for (const recording of connection.recordings) list.append(node('li', '', recording));
         section.append(list);
-        ui['detail-body'].append(section);
+        evidence.append(section);
       }
     } catch {
       if (request !== detailRequest || state.pin !== pin) return;
@@ -350,9 +425,6 @@ async function bootstrap() {
     const matchingCity = cities.find(city => normalizeSearchText(city) === normalizeSearchText(state.city));
     state.city = matchingCity || '';
     if (!manifest.collections.some(collection => collection.id === state.collection && ['ready', 'released', 'available'].includes(collection.status))) state.collection = '';
-    const availableYears = new Set(properties.map(property => property.yearBuilt).filter(Number.isInteger));
-    if (state.from && !availableYears.has(Number(state.from))) state.from = '';
-    if (state.to && !availableYears.has(Number(state.to))) state.to = '';
   }
 
   function renderCollectionCatalog() {
@@ -360,7 +432,10 @@ async function bootstrap() {
     if (available.length) {
       byId('collection-grid').replaceChildren(...available.map((collection, index) => {
         const item = node('li');
-        item.append(node('span', 'collection-number', String(index + 1).padStart(2, '0')), node('h3', '', collection.name), node('p', '', `${integer(collection.propertyCount)} homes in this view`));
+        const homes = properties.filter(property => property.collectionIds.includes(collection.id));
+        const cityCount = new Set(homes.map(property => property.city)).size;
+        const years = homes.map(property => property.yearBuilt).filter(Number.isInteger);
+        item.append(node('h3', '', collection.name), node('p', 'builder-count', `${integer(collection.propertyCount)} associated homes`), node('p', '', `${cityCount} ${cityCount === 1 ? 'city' : 'cities'} · Built ${Math.min(...years)}–${Math.max(...years)}`));
         const explore = node('a', 'collection-link', 'View homes →');
         explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
         item.append(explore);
@@ -369,8 +444,8 @@ async function bootstrap() {
     }
     if (available.length > 1) {
       byId('coverage-label').textContent = `${available.length} builders`;
-      byId('available-title').textContent = `${available.length} builders in this view`;
-      byId('available-description').textContent = 'Choose a builder to see its matching homes and map locations. Some homes may match more than one builder.';
+      byId('available-title').textContent = `${available.length} builders available`;
+      byId('available-description').textContent = 'Coverage is partial. Counts describe county-record associations; some homes appear under more than one builder.';
     }
   }
 
@@ -409,7 +484,7 @@ async function bootstrap() {
       cities = [...new Set(properties.map(property => property.city))].sort(collator.compare);
       configureAnalyticsCatalog({ cities, collections: manifest.collections });
       for (const city of cities) {
-        const option = node('option', '', city);
+        const option = node('option', '', formatAddress(city));
         option.value = city;
         ui.city.append(option);
       }
@@ -423,15 +498,14 @@ async function bootstrap() {
       const years = [...new Set(properties.map(property => property.yearBuilt).filter(Number.isInteger))]
         .sort((a, b) => b - a);
       for (const year of years) {
-        for (const control of [ui['year-from'], ui['year-to']]) {
-          const option = node('option', '', year);
-          option.value = String(year);
-          control.append(option);
-        }
+        const option = node('option');
+        option.value = String(year);
+        byId('year-options').append(option);
       }
       byId('coverage-count').textContent = integer(properties.length);
       byId('collection-count').textContent = `${integer(properties.length)} homes included`;
       byId('release-info').textContent = `King County data through ${formatDate(manifest.sourceAsOf)} · Updated ${formatDate(manifest.generatedAt)}`;
+      byId('coverage-date').textContent = `Data through ${formatDate(manifest.sourceAsOf)}`;
       renderCollectionCatalog();
       reconcileState();
       syncControls();
@@ -454,14 +528,19 @@ async function bootstrap() {
     render();
     emitSearch();
   });
-  byId('toggle-map').addEventListener('click', () => {
-    mapExpanded = !mapExpanded;
+  function setMapView(expanded) {
+    mapExpanded = expanded;
     byId('toggle-map').setAttribute('aria-expanded', String(mapExpanded));
-    byId('toggle-map').textContent = mapExpanded ? 'Hide map' : 'Show map';
+    byId('toggle-map').setAttribute('aria-pressed', String(mapExpanded));
+    byId('show-list').setAttribute('aria-pressed', String(!mapExpanded));
+    byId('map-panel').hidden = !mapExpanded;
+    byId('results-layout').classList.toggle('map-active', mapExpanded);
     byId('map-content').hidden = !mapExpanded;
     if (mapExpanded) void showMap();
     else mapController?.hide();
-  });
+  }
+  byId('toggle-map').addEventListener('click', () => setMapView(!mapExpanded));
+  byId('show-list').addEventListener('click', () => setMapView(false));
   byId('retry-map').addEventListener('click', () => { void showMap(); });
   byId('fit-map').addEventListener('click', () => mapController?.fit());
   ui.search.addEventListener('input', () => {
@@ -474,12 +553,17 @@ async function bootstrap() {
   for (const [control, key, analyticName] of [['city', 'city', 'city'], ['collection', 'collection', 'collection'], ['year-from', 'from', 'yearFrom'], ['year-to', 'to', 'yearTo'], ['sort', 'sort', 'sort']]) {
     ui[control].addEventListener('change', () => {
       state[key] = ['from', 'to'].includes(key) ? parseYear(ui[control].value) : ui[control].value;
-      if (['from', 'to'].includes(key)) ui[control].value = state[key];
       state.page = 1;
       render();
       trackFilter({ filter: analyticName });
     });
   }
+  for (const button of document.querySelectorAll('[data-year-from]')) button.addEventListener('click', () => {
+    state.from = button.dataset.yearFrom;
+    state.to = button.dataset.yearTo || '';
+    state.page = 1;
+    syncControls(); render(); trackFilter({ filter: 'yearFrom' });
+  });
   ui['clear-filters'].addEventListener('click', resetFilters);
   ui['reset-empty'].addEventListener('click', resetFilters);
   ui['previous-page'].addEventListener('click', () => changePage(-1));

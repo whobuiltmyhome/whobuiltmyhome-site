@@ -4,6 +4,7 @@ Search/evidence fetch transport uses the exact released JSON. The optional map
 is disabled in this offline artifact; use the live site for the interactive map.
 """
 import argparse
+import gzip
 import json
 from pathlib import Path
 import re
@@ -16,7 +17,8 @@ manifest = json.loads((root / 'data/manifest.json').read_text())
 manifest['geometryAvailable'] = False
 assets = {'data/manifest.json': manifest}
 for key in ('indexUrl', 'detailsUrl'):
-    assets[manifest[key]] = json.loads((root / manifest[key]).read_text())
+    source = root / manifest[key]
+    assets[manifest[key]] = json.loads(gzip.decompress(source.read_bytes()) if source.suffix == '.gz' else source.read_bytes())
 payload = json.dumps(assets, separators=(',', ':'), ensure_ascii=False).replace('<', '\\u003c')
 
 analytics = (root / 'analytics.js').read_text()
@@ -43,6 +45,7 @@ const fetch = async (input) => {
 html = (root / 'index.html').read_text()
 html = html.replace('Follow the search results across King County.', 'The interactive map is available on whobuiltmyhome.com; this offline preview includes search and evidence.')
 html = html.replace('<link rel="stylesheet" href="./styles.css" />', '<style>' + (root/'styles.css').read_text() + '</style>')
+html = html.replace('<link rel="stylesheet" href="./filter-controls.css" />', '<style>' + (root/'filter-controls.css').read_text() + '</style>')
 html = html.replace('<script type="module" src="./app.js"></script>', '<script id="review-assets" type="application/json">' + payload + '</script>\n<script type="module">' + fetch_adapter + app.replace('</script', '<\\/script') + '</script>')
 html = html.replace('<body>', '<body><div style="padding:8px 16px;background:#e9efe9;color:#234637;text-align:center;font:13px system-ui">Working preview · Not published · Analytics disabled</div>')
 html = html.replace('href="./"', 'href="#explorer"')
