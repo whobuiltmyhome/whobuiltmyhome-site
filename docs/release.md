@@ -1,5 +1,22 @@
 # September 20, 2026 King County builder view
 
+## October 9 launch preparation
+
+- Added a static King County builder-research guide plus Burnstead and Quadrant
+  collection pages generated from this release. No property inventory changed.
+- Added canonical search routes, a sitemap, robots file, Open Graph metadata,
+  and a 1200 × 630 sharing card.
+- Added city entry points and restored the previously published project email
+  as the primary correction route. Mail delivery has not been independently tested.
+- Prepared allowlisted launch attribution and successful copy-link events.
+  Analytics remains disabled until the existing GA property is accessible and
+  enhanced-measurement settings and real transport are verified.
+- Added the Google-issued HTML verification file for the existing owner's
+  Search Console setup. Keep it to retain ownership verification.
+
+Validation: 19 Node tests and 7 Python data/geometry checks pass. Generated
+page paths, coverage counts, metadata, JSON-LD, and sitemap are also checked.
+
 This release includes 13,056 distinct mapped homes across eight partial builder
 views:
 

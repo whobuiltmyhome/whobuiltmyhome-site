@@ -1,4 +1,4 @@
-import { configureAnalyticsCatalog, trackSearch, trackPropertyOpen, trackSourceClick, trackFilter } from './analytics.js';
+import { configureAnalyticsCatalog, trackSearch, trackPropertyOpen, trackSourceClick, trackFilter, trackShare } from './analytics.js';
 
 export const PAGE_SIZE = 20;
 const MAX_QUERY_LENGTH = 160;
@@ -376,9 +376,8 @@ async function bootstrap() {
       const actions = node('div', 'detail-actions');
       const explore = node('a', '', `More matching homes in ${formatAddress(property.city)}`);
       explore.href = `${buildUrlSearch({ ...readUrlState(), city: property.city, collection: property.collectionIds[0] })}#explorer`;
-      const report = node('a', '', 'Report a data issue ↗');
-      report.href = `https://github.com/whobuiltmyhome/whobuiltmyhome-site/issues/new?${new URLSearchParams({ title: `Property data: ${property.pin}`, body: `Parcel: ${property.pin}\nHome: ${formatAddress(property.address)}, ${formatAddress(property.city)}\n\nWhat seems incorrect?\n\nSupporting public source (optional):\n\nPlease do not include personal contact details or private documents. This report will be public.` })}`;
-      report.target = '_blank'; report.rel = 'noopener noreferrer';
+      const report = node('a', '', 'Email a correction');
+      report.href = `mailto:hello@whobuiltmyhome.com?${new URLSearchParams({ subject: `Property data: ${property.pin}`, body: `Parcel: ${property.pin}\nHome: ${formatAddress(property.address)}, ${formatAddress(property.city)}\n\nWhat seems incorrect?\n\nSupporting public source (optional):` })}`;
       actions.append(explore, report);
       ui['detail-body'].append(actions);
       const evidence = node('details', 'detail-evidence');
@@ -439,6 +438,11 @@ async function bootstrap() {
         const explore = node('a', 'collection-link', 'View homes →');
         explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
         item.append(explore);
+        if (['burnstead', 'quadrant'].includes(collection.id)) {
+          const guide = node('a', 'collection-guide', 'Coverage & research guide');
+          guide.href = `./builders/${collection.id}/`;
+          item.append(guide);
+        }
         return item;
       }));
     }
@@ -587,6 +591,7 @@ async function bootstrap() {
     try {
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
       await navigator.clipboard.writeText(link.href);
+      trackShare();
       ui['copy-status'].textContent = 'Home link copied.';
     } catch {
       ui['copy-status'].textContent = 'Copy the link from your browser’s address bar.';

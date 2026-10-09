@@ -23,6 +23,21 @@ npm test
 python3 -m unittest discover -s tests -p 'data*.py'
 ```
 
+## Research pages and sharing
+
+The homepage links to a practical King County research guide and data-grounded
+Burnstead and Quadrant collection pages. These pages contain static HTML,
+individual canonical URLs, social previews, and a four-page sitemap.
+Regenerate their coverage tables from the unchanged public release with:
+
+```sh
+python3 scripts/build-search-pages.py
+```
+
+`scripts/build-share-card.py` recreates the 1200 × 630 social preview with
+Pillow and DejaVu fonts. Feedback links open an email draft to the existing
+project address, `hello@whobuiltmyhome.com`; no form or hosted inbox is created.
+
 ## Data
 
 The browser reads `data/manifest.json` and the immutable search index first.

@@ -6,6 +6,19 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="description" content="Explore homes associated with major builders across King County. Search by address, city, ZIP, or parcel number and view results on a map." />
   <meta name="theme-color" content="#214f40" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Who Built My Home?" />
+  <meta property="og:title" content="Explore your home's builder connections" />
+  <meta property="og:description" content="A free King County home research tool. Search an address, explore builder connections, and follow the county evidence." />
+  <meta property="og:url" content="https://whobuiltmyhome.com/" />
+  <meta property="og:image" content="https://whobuiltmyhome.com/assets/social-preview.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Who Built My Home? Search a King County address, explore builder connections, and follow the county evidence." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Explore your home's builder connections" />
+  <meta name="twitter:description" content="A free King County home research tool, with traceable county evidence." />
+  <meta name="twitter:image" content="https://whobuiltmyhome.com/assets/social-preview.png" />
   <title>Who Built My Home? | King County Home Builders</title>
   <link rel="canonical" href="https://whobuiltmyhome.com/" />
   <link rel="stylesheet" href="./styles.css" />
@@ -16,7 +29,7 @@
   <a class="skip-link" href="#explorer">Skip to property search</a>
   <header class="site-header wrap">
     <a class="wordmark" href="./" aria-label="Who Built My Home? Home"><span class="brand-icon" aria-hidden="true"></span>Who Built My Home<span class="wordmark-question">?</span></a>
-    <nav aria-label="Main navigation"><a href="#collections">Builders</a><a href="#about">About the data</a></nav>
+    <nav aria-label="Main navigation"><a href="#collections">Builders</a><a href="./guides/find-home-builder-king-county/">Research guide</a><a href="#contact">Contact</a></nav>
   </header>
   <main>
     <section class="intro wrap" aria-labelledby="page-title">
@@ -41,6 +54,7 @@
           <div class="search-row"><span class="search-icon" aria-hidden="true"></span><input id="search" type="search" name="q" maxlength="160" placeholder="Enter an address, city, ZIP, or parcel" list="address-options" autocomplete="off" spellcheck="false" aria-describedby="search-help" disabled /><button class="button button-primary" type="submit" id="search-button" disabled>Search</button></div>
           <datalist id="address-options"></datalist>
           <p class="search-help" id="search-help">Paste a full address or start typing. Coverage is limited to the <a href="#collections">eight builders below</a>.</p>
+          <div class="sample-explorations" aria-label="Try a sample exploration"><span>No address handy?</span><a href="?city=REDMOND#explorer">Explore Redmond →</a><a href="?city=SNOQUALMIE#explorer">Explore Snoqualmie →</a></div>
         </form>
         <fieldset id="filters" class="filters" disabled>
           <legend class="visually-hidden">Narrow the property results</legend>
@@ -94,13 +108,19 @@
       </ol>
     </section>
 
+    <section class="research-section wrap" aria-labelledby="research-title">
+      <div class="section-heading"><div><p class="eyebrow">Go a little deeper</p><h2 id="research-title">Research your home's history</h2></div><p>Understand the records, explore a builder's coverage, and find your next verification step.</p></div>
+      <div class="research-links"><a href="./guides/find-home-builder-king-county/"><span class="eyebrow">Practical guide</span><h3>How to research who built your home</h3><p>Follow a King County address through property records, deeds, and permits.</p><span class="research-cta">Read the guide →</span></a><a href="./builders/burnstead/"><span class="eyebrow">Builder collection</span><h3>Explore Burnstead connections</h3><p>See current coverage, cities, dates, and the evidence behind the collection.</p><span class="research-cta">View the collection guide →</span></a><a href="./builders/quadrant/"><span class="eyebrow">Builder collection</span><h3>Explore Quadrant connections</h3><p>Understand the historical company matches and browse associated homes.</p><span class="research-cta">View the collection guide →</span></a></div>
+    </section>
+
     <section class="about-section wrap" id="about" aria-labelledby="about-title">
       <div><p class="eyebrow">About the data</p><h2 id="about-title">How builder matches are identified</h2><p>This view matches King County home addresses to builder-related company names in county sales records. A match can reflect a home sale, land sale, or parcel transfer, so it may not identify the builder of the current structure.</p></div>
       <dl class="evidence-definitions"><div><dt>Matched address</dt><dd>The address and parcel number match King County property data.</dd></div><div><dt>Builder match</dt><dd>A reviewed builder-company name appears in a county sale associated with the parcel.</dd></div><div><dt>Year built</dt><dd>The construction year listed by King County; it is not the date of the builder-company match.</dd></div><div><dt>Data notes</dt><dd>Date, classification, or multi-parcel details that may need a closer look.</dd></div></dl>
       <details class="source-note"><summary>County data and coverage</summary><div class="source-note-content"><p><strong>County records included: 1976–September 4, 2026.</strong> Coverage varies by builder, and 2026 is incomplete.</p><p id="release-info">Data dates will appear when the homes load.</p><a href="https://info.kingcounty.gov/assessor/DataDownload/default.aspx" target="_blank" rel="noopener noreferrer" data-source="county">King County data source <span aria-hidden="true">↗</span></a></div></details>
     </section>
   </main>
-  <section class="project-info wrap" aria-label="Project information"><details id="project"><summary>About this project &amp; contact</summary><p>Who Built My Home? is an independent project maintained by <a href="https://github.com/whobuiltmyhome" target="_blank" rel="noopener noreferrer">whobuiltmyhome on GitHub</a>. It is not affiliated with King County or the builders listed here.</p><p><a href="https://github.com/whobuiltmyhome/whobuiltmyhome-site/issues/new" target="_blank" rel="noopener noreferrer">Report a data issue or contact the project ↗</a>. GitHub sign-in is required and reports are public. Please do not include private documents or personal contact details.</p></details><details id="privacy"><summary>Privacy</summary><p>Address searches and filters run in your browser against the site's downloaded data. Google Analytics is currently disabled. Searches can appear in your browser's URL and history; the Copy home link button shares only the selected parcel.</p><p>Hosting providers may receive ordinary request information. Opening the map loads tiles from OpenStreetMap, which receives requests for the area displayed. External links open third-party services with their own privacy policies.</p></details></section>
+  <section class="contact-panel wrap" id="contact" aria-labelledby="contact-title"><p class="eyebrow">Help improve the collection</p><h2 id="contact-title">Found a missing home or a confusing result?</h2><p>Share a correction, ask a question, or tell us whether the tool helped your research.</p><a class="button button-primary" href="mailto:hello@whobuiltmyhome.com?subject=Who%20Built%20My%20Home%20feedback">Email the project →</a><p>hello@whobuiltmyhome.com · Opens your email app. No GitHub account needed.</p></section>
+  <section class="project-info wrap" aria-label="Project information"><details id="project"><summary>About this project</summary><p>Who Built My Home? is an independent project maintained by <a href="https://github.com/whobuiltmyhome" target="_blank" rel="noopener noreferrer">whobuiltmyhome on GitHub</a>. It is not affiliated with King County or the builders listed here.</p><p><a href="https://github.com/whobuiltmyhome/whobuiltmyhome-site/issues/new" target="_blank" rel="noopener noreferrer">Report a public issue on GitHub ↗</a>. GitHub sign-in is required and reports are public. Please do not include private documents or personal contact details.</p></details><details id="privacy"><summary>Privacy</summary><p>Address searches and filters run in your browser against the site's downloaded data. Google Analytics is currently disabled. Searches can appear in your browser's URL and history; the Copy home link button shares only the selected parcel.</p><p>Hosting providers may receive ordinary request information. Opening the map loads tiles from OpenStreetMap, which receives requests for the area displayed. External links open third-party services with their own privacy policies.</p></details></section>
   <footer class="site-footer wrap"><span>Who Built My Home?</span><p>Independent research · King County, Washington</p><a href="#explorer">Back to search ↑</a></footer>
 
   <dialog id="property-dialog" class="property-dialog" aria-labelledby="detail-title"><div class="dialog-header"><span class="eyebrow">Home details</span><button id="close-detail" class="close-button" type="button" aria-label="Close home details">×</button></div><div id="detail-body"></div><div class="dialog-footer"><button id="copy-property-link" class="button button-secondary" type="button">Copy home link</button><span id="copy-status" role="status" aria-live="polite"></span></div></dialog>

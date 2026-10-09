@@ -1,7 +1,18 @@
 import { ANALYTICS_CONFIG } from './analytics-config.js';
 
-const CANONICAL_URL = 'https://whobuiltmyhome.com/';
-const PAGE_TITLE = 'Who Built My Home? | King County';
+const CANONICAL_ORIGIN = 'https://whobuiltmyhome.com';
+const pageTitles = new Map([
+  ['/', 'Who Built My Home? | King County Home Builders'],
+  ['/guides/find-home-builder-king-county/', 'How to Find Your Home Builder in King County | Who Built My Home?'],
+  ['/builders/burnstead/', 'Burnstead Homes in King County | Who Built My Home?'],
+  ['/builders/quadrant/', 'Quadrant Homes in King County | Who Built My Home?'],
+]);
+const campaignSources = new Set([
+  'agent_outreach', 'reddit', 'facebook', 'nextdoor', 'newsletter',
+  'living_snoqualmie', 'hoa', 'redmond_ridge',
+]);
+const campaignMedia = new Set(['email', 'social', 'referral']);
+const campaignNames = new Set(['launch_2026_10']);
 const queryTypes = new Set(['empty', 'zip', 'address_or_text', 'city', 'text', 'address', 'postal', 'mixed']);
 const filters = new Set(['city', 'collection', 'yearFrom', 'yearTo', 'from', 'to', 'sort', 'reset']);
 let cities = new Set();
@@ -42,6 +53,9 @@ export function eventPayload(name, input = {}) {
     params = { source: sources.has(input.source) ? input.source : 'county_record' };
   } else if (name === 'filter_changed') {
     params = { filter: filters.has(input.filter) ? input.filter : 'other' };
+  } else if (name === 'share') {
+    // Count a completed copy action, never the copied property or destination.
+    params = { method: 'copy_link', content_type: 'property_evidence' };
   } else {
     return null;
   }
@@ -62,6 +76,50 @@ function referrerOrigin(value) {
   }
 }
 
+function locationUrl(location) {
+  try {
+    return new URL(location?.href || `${CANONICAL_ORIGIN}${location?.pathname || '/'}${location?.search || ''}`);
+  } catch {
+    return new URL(`${CANONICAL_ORIGIN}/`);
+  }
+}
+
+// Never use document.title or an arbitrary pathname as measurement input.
+export function pageContext(location) {
+  const pathname = locationUrl(location).pathname;
+  const path = pathname === '/index.html' ? '/' : pathname.replace(/\/index\.html$/, '/');
+  const pagePath = pageTitles.has(path) ? path : '/';
+  return {
+    page_location: `${CANONICAL_ORIGIN}${pagePath}`,
+    page_path: pagePath,
+    page_title: pageTitles.get(pagePath),
+  };
+}
+
+export function campaignAttribution(location) {
+  const params = locationUrl(location).searchParams;
+  const values = ['utm_source', 'utm_medium', 'utm_campaign'].map(key => params.getAll(key));
+  const hasCampaign = [...params.keys()].some(key => key.startsWith('utm_'));
+  if (!hasCampaign) return {};
+
+  const [source, medium, campaign] = values.map(value => value[0]);
+  const valid = values.every(value => value.length === 1) &&
+    campaignSources.has(source) && campaignMedia.has(medium) && campaignNames.has(campaign);
+  // Explicit constants override unsupported native UTM values. No partial
+  // campaign or duplicate parameters can silently label a visitor.
+  const result = {
+    campaign_source: valid ? source : 'unattributed',
+    campaign_medium: valid ? medium : 'none',
+    campaign_name: valid ? campaign : 'unattributed',
+  };
+  for (const [queryKey, campaignKey] of [
+    ['utm_id', 'campaign_id'], ['utm_term', 'campaign_term'], ['utm_content', 'campaign_content'],
+  ]) {
+    if (params.has(queryKey)) result[campaignKey] = 'not_collected';
+  }
+  return result;
+}
+
 let send = null;
 export function initializeAnalytics(win = typeof window === 'undefined' ? null : window, config = ANALYTICS_CONFIG) {
   if (send || !win || !productionAllowed(win.location, config)) return false;
@@ -77,9 +135,11 @@ export function initializeAnalytics(win = typeof window === 'undefined' ? null :
   const gtag = function () { win.dataLayer.push(arguments); };
   win.gtag = gtag;
   const common = {
-    page_location: CANONICAL_URL,
-    page_title: PAGE_TITLE,
+    ...pageContext(win.location),
     page_referrer: referrerOrigin(win.document.referrer),
+    // Capture once before the explorer rewrites its URL. Retain only the
+    // allowlisted strings, not the original query, PIN, or URL.
+    ...campaignAttribution(win.location),
   };
   gtag('js', new Date());
   gtag('set', common);
@@ -116,5 +176,6 @@ export const trackSearch = input => track('search_performed', input);
 export const trackPropertyOpen = () => track('property_open');
 export const trackSourceClick = input => track('source_click', input);
 export const trackFilter = input => track('filter_changed', input);
+export const trackShare = () => track('share');
 
 initializeAnalytics();
