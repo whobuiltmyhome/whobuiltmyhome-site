@@ -143,7 +143,7 @@ def guide_body(manifest):
       <section class="research-section" aria-labelledby="keep-notes">
         <h2 id="keep-notes">Keep an evidence trail</h2>
         <p>Save source links, recording and permit numbers, relevant names, and unresolved date differences. Describe the result at the level the documents support: a company-sale association, a permit naming a contractor, or an unresolved lead. A no-match here means the home is outside this release's reviewed matches; it does not mean the builder never worked there.</p>
-        <p>For more official resources, see {link(RESEARCH, "King County's property-research directory")}. To explore a specific collection, start with <a href="/builders/burnstead/">Burnstead</a> or <a href="/builders/quadrant/">Quadrant Homes</a>.</p>
+        <p>For more official resources, see {link(RESEARCH, "King County's property-research directory")}. To explore a specific collection, start with <a href="/builders/buchan/">Buchan</a>, <a href="/builders/burnstead/">Burnstead</a>, or <a href="/builders/quadrant/">Quadrant Homes</a>.</p>
       </section>
       <div class="research-action"><a class="button button-primary" href="/#explorer">Search a King County home</a><a href="/#contact">Report an issue or missing result</a></div>
 '''
@@ -180,6 +180,32 @@ def city_table(slug, stats):
 
 def stats_panel(stats):
     return f'''<dl class="research-stats"><div><dt>Associated parcels</dt><dd>{stats['count']:,}</dd></div><div><dt>Postal-city labels</dt><dd>{len(stats['cities'])}</dd></div><div><dt>County year built</dt><dd>{stats['year_min']}–{stats['year_max']}</dd></div></dl><p class="stats-note">Year range describes the county's current structure records, not the builder's operating history.</p>'''
+
+
+def buchan_body(stats, manifest):
+    flags = stats["flags"]
+    return f'''
+      {stats_panel(stats)}
+      <aside class="research-note"><strong>One Buchan collection</strong><p>Reviewed Buchan-named company associations are grouped together for discovery. This collection does not divide homes between John Buchan and William Buchan, establish legal relationships between the companies, or certify who built a particular home.</p></aside>
+      <section class="research-section" aria-labelledby="buchan-coverage">
+        <h2 id="buchan-coverage">Explore Buchan-linked parcels by city</h2>
+        <p>The release includes {stats['count']:,} distinct King County parcels associated with reviewed Buchan company names across {len(stats['cities'])} postal-city labels. These figures describe the records included here, not every historical Buchan home or the builder's market share.</p>
+        {city_table('buchan', stats)}
+      </section>
+      <section class="research-section" aria-labelledby="buchan-evidence">
+        <h2 id="buchan-evidence">Read the company evidence and dates</h2>
+        <p>Open a parcel's evidence panel to see its reviewed company label and recording references. A company in a sale record may have been a seller, owner, or developer. Check the original construction permit before treating that association as confirmation of the contractor.</p>
+        <p>The county source snapshot is dated {day(manifest['sourceAsOf'])}. Included parcels have first matching company recordings from {day(stats['record_min'])} to {day(stats['record_max'])}. Their current county year-built values range from {stats['year_min']} to {stats['year_max']}. Recording and construction dates describe different events, and this range is not a company operating history.</p>
+      </section>
+      <section class="research-section" aria-labelledby="buchan-check">
+        <h2 id="buchan-check">Verify a particular home's builder</h2>
+        <p>Search an exact address or ten-digit parcel number, open the county property report, and compare the cited document in the {link(RECORDER, "official Recorder's search")}. Check the legal description, company names, and dates against the original permit from the correct city or county office.</p>
+        <p>This collection contains {flags['land-only-evidence']:,} parcel associations supported only by land-classified sales without an improved-residential classification, and {flags['chronology-review']:,} whose county construction year is at least three years after the earliest matching recording. Some flags overlap. They identify evidence to inspect rather than establish an error or a different builder.</p>
+        <p>A missing result means this release has no reviewed association for that parcel; it does not rule out a Buchan connection. Use the <a href="{GUIDE}">King County builder research guide</a> to continue with official records and older documents.</p>
+      </section>
+      <section class="research-sources" aria-labelledby="buchan-sources"><h2 id="buchan-sources">Sources and scope</h2><p>Counts and dates are computed from the released county parcel, residential-building, and sale-record data. See <a href="/#about">the matching methodology</a> and {link(RESEARCH, "official county property-research tools")} for individual verification. This independent collection is not affiliated with or endorsed by the builders named here.</p></section>
+      <div class="research-action"><a class="button button-primary" href="{explorer('buchan')}">Explore Buchan associations</a><a href="{GUIDE}">Read the research guide</a></div>
+'''
 
 
 def burnstead_body(stats, manifest):
@@ -236,7 +262,7 @@ def quadrant_body(stats, manifest):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--lastmod", default="2026-10-09", help="Date these page files changed, YYYY-MM-DD")
+    parser.add_argument("--lastmod", default="2026-10-11", help="Date these page files changed, YYYY-MM-DD")
     args = parser.parse_args()
     modified = date.fromisoformat(args.lastmod).isoformat()
     manifest = json.loads((ROOT / "data/manifest.json").read_text())
@@ -245,17 +271,20 @@ def main():
     with gzip.open(ROOT / manifest["detailsUrl"], "rt") as source:
         details = json.load(source)
     assert len({p["pin"] for p in index}) == manifest["verifiedPropertyCount"]
+    buchan = collection_stats("buchan", manifest, index, details)
     burnstead = collection_stats("burnstead", manifest, index, details)
     quadrant = collection_stats("quadrant", manifest, index, details)
     pages = [
         (GUIDE, "How to Find Who Built Your Home in King County | Who Built My Home?", "Research a King County home's builder using parcel records, eReal Property, recorded deeds, and original permits. Learn what a company match does and does not prove.", "How to find who built your home in King County", "Research guide", "Follow the evidence from your address to the parcel, recorded documents, and original construction permit.", guide_body(manifest)),
+        ("/builders/buchan/", "Buchan Homes in King County: County-Record Research | Who Built My Home?", f"Explore {buchan['count']:,} King County parcels in one Buchan company-record collection. Browse city counts, construction-year ranges, and evidence for individual homes.", "Research Buchan homes in King County", "Builder records", "Browse one combined Buchan collection and follow the county evidence for a particular home.", buchan_body(buchan, manifest)),
         ("/builders/burnstead/", "Burnstead Homes in King County: Research County Records | Who Built My Home?", f"Explore {burnstead['count']:,} King County parcels associated with reviewed Burnstead company names. Browse city counts, county year-built ranges, and evidence limits.", "Research Burnstead homes in King County", "Builder records", "Explore county sale-record connections to Burnstead-named companies, then verify the evidence for a particular home.", burnstead_body(burnstead, manifest)),
         ("/builders/quadrant/", "Quadrant Homes in King County: County-Record Explorer | Who Built My Home?", f"Explore {quadrant['count']:,} King County parcels associated with reviewed historical Quadrant company names. Browse city counts and learn how to verify a home's builder.", "Research Quadrant homes in King County", "Builder records", "Find historical Quadrant company-sale associations and the county records you can use to investigate them.", quadrant_body(quadrant, manifest)),
     ]
     for path, title, description, heading, label, intro, body in pages:
         target = ROOT / path.strip("/") / "index.html"
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(shell(path, title, description, heading, label, intro, body, modified, manifest["sourceAsOf"]))
+        rendered = shell(path, title, description, heading, label, intro, body, modified, manifest["sourceAsOf"])
+        target.write_text("\n".join(line.rstrip() for line in rendered.splitlines()) + "\n")
         print(f"Built {target.relative_to(ROOT)}")
     locations = ["/"] + [page[0] for page in pages]
     entries = "\n".join(f"  <url><loc>{BASE}{path}</loc><lastmod>{modified}</lastmod></url>" for path in locations)

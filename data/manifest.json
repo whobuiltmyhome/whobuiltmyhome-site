@@ -94,6 +94,13 @@
   ],
   "collections": [
     {
+      "description": "Verified addresses with historical Buchan company sale or deed associations. Current-structure builders are unconfirmed; the John F. Buchan / William E. Buchan split remains unreviewed.",
+      "id": "buchan",
+      "name": "Buchan",
+      "propertyCount": 2975,
+      "status": "available"
+    },
+    {
       "id": "burnstead",
       "name": "Burnstead",
       "historySource": "https://www.burnstead.com/builder-documents-1",
@@ -158,8 +165,8 @@
       "description": "County sale associations limited to explicit Lennar Northwest seller names through September 4, 2026. Lennart and other surname lookalikes are excluded."
     }
   ],
-  "coverage": "A partial view of homes linked to eight builders across King County. Coverage varies by builder, and a match does not confirm who built the current structure.",
-  "evidenceScope": "King County homes linked to reviewed builder-company names in county sale records. A match does not confirm who built the current structure.",
+  "coverage": "A partial view of homes linked to nine builder collections across King County. Coverage varies by builder, and a match does not confirm who built the current structure.",
+  "evidenceScope": "King County home addresses with reviewed historical builder-company sale or deed associations. A match does not confirm who built the current structure.",
   "geometryAvailable": true,
   "geometryDescription": "Approximate county parcel centers matched by parcel number, street address, and ZIP. These are not surveyed building locations.",
   "researchWindow": [
@@ -170,6 +177,13 @@
   "sourceAsOf": "2026-09-04",
   "sourceRetrievedOn": "2026-09-13",
   "sources": [
+    {
+      "asOf": "2026-09-04",
+      "name": "Legal",
+      "retrievedOn": "2026-09-13",
+      "sha256": "f3dda171edd47110bfa717266bc22f599d2ad801d6511eca419eb7c75dfa05aa",
+      "url": "https://aqua.kingcounty.gov/extranet/assessor/Legal.zip"
+    },
     {
       "asOf": "2026-09-04",
       "name": "Lookup",
@@ -199,48 +213,72 @@
       "url": "https://aqua.kingcounty.gov/extranet/assessor/Residential%20Building.zip"
     }
   ],
-  "indexUrl": "data/index.d6eb7a193bb62676.json.gz",
-  "indexSha256": "d6eb7a193bb62676377856a3a25f48bebc7f32e65b8394902b78f10ed4f2e459",
-  "detailsUrl": "data/details.f5cdb0116f3b738a.json.gz",
-  "detailsSha256": "f5cdb0116f3b738a67874a3a1fd4628bb6715ab74fb6726af5e0201ec97d4dda",
-  "geometryUrl": "data/geometry.bfd2f9a2b1913444.json.gz",
-  "geometrySha256": "bfd2f9a2b1913444f308803e9080012f788e036a38be66fc3893ac786ea210e2",
-  "mappedPropertyCount": 13056,
+  "indexUrl": "data/index.b62b1b0171b80f66.json.gz",
+  "indexSha256": "b62b1b0171b80f66de2214352cf8cd21ca0edce54fa827a3ad05e6ecf040e0be",
+  "detailsUrl": "data/details.6707eab179e469ec.json.gz",
+  "detailsSha256": "6707eab179e469eca80edb08e0aa73467bafa487bc3c219fe0f06c6a93c4248d",
+  "geometryUrl": "data/geometry.7b90fc2ae50d9325.json.gz",
+  "geometrySha256": "7b90fc2ae50d93257a9bc868eb19c9b3290cd7b573e83b192ffbee87769a71ad",
+  "mappedPropertyCount": 16025,
   "unmappedPropertyCount": 0,
   "postalSourceAsOf": [
+    "2026-09-14",
     "2026-09-18",
     "2026-09-19"
   ],
   "geometryRetrievedAt": "2026-09-19T21:35:41.396108+00:00",
-  "generatedAt": "2026-09-20T21:56:03Z",
-  "releaseId": "2026-09-20-king-county-builder-view-v6",
-  "ruleVersion": "reviewed-company-associations-v6",
-  "verifiedPropertyCount": 13056,
+  "generatedAt": "2026-10-11T13:03:20Z",
+  "releaseId": "2026-10-11-king-county-builders-buchan-restored-v7",
+  "ruleVersion": "reviewed-company-associations-v7-buchan-restored",
+  "verifiedPropertyCount": 16025,
   "expansionAuditUrl": "data/expansion-audit.json",
   "reviewCounts": {
     "assessor-sale-association": 13056,
-    "minor-chronology-gap": 2179,
-    "multi-parcel-recording": 1900,
-    "land-only-evidence": 1714,
-    "chronology-review": 196,
+    "minor-chronology-gap": 2341,
+    "multi-parcel-recording": 1915,
+    "land-only-evidence": 1766,
+    "chronology-review": 214,
+    "legal-corroboration-missing": 401,
+    "recording-crosswalk": 105,
     "gis-primary-address-recovery": 831
   },
-  "priorityReviewPropertyCount": 1757,
+  "priorityReviewPropertyCount": 1814,
   "reviewFlagDescriptions": {
-    "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.",
-    "gis-primary-address-recovery": "The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match.",
     "chronology-review": "The county construction year is at least three years after the earliest matching company recording. Structure identity and construction history need review; rebuilding is not established.",
     "land-only-evidence": "Supporting Assessor sales include residential land-only classifications and no residential improved-property classification. This does not establish who built the current structure.",
+    "legal-corroboration-missing": "The complete plat, lot, and block combination was not independently corroborated. The verified association uses the Assessor recording-to-parcel crosswalk.",
     "minor-chronology-gap": "The county construction year is one or two years after the earliest matching company recording. This date difference alone does not establish rebuilding or a different builder.",
-    "multi-parcel-recording": "The Assessor links a supporting recording to more than one parcel. Each home remains a distinct PIN."
+    "multi-parcel-recording": "The Assessor links a supporting recording to more than one parcel. Each home remains a distinct PIN.",
+    "recording-crosswalk": "The Assessor recording-to-parcel crosswalk differs from the recorder index PIN. The verified address uses the Assessor crosswalk.",
+    "assessor-sale-association": "The Assessor directly associates this PIN with a sale by a reviewed company name. The deed image and original builder have not been independently confirmed.",
+    "gis-primary-address-recovery": "The released street, ZIP, postal city and parcel center use the county-designated primary GIS address because the Residential Building address was missing or did not match."
   },
   "evidenceLabels": {
     "associated": "Builder-company match; builder unconfirmed",
-    "assessor-sale-association": "County sale-record match",
-    "gis-primary-address-recovery": "County primary-address match",
     "chronology-review": "Construction chronology needs review",
     "land-only-evidence": "Land-only classification in supporting sales",
+    "legal-corroboration-missing": "Legal description not independently corroborated",
     "minor-chronology-gap": "One or two-year date difference",
-    "multi-parcel-recording": "Recording covers multiple parcels"
+    "multi-parcel-recording": "Recording covers multiple parcels",
+    "recording-crosswalk": "County recording crosswalk used",
+    "assessor-sale-association": "County sale-record match",
+    "gis-primary-address-recovery": "County primary-address match"
+  },
+  "frozenCollectionSources": {
+    "buchan": {
+      "releaseId": "2026-09-14-buchan-associations-map-v1",
+      "ruleVersion": "buchan-public-projection-1",
+      "sourceSnapshots": {
+        "finalVerificationSha256": "1f06d5b3a931e4b0cb70eba281027595676b6893e552025063f595c7ef38b45a",
+        "independentAssessorEvidenceSha256": "c51d53e80ae134e368030bd4b879c23a8df46ad56ab96774682fc07aad722941"
+      },
+      "restoredFromCommit": "13ee6ae6df5b529e1a53725fc5b89af5e04d730e",
+      "indexSha256": "f38761569ab8e16ac3990be96ba2af9f1c4f0345280eb1161fe935253969b7bb",
+      "detailsSha256": "a7cec1c52d36f0174abdc936696cf1f54c109ee07f5197274f96c59a6a6ff351",
+      "geometrySha256": "ec5d694cf13a0bc1fd9725ffdfdfde19a8554d132961a92d60e163a9b81cbf99",
+      "propertyCount": 2975,
+      "heldRecoveryCandidateCount": 362,
+      "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation."
+    }
   }
 }

@@ -382,6 +382,17 @@ def main():
         'sourceRetrievedOn': '2026-09-13',
         'sources': SOURCE_CATALOG,
     }
+    # Always retain the frozen Buchan collection during expansion rebuilds.
+    # Its recorder/crosswalk evidence has a separate contract; do not invent
+    # exact entity IDs or a John/William split from the expansion allowlist.
+    restore_spec = importlib.util.spec_from_file_location('restore_buchan', ROOT / 'scripts/restore-buchan.py')
+    restore = importlib.util.module_from_spec(restore_spec)
+    restore_spec.loader.exec_module(restore)
+    geometry['sourceBatches'] = batches
+    restore.merge_buchan(index, details, geometry, manifest, audit)
+    batches = geometry['sourceBatches']
+    flags_text.update(manifest['reviewFlagDescriptions'])
+    evidence_labels = {**EVIDENCE_LABELS, **manifest['evidenceLabels']}
     public_rows = [index[p] for p in sorted(index)]
     for label, value in [('index', public_rows), ('details', details)]:
         raw = geo.packed(value)
@@ -396,14 +407,14 @@ def main():
                     mappedPropertyCount=len(geometry['locations']), unmappedPropertyCount=0,
                     postalSourceAsOf=sorted({b['retrievedAt'][:10] for b in batches}),
                     geometryRetrievedAt=max(b['retrievedAt'] for b in batches), generatedAt=args.generated_at,
-                    releaseId='2026-09-20-king-county-builder-view-v6', ruleVersion=audit['ruleVersion'],
+                    releaseId='2026-10-11-king-county-builders-buchan-restored-v7', ruleVersion=audit['ruleVersion'],
                     verifiedPropertyCount=len(index), expansionAuditUrl='data/expansion-audit.json',
                     reviewCounts=dict(Counter(f for r in public_rows for f in r['reviewFlags'])),
                     priorityReviewPropertyCount=sum(bool(set(r['reviewFlags']) & {'land-only-evidence', 'chronology-review'}) for r in public_rows))
     used_flags = set(manifest['reviewCounts'])
     manifest['reviewFlagDescriptions'] = {key: value for key, value in flags_text.items()
                                           if key in used_flags}
-    manifest['evidenceLabels'] = {key: value for key, value in EVIDENCE_LABELS.items()
+    manifest['evidenceLabels'] = {key: value for key, value in evidence_labels.items()
                                   if key == 'associated' or key in used_flags}
     (ROOT / manifest['geometryUrl']).write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
     (ROOT / 'data/expansion-audit.json').write_text(json.dumps(audit, indent=2) + '\n')

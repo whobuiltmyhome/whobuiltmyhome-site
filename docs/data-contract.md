@@ -1,7 +1,7 @@
 # Public data contract, version 2
 
-The site publishes 13,056 distinct King County homes linked to eight builders
-through county sale records. Every builder view is partial. A match can reflect
+The site publishes 16,025 distinct King County homes linked to nine builder
+collections through historical county sale or deed associations. Every view is partial. A match can reflect
 a home sale, land sale, or parcel transfer and does not certify who built the
 current structure.
 
@@ -41,6 +41,16 @@ templates.
 Matching normalizes case, whitespace, commas, and periods, then applies only the
 documented terms. There is no fuzzy surname or successor-brand matching.
 
+The following gates apply to the eight expanded collections. Buchan is restored
+from its separately reviewed, hash-pinned September 14 release in
+`tests/fixtures/buchan/`. Its 2,975 records retain original recording references,
+review notes, and GIS coordinates. `entityIds: []` preserves the unreviewed
+John Buchan / William Buchan distinction. County construction years range from
+1965–2026; they are separate from the 1976–2026 transaction research window.
+Only the expansion connections require `assessor-sale-association` and exact
+entity-policy membership. Buchan's recorder/legal-crosswalk route retains its
+original `recording-crosswalk` and `legal-corroboration-missing` flags.
+
 - Include valid county document dates and 12–14 digit recording identifiers.
 - Include warranty or statutory-warranty instruments and residential land or
   improved-property classes only.
@@ -78,3 +88,10 @@ python -m unittest discover -s tests -p 'data*.py'
 Reuse the recorded timestamp and cached GIS responses for byte-identical output.
 The exporter writes immutable payloads before replacing the manifest. Publish
 the new assets and manifest together.
+
+`build-expanded-data.py` merges the frozen Buchan input on every rebuild.
+`python3 scripts/restore-buchan.py` also restores it into an existing release
+without refreshing county data. The merge rejects address/year conflicts,
+retains other builder evidence for the six overlapping PINs, and records seed
+hashes and the source commit in `frozenCollectionSources`. Regression checks
+require all 2,975 original Buchan PINs, references, flags, and coordinates.

@@ -30,8 +30,8 @@ class ExpansionTests(unittest.TestCase):
         cls.index = {r['pin']: r for r in read(cls.manifest['indexUrl'])}
         cls.details = read(cls.manifest['detailsUrl'])
 
-    def test_release_contains_only_the_eight_active_builders(self):
-        expected = {'burnstead', 'murray-franklyn', 'camwest', 'quadrant', 'conner',
+    def test_release_contains_all_nine_active_builders_including_buchan(self):
+        expected = {'buchan', 'burnstead', 'murray-franklyn', 'camwest', 'quadrant', 'conner',
                     'toll-brothers', 'mainvue', 'lennar'}
         self.assertEqual({c['id'] for c in self.manifest['collections']}, expected)
         self.assertEqual({c for row in self.index.values() for c in row['collectionIds']}, expected)
@@ -100,10 +100,15 @@ class ExpansionTests(unittest.TestCase):
                 self.assertTrue(c['recordings'])
                 for recording in c['recordings']:
                     self.assertRegex(recording, r'^\d{12,14}$')
-                self.assertTrue(c['entityIds'])
-                self.assertIn('assessor-sale-association', c['reviewFlags'])
+                if c['collectionId'] == 'buchan':
+                    # The frozen recorder/crosswalk route does not establish
+                    # the John/William split or expansion-style exact entity IDs.
+                    self.assertEqual(c['entityIds'], [])
+                else:
+                    self.assertTrue(c['entityIds'])
+                    self.assertIn('assessor-sale-association', c['reviewFlags'])
                 self.assertTrue(all(entities[e]['collectionId'] == c['collectionId'] for e in c['entityIds']))
-                self.assertTrue(1976 <= row['yearBuilt'] <= 2026)
+                self.assertTrue((1965 if c['collectionId'] == 'buchan' else 1976) <= row['yearBuilt'] <= 2026)
             self.assertEqual(set(row['reviewFlags']), flags)
             self.assertEqual(set(detail['recordings']), {r for c in detail['connections'] for r in c['recordings']})
         flags = Counter(f for r in self.index.values() for f in r['reviewFlags'])
@@ -123,21 +128,24 @@ class ExpansionTests(unittest.TestCase):
         self.assertEqual(audit['collections']['mainvue']['gisPrimaryAddressRecoveredPins'], 723)
         self.assertEqual(audit['collections']['murray-franklyn']['publishedPins'], 204)
         self.assertEqual(audit['collections']['murray-franklyn']['gisPrimaryAddressRecoveredPins'], 108)
-        self.assertEqual(self.manifest['verifiedPropertyCount'], 13056)
-        self.assertEqual(len(self.manifest['collections']), 8)
+        self.assertEqual(self.manifest['verifiedPropertyCount'], 16025)
+        self.assertEqual(len(self.manifest['collections']), 9)
         self.assertEqual(set(self.manifest['reviewCounts']),
                          {'assessor-sale-association', 'minor-chronology-gap',
                           'multi-parcel-recording', 'land-only-evidence',
-                          'chronology-review', 'gis-primary-address-recovery'})
+                          'chronology-review', 'gis-primary-address-recovery',
+                          'legal-corroboration-missing', 'recording-crosswalk'})
         self.assertEqual(self.manifest['reviewCounts']['assessor-sale-association'], 13056)
-        self.assertEqual(self.manifest['reviewCounts']['minor-chronology-gap'], 2179)
-        self.assertEqual(self.manifest['reviewCounts']['multi-parcel-recording'], 1900)
-        self.assertEqual(self.manifest['reviewCounts']['land-only-evidence'], 1714)
-        self.assertEqual(self.manifest['reviewCounts']['chronology-review'], 196)
+        self.assertEqual(self.manifest['reviewCounts']['minor-chronology-gap'], 2341)
+        self.assertEqual(self.manifest['reviewCounts']['multi-parcel-recording'], 1915)
+        self.assertEqual(self.manifest['reviewCounts']['land-only-evidence'], 1766)
+        self.assertEqual(self.manifest['reviewCounts']['chronology-review'], 214)
         self.assertEqual(self.manifest['reviewCounts']['gis-primary-address-recovery'], 831)
-        self.assertEqual(self.manifest['priorityReviewPropertyCount'], 1757)
+        self.assertEqual(self.manifest['reviewCounts']['legal-corroboration-missing'], 401)
+        self.assertEqual(self.manifest['reviewCounts']['recording-crosswalk'], 105)
+        self.assertEqual(self.manifest['priorityReviewPropertyCount'], 1814)
         self.assertEqual({source['name'] for source in self.manifest['sources']},
-                         {'Lookup', 'Parcel', 'Real Property Sales', 'Residential Building'})
+                         {'Legal', 'Lookup', 'Parcel', 'Real Property Sales', 'Residential Building'})
         self.assertEqual(audit['collections']['mainvue']['heldReasons'],
                          {'no-eligible-reviewed-company-sale': 66,
                           'not-current-single-building-single-unit': 3})
@@ -145,6 +153,35 @@ class ExpansionTests(unittest.TestCase):
                          {'missing-primary-address': 1,
                           'no-eligible-reviewed-company-sale': 4,
                           'not-current-single-building-single-unit': 2})
+
+    def test_frozen_buchan_membership_evidence_and_map_locations_are_retained(self):
+        spec = importlib.util.spec_from_file_location('restore', ROOT / 'scripts/restore-buchan.py')
+        restore = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(restore)
+        original_manifest, frozen = restore.frozen_release()
+        original_pins = {row['pin'] for row in frozen['index']}
+        restored_pins = {p for p, row in self.index.items() if 'buchan' in row['collectionIds']}
+        self.assertEqual(restored_pins, original_pins)
+        self.assertEqual(len(restored_pins), 2975)
+        geometry = read(self.manifest['geometryUrl'])
+        overlap = 0
+        for original in frozen['index']:
+            p = original['pin']
+            row = self.index[p]
+            for key in ('id', 'address', 'city', 'zip', 'yearBuilt', 'status'):
+                self.assertEqual(row[key], original[key])
+            connection, = [c for c in self.details[p]['connections'] if c['collectionId'] == 'buchan']
+            for key in ('firstCompanyRecording', 'recordings', 'notes'):
+                self.assertEqual(connection[key], frozen['details'][p][key])
+            self.assertEqual(connection['reviewFlags'], original['reviewFlags'])
+            self.assertEqual(geometry['locations'][p], frozen['geometry']['locations'][p])
+            overlap += len(row['collectionIds']) > 1
+        self.assertEqual(overlap, 6)
+        source = self.manifest['frozenCollectionSources']['buchan']
+        self.assertEqual(source['releaseId'], original_manifest['releaseId'])
+        self.assertEqual(source['heldRecoveryCandidateCount'], 362)
+        self.assertNotIn('john-f-buchan', {c['id'] for c in self.manifest['collections']})
+        self.assertNotIn('william-e-buchan', {c['id'] for c in self.manifest['collections']})
 
 
 if __name__ == '__main__':

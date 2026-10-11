@@ -6,6 +6,7 @@ const pageTitles = new Map([
   ['/guides/find-home-builder-king-county/', 'How to Find Your Home Builder in King County | Who Built My Home?'],
   ['/builders/burnstead/', 'Burnstead Homes in King County | Who Built My Home?'],
   ['/builders/quadrant/', 'Quadrant Homes in King County | Who Built My Home?'],
+  ['/builders/buchan/', 'Buchan Homes in King County | Who Built My Home?'],
 ]);
 const campaignSources = new Set([
   'agent_outreach', 'reddit', 'facebook', 'nextdoor', 'newsletter',

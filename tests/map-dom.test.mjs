@@ -74,9 +74,11 @@ test('real app and map recover from geometry failure, share filters, open eviden
     assert.equal(byId('collection').querySelector('option[value=burnstead]').disabled, false);
     assert.equal(byId('collection').querySelector('option[value=quadrant]').disabled, false);
     assert.equal(byId('review'), null, 'data-note review is not a primary search filter');
-    assert.equal(byId('year-options').options.length, 48);
+    const properties = JSON.parse(gunzipSync(readFileSync(new URL(manifest.indexUrl, root))));
+    const years = [...new Set(properties.map(p => p.yearBuilt).filter(Number.isInteger))].sort((a, b) => b - a);
+    assert.equal(byId('year-options').options.length, years.length);
     assert.equal(byId('year-options').options[0].value, '2026');
-    assert.equal(byId('year-options').options[47].value, '1979');
+    assert.equal(byId('year-options').options[years.length - 1].value, '1965');
     assert.equal(window.location.search, '?from=1900', 'valid typed year boundaries survive even when no home was built in that year');
     assert.equal(document.querySelector('details.source-note').open, false, 'county source details start collapsed');
     const beforeZoom = canvas.querySelector('.leaflet-marker-pane').innerHTML;
@@ -102,14 +104,18 @@ test('real app and map recover from geometry failure, share filters, open eviden
     assert.equal(countyLinks[0].href, 'https://blue.kingcounty.com/Assessor/eRealProperty/Detail.aspx?ParcelNbr=0292000050');
     assert.equal(byId('property-dialog').open, true);
     byId('close-detail').click();
-    for (const collection of manifest.collections.filter(c => ['burnstead', 'quadrant'].includes(c.id))) {
+    for (const collection of manifest.collections.filter(c => ['buchan', 'burnstead', 'quadrant'].includes(c.id))) {
       byId('clear-filters').click();
       change('collection', collection.id);
       const count = collection.propertyCount.toLocaleString('en-US');
       await until(() => byId('map-status').textContent.startsWith(`${count} of ${count}`));
       document.querySelector('.property-item button').click();
       await until(() => byId('detail-body').querySelector(`[data-collection=${collection.id}]`));
-      assert.ok(byId('detail-body').textContent.includes('Company match group:'));
+      if (collection.id === 'buchan') {
+        assert.ok(byId('detail-body').textContent.includes('John Buchan / William Buchan attribution remains unreviewed'));
+      } else {
+        assert.ok(byId('detail-body').textContent.includes('Company match group:'));
+      }
       assert.ok(byId('detail-body').textContent.includes('View King County property details'));
       byId('close-detail').click();
     }
