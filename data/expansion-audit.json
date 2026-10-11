@@ -1,6 +1,6 @@
 {
-  "ruleVersion": "reviewed-company-associations-v6",
-  "reviewedOn": "2026-09-20",
+  "ruleVersion": "reviewed-company-associations-v7-buchan-restored",
+  "reviewedOn": "2026-10-11",
   "entityPolicySha256": "83f452cfd3e998ef3d201ac117452e355ec564c7b6726f193207ce7362bb83f2",
   "collections": {
     "burnstead": {
@@ -107,6 +107,23 @@
         "not-current-single-building-single-unit": 22
       },
       "scope": "County sale associations for explicit Toll Brothers or Toll Bros seller names through September 4, 2026. These associations do not certify the original builder."
+    }
+  },
+  "frozenCollectionRestorations": {
+    "buchan": {
+      "releaseId": "2026-09-14-buchan-associations-map-v1",
+      "ruleVersion": "buchan-public-projection-1",
+      "sourceSnapshots": {
+        "finalVerificationSha256": "1f06d5b3a931e4b0cb70eba281027595676b6893e552025063f595c7ef38b45a",
+        "independentAssessorEvidenceSha256": "c51d53e80ae134e368030bd4b879c23a8df46ad56ab96774682fc07aad722941"
+      },
+      "restoredFromCommit": "13ee6ae6df5b529e1a53725fc5b89af5e04d730e",
+      "indexSha256": "f38761569ab8e16ac3990be96ba2af9f1c4f0345280eb1161fe935253969b7bb",
+      "detailsSha256": "a7cec1c52d36f0174abdc936696cf1f54c109ee07f5197274f96c59a6a6ff351",
+      "geometrySha256": "ec5d694cf13a0bc1fd9725ffdfdfde19a8554d132961a92d60e163a9b81cbf99",
+      "propertyCount": 2975,
+      "heldRecoveryCandidateCount": 362,
+      "heldRecoveryDescription": "GIS-ZIP recovery candidates from the prior assessment remain outside this release pending validation."
     }
   }
 }

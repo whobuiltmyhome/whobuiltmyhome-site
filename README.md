@@ -1,7 +1,7 @@
 # Who Built My Home
 
 A free static explorer of home builders across King County. The current view
-contains 13,056 homes linked to eight builders through county property and sale
+contains 16,025 homes linked to nine builders through county property and sale
 records. Coverage varies by builder, and a match does not by itself prove who
 built the current home.
 
@@ -26,9 +26,9 @@ python3 -m unittest discover -s tests -p 'data*.py'
 ## Research pages and sharing
 
 The homepage links to a practical King County research guide and data-grounded
-Burnstead and Quadrant collection pages. These pages contain static HTML,
-individual canonical URLs, social previews, and a four-page sitemap.
-Regenerate their coverage tables from the unchanged public release with:
+Buchan, Burnstead, and Quadrant collection pages. These pages contain static HTML,
+individual canonical URLs, social previews, and a five-page sitemap.
+Regenerate their coverage tables from the public release with:
 
 ```sh
 python3 scripts/build-search-pages.py
@@ -44,10 +44,15 @@ The browser reads `data/manifest.json` and the immutable search index first.
 Home details and map geometry load only when needed. No raw owner, buyer,
 grantor, grantee, or private seller fields are published.
 
-The eight builder counts, source dates, content hashes, and coverage limits are
+The nine builder counts, source dates, content hashes, and coverage limits are
 recorded in the manifest. See [the data contract](docs/data-contract.md) for the
 deterministic export and validation rules. Raw source exports and GIS caches
 must remain outside this public repository.
+
+Buchan appears as one combined collection of 2,975 historical company
+associations. The John Buchan / William Buchan attribution remains unreviewed.
+Six parcels also have an association with another included builder; the total
+inventory counts each parcel once.
 
 The optional map shows approximate parcel centers for every matching home.
 Search and filters control the list and map together; list pagination never

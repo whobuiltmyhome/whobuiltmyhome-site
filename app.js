@@ -60,10 +60,11 @@ function parseYear(value) {
 export function readUrlState(search = '') {
   const params = new URLSearchParams(search);
   const page = Number(params.get('page'));
+  const requestedCollection = (params.get('collection') || '').slice(0, 80);
   return {
     q: (params.get('q') || '').slice(0, MAX_QUERY_LENGTH).trim(),
     city: (params.get('city') || '').slice(0, 80),
-    collection: (params.get('collection') || '').slice(0, 80),
+    collection: ['john-f-buchan', 'william-e-buchan'].includes(requestedCollection) ? 'buchan' : requestedCollection,
     from: parseYear(params.get('from')),
     to: parseYear(params.get('to')),
     sort: SORT_VALUES.has(params.get('sort')) ? params.get('sort') : 'address',
@@ -393,7 +394,10 @@ async function bootstrap() {
         section.append(node('h3', '', collection?.name || 'Builder match'));
         const entityNames = (connection.entityIds || []).map(id => manifest.entities?.find(e => e.id === id)?.name).filter(Boolean);
         if (entityNames.length) section.append(node('p', '', `Company match group: ${entityNames.join('; ')}`));
-        section.append(node('p', '', 'These are reviewed company labels; some group several historical company names. Use the county property details and recording references below to investigate the association.'));
+        const companyExplanation = connection.collectionId === 'buchan' && !entityNames.length
+          ? 'This is a historical Buchan company association. The John Buchan / William Buchan attribution remains unreviewed. Use the county property details and recording references below to investigate the association.'
+          : 'These are reviewed company labels; some group several historical company names. Use the county property details and recording references below to investigate the association.';
+        section.append(node('p', '', companyExplanation));
         section.append(node('p', '', `First matching record: ${formatDate(connection.firstCompanyRecording)}`));
         const reviewNotes = (connection.reviewFlags || []).filter(flag => !ROUTINE_DATA_FLAGS.has(flag))
           .map(flag => manifest.reviewFlagDescriptions?.[flag]).filter(Boolean);
@@ -438,7 +442,7 @@ async function bootstrap() {
         const explore = node('a', 'collection-link', 'View homes →');
         explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
         item.append(explore);
-        if (['burnstead', 'quadrant'].includes(collection.id)) {
+        if (['buchan', 'burnstead', 'quadrant'].includes(collection.id)) {
           const guide = node('a', 'collection-guide', 'Coverage & research guide');
           guide.href = `./builders/${collection.id}/`;
           item.append(guide);

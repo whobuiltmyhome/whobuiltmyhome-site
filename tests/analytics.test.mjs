@@ -61,7 +61,7 @@ test('preview and unreviewed production settings do not load analytics', () => {
 
 test('page identity uses exact released routes, never raw paths or document titles', () => {
   assert.equal(pageContext(new URL('https://whobuiltmyhome.com/index.html?q=Private')).page_path, '/');
-  for (const path of ['/guides/find-home-builder-king-county/', '/builders/burnstead/', '/builders/quadrant/']) {
+  for (const path of ['/guides/find-home-builder-king-county/', '/builders/burnstead/', '/builders/quadrant/', '/builders/buchan/']) {
     const result = pageContext(new URL(`https://whobuiltmyhome.com${path}?q=Private&pin=0123456789#person@example.com`));
     assert.equal(result.page_path, path);
     assert.equal(result.page_location, `https://whobuiltmyhome.com${path}`);

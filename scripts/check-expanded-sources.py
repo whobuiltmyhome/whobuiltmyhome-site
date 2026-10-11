@@ -10,6 +10,7 @@ from datetime import datetime
 import hashlib
 import gzip
 import io
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -78,6 +79,8 @@ def main():
     public_pins = set()
     for p, detail in details.items():
         for c in detail['connections']:
+            if c['collectionId'] == 'buchan':
+                continue  # Independently check the frozen recorder/crosswalk route below.
             public_pins.add(p)
             for recording in c['recordings']:
                 needed[p, recording, c['collectionId']] = c['entityIds']
@@ -134,8 +137,25 @@ def main():
         assert {normalize(f['attributes']['POSTALCTYNAME']) for f in matches} == {normalize(row['city'])}
     audit = read(manifest['expansionAuditUrl'])
     assert recovered == sum(c['gisPrimaryAddressRecoveredPins'] for c in audit['collections'].values())
+    spec = importlib.util.spec_from_file_location('restore', ROOT / 'scripts/restore-buchan.py')
+    restore = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(restore)
+    _, frozen = restore.frozen_release()
+    frozen_pins = {row['pin'] for row in frozen['index']}
+    assert frozen_pins == {p for p, row in index.items() if 'buchan' in row['collectionIds']}
+    for original in frozen['index']:
+        p = original['pin']
+        for field in ('id', 'pin', 'address', 'city', 'zip', 'yearBuilt', 'status'):
+            assert index[p][field] == original[field]
+        c, = [c for c in details[p]['connections'] if c['collectionId'] == 'buchan']
+        assert c['entityIds'] == []
+        assert c['reviewFlags'] == original['reviewFlags']
+        for field in ('firstCompanyRecording', 'recordings', 'notes'):
+            assert c[field] == frozen['details'][p][field]
+        assert geometry['locations'][p] == frozen['geometry']['locations'][p]
     print(json.dumps({'propertiesChecked': len(public_pins), 'companyRecordingParcelReferencesChecked': len(needed),
                       'countyLocationsChecked': len(public_pins), 'gisPrimaryAddressesChecked': recovered,
+                      'frozenBuchanPropertiesChecked': len(frozen_pins),
                       'mismatches': 0}))
 
 
