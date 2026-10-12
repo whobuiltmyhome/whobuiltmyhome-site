@@ -1,5 +1,30 @@
 # Search and usage measurement
 
+## Project account and ownership
+
+The user confirmed `whobuiltmyhome@gmail.com` as the dedicated Google account
+for this project on October 12, 2026. Confirm the account before future
+registrations as specified in the repository's `AGENTS.md`; an incidental
+personal-account browser session is not the intended project identity.
+
+Search Console manages Google Search visibility; Analytics measures site
+visits and usage. Their properties and permissions are independent. The user's
+October 12 screenshots show that the dedicated account lacks access to the
+existing Search Console URL-prefix property `https://whobuiltmyhome.com/`.
+It needs independent verified ownership or an appropriate owner-access update.
+Confirm access under the dedicated account before retiring any previous
+verification token or permission, so the property stays accessible.
+
+Ownership correction is pending authenticated account access. The existing
+GA4 identifier remains `G-B3FYWYWXTN`; its current administrator has not been
+verified. Keep this stream and its history if it is the intended existing site
+property. Inspect the dedicated account first, and correct administration or
+move the property if necessary rather than create a duplicate. Site measurement
+remains disabled until the account settings and actual receipt checks below
+pass. A successful Search Console verification does not activate Analytics.
+
+## Measurement implementation
+
 The existing live site's GA4 identifier is `G-B3FYWYWXTN`. Its earlier code sends
 `query_sample` and residential address fields. The replacement module never
 forwards these fields. It constructs only the events below from an allowlist.
@@ -13,7 +38,7 @@ forwards these fields. It constructs only the events below from an allowlist.
 | `share` | Successfully copy a property-evidence link | fixed method `copy_link` and content type `property_evidence`; no property ID or copied URL |
 
 All manual events use an allowlisted canonical page URL, path, and title. The
-released homepage, King County research guide, Burnstead page, and Quadrant page
+released homepage, King County research guide, Buchan page, Burnstead page, and Quadrant page
 have distinct identities. `/index.html` forms map to their canonical directory
 paths; unrecognized paths fall back to the homepage identity instead of sending
 arbitrary path segments. Query strings, fragments, and `document.title` never
