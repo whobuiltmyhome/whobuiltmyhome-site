@@ -19,3 +19,9 @@ See `docs/analytics.md` for the activation gate and project-account status.
 
 Use secure browser sign-in for credentials. Never request passwords or one-time
 codes in chat, or place credentials in repository files.
+
+The user reaffirmed account separation on October 25, 2026. Keep source changes,
+pull requests, and GitHub Pages publication in the dedicated GitHub repository
+`whobuiltmyhome/whobuiltmyhome-site`, using the `whobuiltmyhome` identity. Do not
+move or fork this project into a personal GitHub account for routine updates.
+Verify the connected GitHub identity before writes when that identity is unknown.
