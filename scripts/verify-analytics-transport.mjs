@@ -16,7 +16,7 @@ try {
   const context=await browser.newContext();
   const page=await context.newPage();
   const events=[]; const violations=[]; const receipts=[];
-  await page.route('**/analytics-config.js',r=>r.fulfill({contentType:'application/javascript',body:config.replace('enhancedMeasurementReviewed: false','enhancedMeasurementReviewed: true')}));
+  if (process.env.VERIFY_DEPLOYED !== '1') await page.route('**/analytics-config.js',r=>r.fulfill({contentType:'application/javascript',body:config.replace('enhancedMeasurementReviewed: false','enhancedMeasurementReviewed: true')}));
   await page.route(/https:\/\/[^/]*google-analytics\.com\/.*collect/,async route=>{
    const req=route.request();
    const u=new URL(req.url());
