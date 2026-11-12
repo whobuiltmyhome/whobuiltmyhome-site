@@ -38,6 +38,7 @@ try {
   page.on('response',r=>{if(/google-analytics\.com\/.*collect/.test(r.url())) receipts.push(r.status());});
   await page.goto(origin+scenario.path+scenario.query,{waitUntil:'networkidle',timeout:60000});
   if(scenario.path==='/') {
+   if (await page.locator('#property-dialog').isVisible()) await page.locator('#close-detail').click();
    await page.locator('#search').fill('Synthetic');
    await page.locator('#search-button').click();
   }
