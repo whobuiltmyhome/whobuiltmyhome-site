@@ -1,5 +1,37 @@
 # Search and usage measurement
 
+## Verified setup — November 11, 2026
+
+The user explicitly approved a fresh GA4 account/property under
+`whobuiltmyhome@gmail.com`, replacing the prior plan to preserve the old
+measurement destination. The dedicated Google identity was verified in the UI.
+
+- Account: Who Built My Home, `415983789`.
+- Property: Who Built My Home, `563899630`.
+- Web stream: Who Built My Home — Website, `16324106489`.
+- Measurement ID: `G-YG0TM1H4F3`.
+- Reporting timezone: Los Angeles; currency: USD.
+- Standard free GA4 only. No payment method, paid upgrade, Ads campaign, or
+  paid billing commitment was added. Obtain explicit user permission for any
+  future paid service.
+- Optional account data sharing was disabled during creation.
+- Enhanced measurement is OFF, verified after stream creation.
+- Email redaction and all 16 URL query parameter keys listed below were saved.
+  Google's redaction preview removed synthetic address, parcel, email and
+  unsupported campaign values.
+- Connected site tags: 0.
+- Dashboard confirms the new property and no data received.
+
+The site now references the new measurement ID but collection remains OFF.
+Ten analytics tests passed. The actual-tag browser test could not launch:
+Chromium reported `socket() failed: Operation not permitted (1)`.
+No outgoing event payloads or production receipt have been verified.
+Complete the remaining tag-destination/custom-rule inspection and production
+payload/Realtime checks below before retaining an enabled release. Do not
+mistake the account creation or redaction preview for end-to-end verification.
+The previous identifier `G-B3FYWYWXTN` is historical; no old property or
+reporting data was deleted. Search Console ownership remains a separate task.
+
 ## Project account and ownership
 
 The user confirmed `whobuiltmyhome@gmail.com` as the dedicated Google account
@@ -15,17 +47,14 @@ It needs independent verified ownership or an appropriate owner-access update.
 Confirm access under the dedicated account before retiring any previous
 verification token or permission, so the property stays accessible.
 
-Ownership correction is pending authenticated account access. The existing
-GA4 identifier remains `G-B3FYWYWXTN`; its current administrator has not been
-verified. Keep this stream and its history if it is the intended existing site
-property. Inspect the dedicated account first, and correct administration or
-move the property if necessary rather than create a duplicate. Site measurement
-remains disabled until the account settings and actual receipt checks below
-pass. A successful Search Console verification does not activate Analytics.
+The new GA4 account is verified as described above. The prior administrator of
+`G-B3FYWYWXTN` remains unknown. The user authorized the replacement property;
+no old property was deleted. A successful Search Console verification does not
+activate Analytics.
 
 ## Measurement implementation
 
-The existing live site's GA4 identifier is `G-B3FYWYWXTN`. Its earlier code sends
+The historical site's GA4 identifier was `G-B3FYWYWXTN`. Its earlier code sent
 `query_sample` and residential address fields. The replacement module never
 forwards these fields. It constructs only the events below from an allowlist.
 
@@ -95,7 +124,7 @@ Therefore `analytics-config.js` ships with `enhancedMeasurementReviewed: false`.
 No Google tag loads until that explicit setting is true on the production domain.
 
 Open Google Analytics **Admin → Data collection and modification → Data streams**,
-select the intended web stream (`G-B3FYWYWXTN`), and open Enhanced measurement's
+select the intended web stream (`G-YG0TM1H4F3`), and open Enhanced measurement's
 settings. This requires Editor or higher access. For this stream:
 
 1. Disable **Site search** automatic measurement. Do not create an automatic
