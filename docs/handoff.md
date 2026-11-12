@@ -25,9 +25,8 @@ Updated November 12, 2026. See `analytics.md` for the verified account and trans
 
 1. Confirm dedicated-account ownership of the existing Search Console property.
    Google sign-in and GA4 administration are complete; Search Console is separate.
-2. Confirm GA4 Realtime and final acquisition reporting from a normal production
-   visit. The automated transport test received Google HTTP 204 responses, but
-   its traffic was not yet visible in Realtime at activation.
+2. Review acquisition reporting once traffic accumulates. Production Realtime
+   receipt is verified: one active user and homepage page_view after deployment.
 3. Recheck the five-page sitemap in Search Console; its earlier fetch error
    has not been verified as resolved. Public search-tool retrieval of the XML
    was unavailable on October 25, which does not establish a site error.

@@ -38,10 +38,12 @@ pageviews, or automatic search events were permitted through the interceptor.
 Property/source/share event helpers were exercised directly; search used the UI.
 This is transport verification, not a complete manual phone walkthrough.
 
-The production gate is enabled following this verification. Realtime reporting
-had not yet displayed the automated test traffic at activation; HTTP acceptance
-alone does not prove final reporting or acquisition attribution. Check reporting
-with a normal production visit after publication.
+The production gate is enabled and GitHub Pages deployment succeeded (run
+43234829555). A normal visit to the live site loaded G-YG0TM1H4F3, and the
+project account Realtime report showed one active user, the homepage view,
+page_view, first_visit and session_start. Full acquisition reports remain a
+later reporting check, not an activation blocker. The final 19-test suite and
+transport checks also passed in run 43234782324.
 
 The previous identifier `G-B3FYWYWXTN` is historical; no old property or
 reporting data was deleted. Search Console ownership remains a separate task.
