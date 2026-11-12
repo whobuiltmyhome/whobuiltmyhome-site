@@ -28,7 +28,7 @@ try {
     if(/Synthetic|0000000000|probe@|example\.com|view_search_results/i.test(text) ||
        p.get('tid')!==id || (p.has('dl') && p.get('dl')!==origin+scenario.path) ||
        (p.has('dr') && /[?#]/.test(p.get('dr')))) {
-      violations.push('Unexpected destination, URL, event or synthetic private value');
+      violations.push({reason:'Unexpected destination, URL, event or synthetic private value',fields:Object.fromEntries(Object.entries(record).filter(([k])=>['tid','dl','dr','en','cs','cm','cn'].includes(k))),markerKeys:Object.entries(record).filter(([k,v])=>/Synthetic|0000000000|probe@|example\\.com|view_search_results/i.test(v)).map(([k])=>k)});
       await route.abort(); return;
     }
     if(p.get('en')) events.push(record);
