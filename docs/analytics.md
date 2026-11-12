@@ -20,15 +20,29 @@ measurement destination. The dedicated Google identity was verified in the UI.
   Google's redaction preview removed synthetic address, parcel, email and
   unsupported campaign values.
 - Connected site tags: 0.
-- Dashboard confirms the new property and no data received.
+- Google upgraded the tag into container `GTM-MGRM9NL2`. Version 2, published
+  November 12 by the project account, disables the default pageview with
+  `send_page_view: false` and unchecks “Ignore duplicate instances of on-page
+  configuration” so the site's sanitized configuration takes effect.
 
-The site now references the new measurement ID but collection remains OFF.
-Ten analytics tests passed. The actual-tag browser test could not launch:
-Chromium reported `socket() failed: Operation not permitted (1)`.
-No outgoing event payloads or production receipt have been verified.
-Complete the remaining tag-destination/custom-rule inspection and production
-payload/Realtime checks below before retaining an enabled release. Do not
-mistake the account creation or redaction preview for end-to-end verification.
+## Transport verification — November 12, 2026
+
+The real Chromium test passed on the public repository's standard Ubuntu runner:
+https://github.com/whobuiltmyhome/whobuiltmyhome-site/actions/runs/43232888805
+(attempt 2). All ten analytics unit tests also passed. Each of three scenarios
+received HTTP 204 from Google: invalid address/parcel/email campaign values,
+valid allowlisted campaign values, and the guide page. Each had one canonical
+pageview; search, property-open, source-click and share events were observed as
+applicable. No synthetic private values, raw query URLs, duplicate history
+pageviews, or automatic search events were permitted through the interceptor.
+Property/source/share event helpers were exercised directly; search used the UI.
+This is transport verification, not a complete manual phone walkthrough.
+
+The production gate is enabled following this verification. Realtime reporting
+had not yet displayed the automated test traffic at activation; HTTP acceptance
+alone does not prove final reporting or acquisition attribution. Check reporting
+with a normal production visit after publication.
+
 The previous identifier `G-B3FYWYWXTN` is historical; no old property or
 reporting data was deleted. Search Console ownership remains a separate task.
 
@@ -120,7 +134,7 @@ Google tag's internal behavior or the GA account's final attribution.
 The site supports shareable URLs containing `q` and `pin`. The Google tag can
 automatically collect these independently of manual events. The setting
 `send_page_view: false` does not disable enhanced history-based pageviews.
-Therefore `analytics-config.js` ships with `enhancedMeasurementReviewed: false`.
+The rollout gate is `enhancedMeasurementReviewed` in `analytics-config.js`.
 No Google tag loads until that explicit setting is true on the production domain.
 
 Open Google Analytics **Admin → Data collection and modification → Data streams**,
@@ -158,10 +172,10 @@ settings. This requires Editor or higher access. For this stream:
    unexpected fields/events appear, disable the site switch while correcting the
    account/tag setup.
 
-The code and mocked transport tests are completed locally. Account configuration,
-actual event receipt, reporting dimensions, consent requirements, and historical
-traffic have not been inspected. This change does not remove previously collected
-analytics data. The production switch should not be turned on based on unit tests alone.
+Account configuration and real transport verification are recorded above.
+Final reporting dimensions, consent requirements for any expanded audience, and
+historical traffic remain separate checks. This change does not remove historical
+analytics data. Do not enable a changed tag setup based on unit tests alone.
 
 To report custom fields beyond the event counts, register event-scoped dimensions
 for `query_type`, `city`, `collection`, and `source`, plus an

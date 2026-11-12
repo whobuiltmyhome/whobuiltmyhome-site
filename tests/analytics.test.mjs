@@ -54,7 +54,7 @@ test('preview and unreviewed production settings do not load analytics', () => {
   const enabled = {enhancedMeasurementReviewed:true, productionHosts:['whobuiltmyhome.com']};
   assert.equal(productionAllowed({protocol:'http:',hostname:'localhost'}, enabled), false);
   assert.equal(productionAllowed({protocol:'https:',hostname:'preview.example.com'}, enabled), false);
-  assert.equal(productionAllowed({protocol:'https:',hostname:'whobuiltmyhome.com'}), false);
+  assert.equal(productionAllowed({protocol:'https:',hostname:'whobuiltmyhome.com'}, {...enabled, enhancedMeasurementReviewed:false}), false);
   assert.equal(productionAllowed({protocol:'https:',hostname:'whobuiltmyhome.com'}, enabled), true);
   assert.equal(initializeAnalytics(null), false);
 });

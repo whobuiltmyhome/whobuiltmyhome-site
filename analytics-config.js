@@ -3,5 +3,5 @@
 export const ANALYTICS_CONFIG = Object.freeze({
   measurementId: 'G-YG0TM1H4F3',
   productionHosts: ['whobuiltmyhome.com', 'www.whobuiltmyhome.com'],
-  enhancedMeasurementReviewed: false,
+  enhancedMeasurementReviewed: true,
 });
