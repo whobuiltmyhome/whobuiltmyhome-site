@@ -50,7 +50,7 @@ def shell(path, title, description, heading, label, intro, body, modified, sourc
                 "url": canonical,
                 "dateModified": modified,
                 "inLanguage": "en-US",
-                "image": BASE + "/assets/social-preview.png?v=20261113-ui",
+                "image": BASE + "/assets/social-preview.png?v=20261113-simple",
             },
             {
                 "@type": "BreadcrumbList",
@@ -74,12 +74,12 @@ def shell(path, title, description, heading, label, intro, body, modified, sourc
   <meta property="og:title" content="{escape(title, quote=True)}" />
   <meta property="og:description" content="{escape(description, quote=True)}" />
   <meta property="og:url" content="{canonical}" />
-  <meta property="og:image" content="{BASE}/assets/social-preview.png?v=20261113-ui" />
+  <meta property="og:image" content="{BASE}/assets/social-preview.png?v=20261113-simple" />
   <meta property="og:image:alt" content="Who Built My Home? Search King County homes." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{escape(title, quote=True)}" />
   <meta name="twitter:description" content="{escape(description, quote=True)}" />
-  <meta name="twitter:image" content="{BASE}/assets/social-preview.png?v=20261113-ui" />
+  <meta name="twitter:image" content="{BASE}/assets/social-preview.png?v=20261113-simple" />
   <title>{escape(title)}</title>
   <link rel="canonical" href="{canonical}" />
   <link rel="stylesheet" href="../../styles.css" />
@@ -118,7 +118,6 @@ def guide_body(manifest):
     total = manifest["verifiedPropertyCount"]
     builders = len(manifest["collections"])
     return f'''
-      <aside class="research-note"><p>A company in a sale record may have sold the land or home without building it. Check the original construction permit for the contractor's name.</p></aside>
       <section class="research-section" aria-labelledby="step-parcel">
         <p class="step-label">Step 1</p><h2 id="step-parcel">Find the parcel number</h2>
         <p>Search the address in {link(PARCEL, 'King County Parcel Viewer')}. Check the location and note the ten-digit parcel number. For a condo or subdivided lot, check that you have the right unit or lot.</p>
@@ -131,7 +130,7 @@ def guide_body(manifest):
       </section>
       <section class="research-section" aria-labelledby="step-deed">
         <p class="step-label">Step 3</p><h2 id="step-deed">Read the deed</h2>
-        <p>Look up the recording number in the {link(RECORDER, "King County Recorder's search")}. Check the property description and company names in the document. The seller, owner, developer, and contractor can be different people or companies.</p>
+        <p>Look up the recording number in the {link(RECORDER, "King County Recorder's search")}. Check the property description and company names in the document.</p>
         <p>Older documents may require a name or property-description search. If you cannot find a document online, check with the Recorder's Office or county Archives.</p>
       </section>
       <section class="research-section" aria-labelledby="step-permit">
@@ -203,7 +202,6 @@ def check_section(slug):
 def buchan_body(stats, manifest):
     return f'''
       {stats_panel(stats)}
-      <aside class="research-note"><p>This site groups John Buchan and William Buchan matches together. Sales records alone do not confirm who built each home.</p></aside>
       <section class="research-section" aria-labelledby="buchan-coverage"><h2 id="buchan-coverage">Homes by city</h2>{city_table('buchan', stats)}</section>
       {check_section('buchan')}
       {record_details('buchan', stats, manifest)}
@@ -216,7 +214,6 @@ def burnstead_body(stats, manifest):
     names = "<p>Names include Burnstead Construction LLC, Rick Burnstead Construction LLC, Steve Burnstead Construction LLC, and older Burnstead construction or homes companies.</p>"
     return f'''
       {stats_panel(stats)}
-      <aside class="research-note"><p>These homes are matched to Burnstead company names in sales records. A sale record does not confirm who built the home.</p></aside>
       <section class="research-section" aria-labelledby="burnstead-coverage"><h2 id="burnstead-coverage">Homes by city</h2>{city_table('burnstead', stats)}</section>
       {check_section('burnstead')}
       {record_details('burnstead', stats, manifest, names)}
@@ -226,10 +223,9 @@ def burnstead_body(stats, manifest):
 
 
 def quadrant_body(stats, manifest):
-    names = "<p>Matches use five Quadrant company names through 2020. Other names and later sales have not been reviewed.</p>"
+    names = "<p>Matches use five Quadrant company names through 2020.</p>"
     return f'''
       {stats_panel(stats)}
-      <aside class="research-note"><p>These homes are matched to Quadrant company names in sales records through 2020. A sale record does not confirm who built the home.</p></aside>
       <section class="research-section" aria-labelledby="quadrant-coverage"><h2 id="quadrant-coverage">Homes by city</h2>{city_table('quadrant', stats)}</section>
       {check_section('quadrant')}
       {record_details('quadrant', stats, manifest, names)}

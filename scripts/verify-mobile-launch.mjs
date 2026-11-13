@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 
 const origin = 'https://whobuiltmyhome.com';
-const copyVersion = '20261113-ui';
+const copyVersion = '20261113-simple';
 const retiredDetailCopy = /Company match group|reviewed company labels|No additional data notes listed|independently verified construction|investigate the association/;
 const browser = await chromium.launch();
 
@@ -33,7 +33,8 @@ try {
       assert.ok(await page.locator('#property-dialog').isVisible());
       const text = await page.locator('#detail-body').innerText();
       assert.ok(text.includes('King County property record'));
-      assert.ok(text.includes('Builder not confirmed'));
+      assert.ok(text.includes('Source: King County records.'));
+      assert.doesNotMatch(text, /builder.*unconfirmed|builder not confirmed/i);
       assert.doesNotMatch(await page.locator('#detail-body').textContent(), retiredDetailCopy);
       assert.equal(await page.locator('.detail-evidence').evaluate(el => el.open), false);
       await page.locator('.detail-evidence summary').click();

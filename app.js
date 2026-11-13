@@ -3,15 +3,7 @@ import { configureAnalyticsCatalog, trackSearch, trackPropertyOpen, trackSourceC
 export const PAGE_SIZE = 20;
 const MAX_QUERY_LENGTH = 160;
 const SORT_VALUES = new Set(['address', 'city', 'year-asc', 'year-desc']);
-const ROUTINE_DATA_FLAGS = new Set(['assessor-sale-association', 'gis-primary-address-recovery']);
-const DATA_NOTES = {
-  'chronology-review': 'The sale record is at least three years older than the home’s listed construction year.',
-  'land-only-evidence': 'The matching sales are classified as land.',
-  'legal-corroboration-missing': 'The parcel match comes from Assessor records. The plat, lot, and block have not been checked separately.',
-  'minor-chronology-gap': 'The sale record is one or two years older than the home’s listed construction year.',
-  'multi-parcel-recording': 'This sale record covers more than one parcel.',
-  'recording-crosswalk': 'County sources list different parcel numbers. This site uses the Assessor’s parcel match.',
-};
+
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 async function responseJson(response) {
@@ -233,8 +225,6 @@ async function bootstrap() {
     meta.append(node('span', 'property-year', property.yearBuilt === null ? 'Year not listed' : `Built ${property.yearBuilt}`));
     const label = property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name).filter(Boolean).join(' · ');
     meta.append(node('span', '', label || 'Builder not listed'));
-    const additionalFlags = property.reviewFlags.filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
-    if (additionalFlags.length) meta.append(node('span', 'property-review', `${additionalFlags.length} data ${additionalFlags.length === 1 ? 'note' : 'notes'}`));
     main.append(meta);
     const arrow = node('span', 'property-arrow', '›');
     arrow.setAttribute('aria-hidden', 'true');
@@ -362,7 +352,7 @@ async function bootstrap() {
     }
     if (track) trackPropertyOpen();
     ui['detail-body'].append(node('p', 'detail-locality', `${formatAddress(property.city)}, WA ${property.zip}`));
-    ui['detail-body'].append(node('p', 'detail-notice', 'From King County property and sales records. Builder not confirmed.'));
+    ui['detail-body'].append(node('p', 'detail-locality', 'Source: King County records.'));
     const facts = node('dl', 'detail-facts');
     facts.append(fact('Builder match', property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name || 'Not listed').join('; ')), fact('Year built', property.yearBuilt ?? 'Not listed'), fact('Parcel number', property.pin));
     ui['detail-body'].append(facts);
@@ -386,8 +376,7 @@ async function bootstrap() {
       actions.append(explore, report);
       ui['detail-body'].append(actions);
       const evidence = node('details', 'detail-evidence');
-      const hasNotes = property.reviewFlags.some(flag => !ROUTINE_DATA_FLAGS.has(flag));
-      evidence.append(node('summary', '', hasNotes ? 'County records and notes' : 'County records'));
+      evidence.append(node('summary', '', 'County records'));
       ui['detail-body'].append(evidence);
       const connections = detail.connections || [{ ...detail, collectionId: property.collectionIds[0], entityIds: [], reviewFlags: property.reviewFlags }];
       for (const connection of connections) {
@@ -395,17 +384,7 @@ async function bootstrap() {
         section.dataset.collection = connection.collectionId;
         const collection = manifest.collections.find(c => c.id === connection.collectionId);
         section.append(node('h3', '', collection?.name || 'Builder match'));
-        if (connection.collectionId === 'buchan' && !(connection.entityIds || []).length) {
-          section.append(node('p', '', 'John Buchan and William Buchan matches are grouped together here.'));
-        }
         section.append(node('p', '', `First matching sale record: ${formatDate(connection.firstCompanyRecording)}`));
-        const reviewNotes = (connection.reviewFlags || []).filter(flag => !ROUTINE_DATA_FLAGS.has(flag))
-          .map(flag => DATA_NOTES[flag] || manifest.reviewFlagDescriptions?.[flag]).filter(Boolean);
-        if (reviewNotes.length) {
-          const notes = node('ul');
-          for (const note of reviewNotes) notes.append(node('li', '', note));
-          section.append(notes);
-        }
         section.append(node('h4', '', 'Record numbers'));
         const list = node('ul', 'recording-list');
         list.setAttribute('aria-label', 'County record numbers');

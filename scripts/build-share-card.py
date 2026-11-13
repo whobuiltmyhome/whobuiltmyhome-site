@@ -40,6 +40,5 @@ for y,label,sub in [(262,'Search an address','Find a property'),(334,'Choose a b
     text(857,y+29,sub,13,fill='#53635c')
 line([(64,548),(1136,548)],fill='#d9dfd4',width=1)
 text(64,571,'whobuiltmyhome.com',19,fill='#214f40',bold=True)
-text(760,575,'Builder matches are not confirmed.',13,fill='#53635c')
 im.resize((1200,630),Image.Resampling.LANCZOS).quantize(colors=128).save(OUT,optimize=True)
 print(OUT)

@@ -135,12 +135,9 @@ test('search, map, all builder dialogs and sharing remain usable after copy clea
       await until(() => byId('map-status').textContent.startsWith(`${count} of ${count}`));
       document.querySelector('.property-item button').click();
       await until(() => byId('detail-body').querySelector(`[data-collection=${collection.id}]`));
-      if (collection.id === 'buchan') {
-        assert.match(byId('detail-body').textContent, /John.*William Buchan.*grouped together/);
-      }
       assert.equal(byId('detail-body').querySelector(`[data-collection=${collection.id}] h3`).textContent, collection.name);
       assert.ok(byId('detail-body').querySelector('.recording-list li'), 'county record numbers remain available');
-      assert.doesNotMatch(byId('detail-body').textContent, /Company match group|reviewed company labels|No additional data notes listed|independently verified construction|investigate the association/);
+      assert.doesNotMatch(byId('detail-body').textContent, /Company match group|reviewed company labels|No additional data notes listed|independently verified construction|investigate the association|Builder not confirmed|Original builder unconfirmed/);
       const countyLink = byId('detail-body').querySelector('.detail-source-links a');
       const pin = new URL(window.location.href).searchParams.get('pin');
       assert.equal(new URL(countyLink.href).searchParams.get('ParcelNbr'), pin);
@@ -178,7 +175,8 @@ test('search, map, all builder dialogs and sharing remain usable after copy clea
     assert.equal(byId('detail-title').textContent, '25 92nd Ave NE');
     assert.equal(byId('detail-body').querySelector('.detail-evidence').open, false);
     assert.ok(byId('detail-body').textContent.includes('Builder match'));
-    assert.ok(byId('detail-body').textContent.includes('Builder not confirmed'));
+    assert.ok(byId('detail-body').textContent.includes('Source: King County records.'));
+    assert.doesNotMatch(byId('detail-body').textContent, /builder.*unconfirmed|builder not confirmed/i);
     failClipboard = true;
     byId('copy-property-link').click();
     await until(() => byId('copy-status').textContent.includes('address bar'));
