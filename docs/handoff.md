@@ -21,14 +21,14 @@ Updated November 13, 2026. See `analytics.md` for Analytics account and transpor
 - November 13 production mobile-emulation checks passed at 375, 390, and 430 CSS-pixel widths in Chromium: Buchan count, map status, address search, county-details link, clipboard contents, reopening shared parcel link, clearing filters, contact mailto target, and no document horizontal overflow. No page JavaScript errors were observed.
 - Mobile test evidence: https://github.com/whobuiltmyhome/whobuiltmyhome-site/actions/runs/43490039482
 - Repeatable check: `scripts/verify-mobile-launch.mjs`, workflow `Verify mobile launch flow`. It runs on changes to its test/workflow files and can be run manually. It checks the live production site.
+- November 13: an independent-sender contact test addressed to `hello@whobuiltmyhome.com` was received in the dedicated `whobuiltmyhome@gmail.com` Inbox. The public contact email route is verified end to end.
 - Standard free GA4 and standard public-repository GitHub Actions only. No paid upgrade or billing commitment was added.
 
 ## Remaining before complete handoff
 
-1. Verify end-to-end delivery to `hello@whobuiltmyhome.com` and confirm it reaches a monitored project inbox. The live contact button is a mailto link, not a server form. On November 13, the user explicitly approved dedicated Gmail inbox access and a contact-delivery test. One test sent from `whobuiltmyhome@gmail.com` to `hello@whobuiltmyhome.com` at 11:19 AM PST was confirmed in Sent. No bounce or separate received copy was observed during the Gmail check, including Spam and Trash; delivery therefore remains unverified. A historical IONOS Mail Basic welcome message addressed to `hello@whobuiltmyhome.com` was present in the dedicated inbox, but does not prove current delivery. Next: send a test from an independent sender to `hello@whobuiltmyhome.com`, then check the dedicated Gmail inbox. A test whose sender is also the potential forwarding destination is inconclusive. The personal Gmail account was not used.
-2. Perform a physical-phone check of touch scrolling, keyboard behavior, map interaction, and opening a shared link. Mobile Chromium emulation passed; physical iOS/Android behavior was not tested.
-3. Before external outreach, refresh the October 9 demo/outreach material to show the restored Buchan collection. No outreach was sent.
-4. After a small soft launch, review actual user feedback and acquisition reporting. No revenue or traffic outcome is guaranteed.
+1. Perform a physical-phone check of touch scrolling, keyboard behavior, map interaction, and opening a shared link. Mobile Chromium emulation passed; physical iOS/Android behavior was not tested.
+2. Before external outreach, refresh the October 9 demo/outreach material to show the restored Buchan collection. No outreach was sent.
+3. After a small soft launch, review actual user feedback and acquisition reporting. No revenue or traffic outcome is guaranteed.
 
 ## Data limitation
 
