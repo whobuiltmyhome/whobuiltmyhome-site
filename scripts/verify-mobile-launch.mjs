@@ -15,7 +15,7 @@ try {
   await page.locator('#toggle-map').click();
   await page.waitForFunction(()=>/2,975/.test(document.querySelector('#map-status').textContent),null,{timeout:60000});
   await checkWidth('map');
-  await page.locator('#search').fill('11325 9TH AVE NE');
+  await page.locator('#search').fill('113 259TH AVE NE');
   await page.locator('#search-button').click();
   await page.waitForFunction(()=>document.querySelectorAll('#property-list button').length===1);
   await page.locator('#property-list button').click();
