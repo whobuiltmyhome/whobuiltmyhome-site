@@ -252,7 +252,7 @@ async function bootstrap() {
     ui['load-state'].hidden = true;
     ui['pagination'].hidden = page.pageCount <= 1;
     ui['clear-filters'].hidden = !hasFilters();
-    ui['results-title'].textContent = invalidYears ? 'Check the year range' : hasFilters() ? `${integer(filtered.length)} matching ${filtered.length === 1 ? 'home' : 'homes'}` : 'Explore homes';
+    ui['results-title'].textContent = invalidYears ? 'Check the year range' : hasFilters() ? `${integer(filtered.length)} matching ${filtered.length === 1 ? 'home' : 'homes'}` : 'Homes';
     ui['result-summary'].textContent = invalidYears ? 'Adjust the years above to see matching homes.' : filtered.length ? `Showing ${integer(page.start + 1)}–${integer(page.end)} of ${integer(filtered.length)} ${hasFilters() ? 'matching homes' : 'homes'}` : `0 matches in ${integer(properties.length)} homes`;
     ui['page-label'].textContent = `Page ${integer(page.page)} of ${integer(page.pageCount)}`;
     ui['previous-page'].disabled = page.page === 1;
@@ -443,7 +443,7 @@ async function bootstrap() {
         explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
         item.append(explore);
         if (['buchan', 'burnstead', 'quadrant'].includes(collection.id)) {
-          const guide = node('a', 'collection-guide', 'Coverage & research guide');
+          const guide = node('a', 'collection-guide', 'About these records');
           guide.href = `./builders/${collection.id}/`;
           item.append(guide);
         }
@@ -452,8 +452,8 @@ async function bootstrap() {
     }
     if (available.length > 1) {
       byId('coverage-label').textContent = `${available.length} builders`;
-      byId('available-title').textContent = `${available.length} builders available`;
-      byId('available-description').textContent = 'Coverage is partial. Counts describe county-record associations; some homes appear under more than one builder.';
+      byId('available-title').textContent = `${available.length} builders`;
+      byId('available-description').textContent = 'Some homes appear under more than one builder.';
     }
   }
 

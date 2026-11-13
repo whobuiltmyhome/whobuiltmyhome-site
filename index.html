@@ -4,20 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
-  <meta name="description" content="Explore homes associated with major builders across King County. Search by address, city, ZIP, or parcel number and view results on a map." />
+  <meta name="description" content="Search King County homes by address, city, or builder. Data comes from King County property and sales records." />
   <meta name="theme-color" content="#214f40" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Who Built My Home?" />
-  <meta property="og:title" content="Explore your home's builder connections" />
-  <meta property="og:description" content="A free King County home research tool. Search an address, explore builder connections, and follow the county evidence." />
+  <meta property="og:title" content="Search King County homes" />
+  <meta property="og:description" content="Search by address, city, or builder. Data comes from King County property and sales records." />
   <meta property="og:url" content="https://whobuiltmyhome.com/" />
   <meta property="og:image" content="https://whobuiltmyhome.com/assets/social-preview.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Who Built My Home? Search a King County address, explore builder connections, and follow the county evidence." />
+  <meta property="og:image:alt" content="Who Built My Home? Search King County homes by address, city, or builder." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Explore your home's builder connections" />
-  <meta name="twitter:description" content="A free King County home research tool, with traceable county evidence." />
+  <meta name="twitter:title" content="Search King County homes" />
+  <meta name="twitter:description" content="Search King County homes using property and sales records." />
   <meta name="twitter:image" content="https://whobuiltmyhome.com/assets/social-preview.png" />
   <title>Who Built My Home? | King County Home Builders</title>
   <link rel="canonical" href="https://whobuiltmyhome.com/" />
@@ -34,9 +34,8 @@
   <main>
     <section class="intro wrap" aria-labelledby="page-title">
       <div class="intro-copy">
-        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Home builders across King County</p>
-        <h1 id="page-title">Discover your home's<br /><em>builder connections.</em></h1>
-        <p class="intro-description">Search King County homes and explore the county records behind each builder association.</p>
+        <h1 id="page-title">Search<br /><em>King County homes</em></h1>
+        <p class="intro-description">Search by address, city, or builder. Data comes from King County property and sales records.</p>
       </div>
       <div class="coverage-summary" aria-label="Current builder coverage">
         <span class="coverage-count" id="coverage-count">—</span>
@@ -65,15 +64,15 @@
         <p id="filter-error" class="filter-error" role="alert" hidden></p>
       </div>
 
-      <div class="evidence-notice"><span class="notice-mark" aria-hidden="true">i</span><p><strong>County-record associations, not confirmed builders.</strong> Open a home to see the evidence. <a href="#about">How matching works</a></p></div>
+      <div class="evidence-notice"><span class="notice-mark" aria-hidden="true">i</span><p>Builder matches are based on company names in sales records. They may not identify who built the home. <a href="#about">How matching works</a></p></div>
 
       <div class="results-toolbar">
-        <div><h2 id="results-title" tabindex="-1">Explore homes</h2><p id="result-summary" role="status" aria-live="polite" aria-atomic="true">Loading homes…</p></div>
+        <div><h2 id="results-title" tabindex="-1">Homes</h2><p id="result-summary" role="status" aria-live="polite" aria-atomic="true">Loading homes…</p></div>
         <div class="result-tools"><button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button><div class="view-switch" role="group" aria-label="Result view"><button id="show-list" type="button" aria-pressed="true">List</button><button id="toggle-map" type="button" aria-pressed="false" aria-expanded="false" aria-controls="map-panel" disabled>Map + list</button></div><label class="sort-label" for="sort">Sort</label><select id="sort" aria-label="Sort properties" disabled><option value="address">Address</option><option value="city">City</option><option value="year-asc">Year: oldest first</option><option value="year-desc">Year: newest first</option></select></div>
       </div>
       <div class="results-layout" id="results-layout">
       <section class="map-panel" id="map-panel" aria-labelledby="map-title" hidden>
-        <div class="map-heading"><h3 id="map-title">Explore on the map</h3></div>
+        <div class="map-heading"><h3 id="map-title">Map</h3></div>
         <div id="map-content" hidden>
           <div class="map-tools"><p id="map-status" role="status" aria-live="polite">Loading parcel locations…</p><button id="fit-map" class="button button-secondary" type="button" disabled>Fit results</button></div>
           <div id="map-error" class="map-error" hidden><p>The map could not be loaded. You can keep searching the list below.</p><button id="retry-map" class="button button-secondary" type="button" hidden>Retry map</button></div>
@@ -94,33 +93,32 @@
     </section>
 
     <section class="collections-section wrap" id="collections" aria-labelledby="collections-title">
-      <div class="section-heading"><div><p class="eyebrow">Explore by builder</p><h2 id="collections-title">Browse builders</h2></div><p>Construction years and cities describe the homes currently included.</p></div>
-      <div class="available-collection"><div><span class="badge badge-green">Available to explore</span><h3 id="available-title">9 builders in this view</h3><p id="available-description">Coverage varies by builder. Some homes may match more than one builder.</p></div><span id="collection-count" class="available-count">Homes loading</span></div>
+      <div class="section-heading"><div><h2 id="collections-title">Browse builders</h2></div></div>
+      <div class="available-collection"><div><h3 id="available-title">9 builders</h3><p id="available-description">Some homes appear under more than one builder.</p></div><span id="collection-count" class="available-count">Homes loading</span></div>
       <ol id="collection-grid" class="collection-grid">
-        <li><span class="collection-number">01</span><h3>Burnstead</h3><p>2,584 homes in this view</p></li>
-        <li><span class="collection-number">02</span><h3>Murray Franklyn</h3><p>204 homes in this view</p></li>
-        <li><span class="collection-number">03</span><h3>CamWest</h3><p>1,667 homes in this view</p></li>
-        <li><span class="collection-number">04</span><h3>Quadrant Homes</h3><p>5,569 homes in this view</p></li>
-        <li><span class="collection-number">05</span><h3>Conner Homes</h3><p>1,634 homes in this view</p></li>
-        <li><span class="collection-number">06</span><h3>Toll Brothers</h3><p>488 homes in this view</p></li>
-        <li><span class="collection-number">07</span><h3>MainVue Homes</h3><p>981 homes in this view</p></li>
-        <li><span class="collection-number">08</span><h3>Lennar</h3><p>53 homes in this view</p></li>
-        <li><span class="collection-number">09</span><h3>Buchan</h3><p>2,975 homes in this view</p><a class="collection-link" href="?collection=buchan#explorer">View homes →</a><a class="collection-guide" href="./builders/buchan/">Coverage &amp; research guide</a></li>
+        <li><span class="collection-number">01</span><h3>Burnstead</h3><p>2,584 homes</p></li>
+        <li><span class="collection-number">02</span><h3>Murray Franklyn</h3><p>204 homes</p></li>
+        <li><span class="collection-number">03</span><h3>CamWest</h3><p>1,667 homes</p></li>
+        <li><span class="collection-number">04</span><h3>Quadrant Homes</h3><p>5,569 homes</p></li>
+        <li><span class="collection-number">05</span><h3>Conner Homes</h3><p>1,634 homes</p></li>
+        <li><span class="collection-number">06</span><h3>Toll Brothers</h3><p>488 homes</p></li>
+        <li><span class="collection-number">07</span><h3>MainVue Homes</h3><p>981 homes</p></li>
+        <li><span class="collection-number">08</span><h3>Lennar</h3><p>53 homes</p></li>
+        <li><span class="collection-number">09</span><h3>Buchan</h3><p>2,975 homes</p><a class="collection-link" href="?collection=buchan#explorer">View homes →</a><a class="collection-guide" href="./builders/buchan/">About these records</a></li>
       </ol>
     </section>
 
     <section class="research-section wrap" aria-labelledby="research-title">
-      <div class="section-heading"><div><p class="eyebrow">Go a little deeper</p><h2 id="research-title">Research your home's history</h2></div><p>Understand the records, explore a builder's coverage, and find your next verification step.</p></div>
-      <div class="research-links"><a href="./guides/find-home-builder-king-county/"><span class="eyebrow">Practical guide</span><h3>How to research who built your home</h3><p>Follow a King County address through property records, deeds, and permits.</p><span class="research-cta">Read the guide →</span></a><a href="./builders/burnstead/"><span class="eyebrow">Builder collection</span><h3>Explore Burnstead connections</h3><p>See current coverage, cities, dates, and the evidence behind the collection.</p><span class="research-cta">View the collection guide →</span></a><a href="./builders/quadrant/"><span class="eyebrow">Builder collection</span><h3>Explore Quadrant connections</h3><p>Understand the historical company matches and browse associated homes.</p><span class="research-cta">View the collection guide →</span></a></div>
+      <div class="section-heading"><div><h2 id="research-title">Research your home's history</h2></div></div>
+      <div class="research-links"><a href="./guides/find-home-builder-king-county/"><h3>How to research who built your home</h3><p>Follow a King County address through property records, deeds, and permits.</p><span class="research-cta">Read the guide →</span></a><a href="./builders/burnstead/"><h3>Burnstead</h3><p>Homes and sales records linked to Burnstead.</p><span class="research-cta">About these records →</span></a><a href="./builders/quadrant/"><h3>Quadrant</h3><p>Homes and sales records linked to Quadrant.</p><span class="research-cta">About these records →</span></a></div>
     </section>
 
     <section class="about-section wrap" id="about" aria-labelledby="about-title">
-      <div><p class="eyebrow">About the data</p><h2 id="about-title">How builder matches are identified</h2><p>This view matches King County home addresses to builder-related company names in county sales records. A match can reflect a home sale, land sale, or parcel transfer, so it may not identify the builder of the current structure.</p></div>
-      <dl class="evidence-definitions"><div><dt>Matched address</dt><dd>The address and parcel number match King County property data.</dd></div><div><dt>Builder match</dt><dd>A reviewed builder-company name appears in a county sale associated with the parcel.</dd></div><div><dt>Year built</dt><dd>The construction year listed by King County; it is not the date of the builder-company match.</dd></div><div><dt>Data notes</dt><dd>Date, classification, or multi-parcel details that may need a closer look.</dd></div></dl>
-      <details class="source-note"><summary>County data and coverage</summary><div class="source-note-content"><p><strong>County records included: 1976–September 4, 2026.</strong> Coverage varies by builder, and 2026 is incomplete.</p><p id="release-info">Data dates will appear when the homes load.</p><a href="https://info.kingcounty.gov/assessor/DataDownload/default.aspx" target="_blank" rel="noopener noreferrer" data-source="county">King County data source <span aria-hidden="true">↗</span></a></div></details>
+      <div><h2 id="about-title">About the records</h2><p>We match property addresses with builder-related company names in King County sales records. These records can include home sales, land sales, and parcel transfers.</p></div>
+      <details class="source-note"><summary>Sources and matching details</summary><div class="source-note-content"><dl class="evidence-definitions"><div><dt>Matched address</dt><dd>The address and parcel number match King County property data.</dd></div><div><dt>Builder match</dt><dd>A reviewed builder-company name appears in a county sale associated with the parcel.</dd></div><div><dt>Year built</dt><dd>The construction year listed by King County; it is not the date of the builder-company match.</dd></div><div><dt>Data notes</dt><dd>Date, classification, or multi-parcel details that may need a closer look.</dd></div></dl><p><strong>County records included: 1976–September 4, 2026.</strong> Coverage varies by builder, and 2026 is incomplete.</p><p id="release-info">Data dates will appear when the homes load.</p><a href="https://info.kingcounty.gov/assessor/DataDownload/default.aspx" target="_blank" rel="noopener noreferrer" data-source="county">King County data source <span aria-hidden="true">↗</span></a></div></details>
     </section>
   </main>
-  <section class="contact-panel wrap" id="contact" aria-labelledby="contact-title"><p class="eyebrow">Help improve the collection</p><h2 id="contact-title">Found a missing home or a confusing result?</h2><p>Share a correction, ask a question, or tell us whether the tool helped your research.</p><a class="button button-primary" href="mailto:hello@whobuiltmyhome.com?subject=Who%20Built%20My%20Home%20feedback">Email the project →</a><p>hello@whobuiltmyhome.com · Opens your email app. No GitHub account needed.</p></section>
+  <section class="contact-panel wrap" id="contact" aria-labelledby="contact-title"><h2 id="contact-title">Questions or corrections?</h2><p>To report an error or missing home, email hello@whobuiltmyhome.com.</p><a class="button button-primary" href="mailto:hello@whobuiltmyhome.com?subject=Who%20Built%20My%20Home%20feedback">Email us</a></section>
   <section class="project-info wrap" aria-label="Project information"><details id="project"><summary>About this project</summary><p>Who Built My Home? is an independent project maintained by <a href="https://github.com/whobuiltmyhome" target="_blank" rel="noopener noreferrer">whobuiltmyhome on GitHub</a>. It is not affiliated with King County or the builders listed here.</p><p><a href="https://github.com/whobuiltmyhome/whobuiltmyhome-site/issues/new" target="_blank" rel="noopener noreferrer">Report a public issue on GitHub ↗</a>. GitHub sign-in is required and reports are public. Please do not include private documents or personal contact details.</p></details><details id="privacy"><summary>Privacy</summary><p>Address searches and filters run in your browser against the site's downloaded data. We use Google Analytics to measure page visits and broad interactions such as searches, filters, and shares. We do not send search text, home addresses, parcel numbers, or copied links in analytics events. Analytics may use cookies and is disabled when your browser sends Do Not Track or Global Privacy Control. Searches can appear in your browser's URL and history; the Copy home link button shares only the selected parcel.</p><p>Hosting providers may receive ordinary request information. Opening the map loads tiles from OpenStreetMap, which receives requests for the area displayed. External links open third-party services with their own privacy policies.</p></details></section>
   <footer class="site-footer wrap"><span>Who Built My Home?</span><p>Independent research · King County, Washington</p><a href="#explorer">Back to search ↑</a></footer>
 
