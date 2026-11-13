@@ -1,51 +1,41 @@
 # Launch handoff
 
-Updated November 12, 2026. See `analytics.md` for the verified account and transport evidence.
+Updated November 13, 2026. See `analytics.md` for Analytics account and transport evidence.
 
 ## Project accounts
 
 - Google: `whobuiltmyhome@gmail.com` for Analytics and Search Console.
 - GitHub: `whobuiltmyhome`, repository `whobuiltmyhome/whobuiltmyhome-site`.
 - Production: https://whobuiltmyhome.com/
-- GitHub connector identity verified as `whobuiltmyhome` on November 12.
+- GitHub connector identity verified as `whobuiltmyhome` on November 13.
 
 ## Verified
 
-- Live homepage: 16,025 homes across nine builders.
-- Buchan filter: 2,975 homes, all 2,975 mapped; a restored home opens its
-  county-record details and official source link.
-- Local checks: 19 Node tests and eight Python data/geometry tests pass.
-- Published restoration: PR #11; dedicated Google account policy: PR #12.
-- The user-approved dedicated GA4 stream is `G-YG0TM1H4F3`. Privacy settings
-  and real network payloads passed verification; the production gate is enabled.
-- Standard free GA4 and public-repository standard GitHub Actions only. No paid
-  upgrade or billing commitment was added.
+- Live homepage: 16,025 homes across nine builders; Buchan filter: 2,975 homes.
+- Buchan restoration: PR #11. Dedicated account policy: PR #12.
+- November 12 checks: 19 Node tests and eight Python data/geometry tests passed.
+- Dedicated GA4 stream `G-YG0TM1H4F3`: privacy settings, production transport, and production Realtime receipt verified. Acquisition reporting should be reviewed once real traffic accumulates.
+- November 13: existing Search Console URL-prefix property ownership verified for the dedicated Google account using `google6cf7727a32fd35b3.html`. Keep this file deployed. Existing owners and history were not removed.
+- Search Console sitemap status: Success, five discovered pages, last read November 12. Overview showed four indexed pages and six total search clicks.
+- November 13 public checks: all five sitemap URLs return HTTP 200; robots.txt allows crawling and names the sitemap; the verification file serves Google's exact content.
+- November 13 production mobile-emulation checks passed at 375, 390, and 430 CSS-pixel widths in Chromium: Buchan count, map status, address search, county-details link, clipboard contents, reopening shared parcel link, clearing filters, contact mailto target, and no document horizontal overflow. No page JavaScript errors were observed.
+- Mobile test evidence: https://github.com/whobuiltmyhome/whobuiltmyhome-site/actions/runs/43490039482
+- Repeatable check: `scripts/verify-mobile-launch.mjs`, workflow `Verify mobile launch flow`. It runs on changes to its test/workflow files and can be run manually. It checks the live production site.
+- Standard free GA4 and standard public-repository GitHub Actions only. No paid upgrade or billing commitment was added.
 
-## Still required for complete handoff
+## Remaining before complete handoff
 
-1. Confirm dedicated-account ownership of the existing Search Console property.
-   Google sign-in and GA4 administration are complete; Search Console is separate.
-2. Review acquisition reporting once traffic accumulates. Production Realtime
-   receipt is verified: one active user and homepage page_view after deployment.
-3. Recheck the five-page sitemap in Search Console; its earlier fetch error
-   has not been verified as resolved. Public search-tool retrieval of the XML
-   was unavailable on October 25, which does not establish a site error.
-4. Confirm that `hello@whobuiltmyhome.com` delivers to a monitored project
-   inbox. The site opens an email draft; delivery has not been tested.
-5. Complete a real phone walkthrough of search, filters, map, evidence, and
-   sharing. Desktop interaction and automated checks do not establish this.
-6. Refresh the October 9 demo/outreach material to show the restored Buchan
-   collection before using those materials publicly.
+1. Verify delivery to `hello@whobuiltmyhome.com` and confirm it reaches a monitored project inbox. The live contact button is a mailto link, not a server form. Its target passed inspection, but this does not prove mailbox delivery. The available Gmail connector uses the personal account, which was not used. Access to the dedicated project inbox requires explicit user approval before inspecting private mail.
+2. Perform a physical-phone check of touch scrolling, keyboard behavior, map interaction, and opening a shared link. Mobile Chromium emulation passed; physical iOS/Android behavior was not tested.
+3. Before external outreach, refresh the October 9 demo/outreach material to show the restored Buchan collection. No outreach was sent.
+4. After a small soft launch, review actual user feedback and acquisition reporting. No revenue or traffic outcome is guaranteed.
 
-The independent eight-builder raw-source audit was not rerun successfully
-during Buchan restoration: the available source ZIPs did not match the pinned
-snapshot hashes. Existing source evidence was preserved; the passing tests
-above are not a replacement for that independent source audit on a data rebuild.
+## Data limitation
+
+The independent eight-builder raw-source audit was not rerun successfully during Buchan restoration: the available source ZIPs did not match the pinned snapshot hashes. Existing source evidence was preserved; passing software tests do not prove every builder association. Retain the visible county-record association disclaimer and correction route. This audit remains necessary for a future data rebuild.
 
 ## Operations
 
 Use `AGENTS.md` for account selection and `release.md` for publishing/rollback.
-Use `analytics.md` for account settings and safe activation. Any future data
-rebuild must retain Buchan and pass the frozen-fixture restoration checks.
-Do not put credentials, private mail, or raw county owner/seller exports in
-this public repository.
+Use `analytics.md` for account settings and safe activation. Any future data rebuild must retain Buchan and pass the frozen-fixture restoration checks.
+Do not put credentials, private mail, or raw county owner/seller exports in this public repository.
