@@ -50,7 +50,7 @@ def shell(path, title, description, heading, label, intro, body, modified, sourc
                 "url": canonical,
                 "dateModified": modified,
                 "inLanguage": "en-US",
-                "image": BASE + "/assets/social-preview.png",
+                "image": BASE + "/assets/social-preview.png?v=20261113-ui",
             },
             {
                 "@type": "BreadcrumbList",
@@ -74,12 +74,12 @@ def shell(path, title, description, heading, label, intro, body, modified, sourc
   <meta property="og:title" content="{escape(title, quote=True)}" />
   <meta property="og:description" content="{escape(description, quote=True)}" />
   <meta property="og:url" content="{canonical}" />
-  <meta property="og:image" content="{BASE}/assets/social-preview.png" />
-  <meta property="og:image:alt" content="Who Built My Home? Research builder connections in King County." />
+  <meta property="og:image" content="{BASE}/assets/social-preview.png?v=20261113-ui" />
+  <meta property="og:image:alt" content="Who Built My Home? Search King County homes." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{escape(title, quote=True)}" />
   <meta name="twitter:description" content="{escape(description, quote=True)}" />
-  <meta name="twitter:image" content="{BASE}/assets/social-preview.png" />
+  <meta name="twitter:image" content="{BASE}/assets/social-preview.png?v=20261113-ui" />
   <title>{escape(title)}</title>
   <link rel="canonical" href="{canonical}" />
   <link rel="stylesheet" href="../../styles.css" />
@@ -91,13 +91,12 @@ def shell(path, title, description, heading, label, intro, body, modified, sourc
   <a class="skip-link" href="#research-content">Skip to page content</a>
   <header class="site-header wrap">
     <a class="wordmark" href="/" aria-label="Who Built My Home? Home"><span class="brand-icon" aria-hidden="true"></span>Who Built My Home<span class="wordmark-question">?</span></a>
-    <nav aria-label="Main navigation"><a href="/#collections">Builders</a><a href="{GUIDE}">Research guide</a><a href="/#contact">Feedback</a></nav>
+    <nav aria-label="Main navigation"><a href="/#collections">Builders</a><a href="{GUIDE}">Research guide</a><a href="/#contact">Contact</a></nav>
   </header>
   <main id="research-content" class="research-wrap">
     <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span>{escape(label)}</span></nav>
     <article>
       <header class="research-intro">
-        <p class="eyebrow">{escape(label)} · King County, Washington</p>
         <h1>{escape(heading)}</h1>
         <p class="research-lead">{intro}</p>
         <p class="research-date">Updated <time datetime="{modified}">{day(modified)}</time></p>
@@ -106,9 +105,9 @@ def shell(path, title, description, heading, label, intro, body, modified, sourc
     </article>
   </main>
   <footer class="research-footer wrap">
-    <p>Who Built My Home? · An independent property-research tool.</p>
-    <p>County source snapshot: <time datetime="{source_as_of}">{day(source_as_of)}</time>. Associations do not confirm the builder.</p>
-    <nav aria-label="Footer navigation"><a href="/#explorer">Search homes</a><a href="/#about">About the data</a><a href="/#contact">Share feedback</a></nav>
+    <p>Who Built My Home? · Independent project. Not affiliated with King County or the builders listed.</p>
+    <p>King County records through <time datetime="{source_as_of}">{day(source_as_of)}</time>.</p>
+    <nav aria-label="Footer navigation"><a href="/#explorer">Search homes</a><a href="/#about">About the records</a><a href="/#contact">Contact</a></nav>
   </footer>
 </body>
 </html>
@@ -119,33 +118,33 @@ def guide_body(manifest):
     total = manifest["verifiedPropertyCount"]
     builders = len(manifest["collections"])
     return f'''
-      <aside class="research-note" aria-label="What a match means"><strong>Start with a lead, then verify it.</strong><p>A company name in a property sale identifies a connection to that parcel. It can concern a home, undeveloped land, or a transfer between companies. It does not, by itself, identify the builder of today's structure.</p></aside>
+      <aside class="research-note"><p>A company in a sale record may have sold the land or home without building it. Check the original construction permit for the contractor's name.</p></aside>
       <section class="research-section" aria-labelledby="step-parcel">
-        <p class="step-label">Step 1</p><h2 id="step-parcel">Find the right address and parcel</h2>
-        <p>Open {link(PARCEL, 'King County Parcel Viewer')} and search the street address. Check the location and save the ten-digit parcel number. For a condominium or a subdivided lot, make sure you have the unit or parcel you actually mean. Use that identifier to keep later searches tied to the same property.</p>
-        <p>You can also start in our <a href="/#explorer">property explorer</a>, using an address, city, ZIP, or parcel number. Its current release includes {total:,} distinct parcels associated with {builders} builder collections. It is a partial discovery index, not a census of King County homes.</p>
+        <p class="step-label">Step 1</p><h2 id="step-parcel">Find the parcel number</h2>
+        <p>Search the address in {link(PARCEL, 'King County Parcel Viewer')}. Check the location and note the ten-digit parcel number. For a condo or subdivided lot, check that you have the right unit or lot.</p>
+        <p>You can also <a href="/#explorer">search this site</a> by address, city, ZIP, or parcel number. It includes {total:,} homes matched to {builders} builders.</p>
       </section>
       <section class="research-section" aria-labelledby="step-assessor">
-        <p class="step-label">Step 2</p><h2 id="step-assessor">Read the Assessor's property report</h2>
-        <p>Follow the parcel's link to {link(EREAL, 'eReal Property')}. Compare the address, county year built, and sale history. If you arrived through this site's results, open the home's details and copy its matching company-record dates and recording numbers. Keep the construction year separate from the transaction date; they answer different questions.</p>
-        <p>A sale near the construction year can help focus your investigation. A much earlier sale may concern the land. A later sale can involve an existing home. None of these timing patterns alone establishes who carried out construction.</p>
+        <p class="step-label">Step 2</p><h2 id="step-assessor">Check the property record</h2>
+        <p>Open {link(EREAL, 'King County eReal Property')} and compare the address, year built, and sales history. On this site, each home's details include a link to its county property record.</p>
+        <p>Note the sale date and recording number. The sale date and year built refer to different events.</p>
       </section>
       <section class="research-section" aria-labelledby="step-deed">
-        <p class="step-label">Step 3</p><h2 id="step-deed">Inspect the recorded document</h2>
-        <p>Use the {link(RECORDER, "Recorder's official records search")} to look up a recording number or parcel. Read the document image, compare its legal description with the property, and record the company names. A seller, owner, developer, and construction contractor can be different parties.</p>
-        <p>The county says most documents recorded from August 1, 1991 onward are online; earlier documents require the Archives. Parcel-number searches cover 1997 onward, so an older record may need a recording number, name, or legal-description search. Missing one search result is not proof that no document exists.</p>
+        <p class="step-label">Step 3</p><h2 id="step-deed">Read the deed</h2>
+        <p>Look up the recording number in the {link(RECORDER, "King County Recorder's search")}. Check the property description and company names in the document. The seller, owner, developer, and contractor can be different people or companies.</p>
+        <p>Older documents may require a name or property-description search. If you cannot find a document online, check with the Recorder's Office or county Archives.</p>
       </section>
       <section class="research-section" aria-labelledby="step-permit">
-        <p class="step-label">Step 4</p><h2 id="step-permit">Check the original construction permit</h2>
-        <p>Find the property's jurisdiction in Parcel Viewer. For a home inside a city, ask that city's permit office for the original construction file; for an unincorporated property, use {link(PERMITS, 'King County Permits')}. Postal city labels are useful search filters, but they do not determine which office issued the permit.</p>
-        <p>Look for the permit's project description, named contractor, address or parcel, and dates. Distinguish original construction from additions or replacement buildings. If the online portal lacks an older file, ask the responsible office about its archived records.</p>
+        <p class="step-label">Step 4</p><h2 id="step-permit">Find the building permit</h2>
+        <p>Check the property's jurisdiction in Parcel Viewer. Ask the city's permit office for the original construction permit. For unincorporated areas, contact {link(PERMITS, 'King County Permits')}. The city in a mailing address may differ from the permit jurisdiction.</p>
+        <p>Check the contractor's name, address or parcel, dates, and work described. Make sure the permit covers the original home, rather than an addition or remodel. Ask about archived files if older permits are not online.</p>
       </section>
       <section class="research-section" aria-labelledby="keep-notes">
-        <h2 id="keep-notes">Keep an evidence trail</h2>
-        <p>Save source links, recording and permit numbers, relevant names, and unresolved date differences. Describe the result at the level the documents support: a company-sale association, a permit naming a contractor, or an unresolved lead. A no-match here means the home is outside this release's reviewed matches; it does not mean the builder never worked there.</p>
-        <p>For more official resources, see {link(RESEARCH, "King County's property-research directory")}. To explore a specific collection, start with <a href="/builders/buchan/">Buchan</a>, <a href="/builders/burnstead/">Burnstead</a>, or <a href="/builders/quadrant/">Quadrant Homes</a>.</p>
+        <h2 id="keep-notes">Save the records</h2>
+        <p>Keep the source links, recording numbers, permit numbers, and company names. If a home is missing from this site, check the county records directly.</p>
+        <p>See {link(RESEARCH, "King County's property research tools")}, or browse <a href="/builders/buchan/">Buchan</a>, <a href="/builders/burnstead/">Burnstead</a>, and <a href="/builders/quadrant/">Quadrant Homes</a>.</p>
       </section>
-      <div class="research-action"><a class="button button-primary" href="/#explorer">Search a King County home</a><a href="/#contact">Report an issue or missing result</a></div>
+      <div class="research-action"><a class="button button-primary" href="/#explorer">Search homes</a><a href="/#contact">Report an error</a></div>
 '''
 
 
@@ -175,94 +174,74 @@ def city_table(slug, stats):
         f'<tr><th scope="row"><a href="{explorer(slug, city)}">{escape(city.title())}</a></th><td>{count:,}</td></tr>'
         for city, count in stats["cities"].most_common(6)
     )
-    return f'''<div class="city-table-wrap"><table class="city-table"><caption>Six largest postal-city groups in this collection</caption><thead><tr><th scope="col">County postal-city label</th><th scope="col">Associated parcels</th></tr></thead><tbody>{rows}</tbody></table></div><p class="table-note">Select a city to open its filtered results. Postal-city labels are not municipal boundaries. Each count is a distinct parcel within this collection; it is not a verified number of homes built.</p>'''
+    return f'''<div class="city-table-wrap"><table class="city-table"><caption>Six cities with the most results</caption><thead><tr><th scope="col">City</th><th scope="col">Homes</th></tr></thead><tbody>{rows}</tbody></table></div><p class="table-note">Select a city to see its homes. City names come from county mailing addresses.</p>'''
 
 
 def stats_panel(stats):
-    return f'''<dl class="research-stats"><div><dt>Associated parcels</dt><dd>{stats['count']:,}</dd></div><div><dt>Postal-city labels</dt><dd>{len(stats['cities'])}</dd></div><div><dt>County year built</dt><dd>{stats['year_min']}–{stats['year_max']}</dd></div></dl><p class="stats-note">Year range describes the county's current structure records, not the builder's operating history.</p>'''
+    return f'''<dl class="research-stats"><div><dt>Homes</dt><dd>{stats['count']:,}</dd></div><div><dt>Cities</dt><dd>{len(stats['cities'])}</dd></div><div><dt>Year built</dt><dd>{stats['year_min']}–{stats['year_max']}</dd></div></dl><p class="stats-note">Years are from county property records.</p>'''
+
+
+def record_details(slug, stats, manifest, extra=""):
+    flags = stats["flags"]
+    multi = f"<li>{flags['multi-parcel-recording']:,} have a recording that covers several parcels.</li>" if flags['multi-parcel-recording'] else ""
+    return f'''<details class="research-section"><summary>Record details</summary>
+        <p>King County data through {day(manifest['sourceAsOf'])}. The first matching recording for each property is dated between {day(stats['record_min'])} and {day(stats['record_max'])}.</p>
+        {extra}
+        <ul><li>{flags['land-only-evidence']:,} properties have matching sales classified only as land.</li><li>{flags['chronology-review']:,} have a year built at least three years after the first matching recording.</li>{multi}</ul>
+        <p>A property can appear in more than one count.</p>
+      </details>'''
+
+
+def sources_section(slug):
+    return f'''<section class="research-sources" aria-labelledby="{slug}-sources"><h2 id="{slug}-sources">Sources</h2><p>King County property, building, and sales records. See <a href="/#about">how we match records</a> and {link(RESEARCH, "King County's property research tools")}.</p></section>'''
+
+
+def check_section(slug):
+    return f'''<section class="research-section" aria-labelledby="{slug}-check"><h2 id="{slug}-check">Check a home</h2><p>Open the home's details and follow the county property link. Look up its recording number in the {link(RECORDER, "Recorder's search")}. Check the original building permit for the contractor's name.</p><p>For instructions, see <a href="{GUIDE}">how to find a home's builder</a>.</p></section>'''
 
 
 def buchan_body(stats, manifest):
-    flags = stats["flags"]
     return f'''
       {stats_panel(stats)}
-      <aside class="research-note"><strong>One Buchan collection</strong><p>Reviewed Buchan-named company associations are grouped together for discovery. This collection does not divide homes between John Buchan and William Buchan, establish legal relationships between the companies, or certify who built a particular home.</p></aside>
-      <section class="research-section" aria-labelledby="buchan-coverage">
-        <h2 id="buchan-coverage">Explore Buchan-linked parcels by city</h2>
-        <p>The release includes {stats['count']:,} distinct King County parcels associated with reviewed Buchan company names across {len(stats['cities'])} postal-city labels. These figures describe the records included here, not every historical Buchan home or the builder's market share.</p>
-        {city_table('buchan', stats)}
-      </section>
-      <section class="research-section" aria-labelledby="buchan-evidence">
-        <h2 id="buchan-evidence">Read the company evidence and dates</h2>
-        <p>Open a parcel's evidence panel to see its reviewed company label and recording references. A company in a sale record may have been a seller, owner, or developer. Check the original construction permit before treating that association as confirmation of the contractor.</p>
-        <p>The county source snapshot is dated {day(manifest['sourceAsOf'])}. Included parcels have first matching company recordings from {day(stats['record_min'])} to {day(stats['record_max'])}. Their current county year-built values range from {stats['year_min']} to {stats['year_max']}. Recording and construction dates describe different events, and this range is not a company operating history.</p>
-      </section>
-      <section class="research-section" aria-labelledby="buchan-check">
-        <h2 id="buchan-check">Verify a particular home's builder</h2>
-        <p>Search an exact address or ten-digit parcel number, open the county property report, and compare the cited document in the {link(RECORDER, "official Recorder's search")}. Check the legal description, company names, and dates against the original permit from the correct city or county office.</p>
-        <p>This collection contains {flags['land-only-evidence']:,} parcel associations supported only by land-classified sales without an improved-residential classification, and {flags['chronology-review']:,} whose county construction year is at least three years after the earliest matching recording. Some flags overlap. They identify evidence to inspect rather than establish an error or a different builder.</p>
-        <p>A missing result means this release has no reviewed association for that parcel; it does not rule out a Buchan connection. Use the <a href="{GUIDE}">King County builder research guide</a> to continue with official records and older documents.</p>
-      </section>
-      <section class="research-sources" aria-labelledby="buchan-sources"><h2 id="buchan-sources">Sources and scope</h2><p>Counts and dates are computed from the released county parcel, residential-building, and sale-record data. See <a href="/#about">the matching methodology</a> and {link(RESEARCH, "official county property-research tools")} for individual verification. This independent collection is not affiliated with or endorsed by the builders named here.</p></section>
-      <div class="research-action"><a class="button button-primary" href="{explorer('buchan')}">Explore Buchan associations</a><a href="{GUIDE}">Read the research guide</a></div>
+      <aside class="research-note"><p>This site groups John Buchan and William Buchan matches together. Sales records alone do not confirm who built each home.</p></aside>
+      <section class="research-section" aria-labelledby="buchan-coverage"><h2 id="buchan-coverage">Homes by city</h2>{city_table('buchan', stats)}</section>
+      {check_section('buchan')}
+      {record_details('buchan', stats, manifest)}
+      {sources_section('buchan')}
+      <div class="research-action"><a class="button button-primary" href="{explorer('buchan')}">View Buchan homes</a><a href="{GUIDE}">Research guide</a></div>
 '''
 
 
 def burnstead_body(stats, manifest):
-    flags = stats["flags"]
+    names = "<p>Names include Burnstead Construction LLC, Rick Burnstead Construction LLC, Steve Burnstead Construction LLC, and older Burnstead construction or homes companies.</p>"
     return f'''
       {stats_panel(stats)}
-      <aside class="research-note"><strong>What the Burnstead label means</strong><p>This collection groups reviewed Burnstead-named companies for discovery. A sale-record association does not certify the builder, and grouping names does not establish legal succession between companies.</p></aside>
-      <section class="research-section" aria-labelledby="burnstead-coverage">
-        <h2 id="burnstead-coverage">Explore the county-record coverage</h2>
-        <p>The collection contains {stats['count']:,} distinct King County parcels across {len(stats['cities'])} postal-city labels. Sammamish and Redmond have the largest included groups, followed by Issaquah. Counts describe dataset coverage, not complete builder output or market share.</p>
-        {city_table('burnstead', stats)}
-      </section>
-      <section class="research-section" aria-labelledby="burnstead-evidence">
-        <h2 id="burnstead-evidence">How the names and dates are matched</h2>
-        <p>Matching includes the documented names Burnstead Construction LLC, Rick Burnstead Construction LLC, and Steve Burnstead Construction LLC, plus reviewed historical seller names containing Burnstead and an explicit construction or homes business term. Open a property's evidence panel to see the particular company group associated with its sale.</p>
-        <p>The county source snapshot is dated {day(manifest['sourceAsOf'])}. Among included parcels, the earliest matching company recording is {day(stats['record_min'])}; the latest first matching recording is {day(stats['record_max'])}. These are transaction dates, separate from the county year-built range of {stats['year_min']}–{stats['year_max']}. The collection is not a timeline of every Burnstead project.</p>
-      </section>
-      <section class="research-section" aria-labelledby="burnstead-check">
-        <h2 id="burnstead-check">Verify the connection to a particular home</h2>
-        <p>Begin with the exact address or ten-digit parcel number. Open the county property report from the result, then inspect the cited recording in the {link(RECORDER, "Recorder's search")}. Check the legal description and seller name before comparing the original construction permit from the responsible city or county office.</p>
-        <p>This collection includes {flags['land-only-evidence']:,} parcel associations whose supporting sales have land-only classifications without an improved-residential classification, and {flags['chronology-review']:,} whose county construction year is at least three years after the first matching recording. These flags identify questions to investigate; they do not establish a different builder or a replacement home. Some flags overlap.</p>
-        <p>If a home is missing, try its parcel number and check the county sources directly. A different company name, an unreviewed transaction, or coverage outside this release can prevent a match. Read the <a href="{GUIDE}">step-by-step builder research guide</a> for the full workflow.</p>
-      </section>
-      <section class="research-sources" aria-labelledby="burnstead-sources"><h2 id="burnstead-sources">Sources and scope</h2><p>Counts come from this site's released King County parcel, residential-building, and sale-record data. {link(RESEARCH, 'Official county property-research tools')} help check individual records. See <a href="/#about">the matching methodology</a> for release details. This is an independent research page, not an endorsement or an active-listings feed.</p></section>
-      <div class="research-action"><a class="button button-primary" href="{explorer('burnstead')}">Explore Burnstead associations</a><a href="/builders/quadrant/">Explore Quadrant Homes records</a></div>
+      <aside class="research-note"><p>These homes are matched to Burnstead company names in sales records. A sale record does not confirm who built the home.</p></aside>
+      <section class="research-section" aria-labelledby="burnstead-coverage"><h2 id="burnstead-coverage">Homes by city</h2>{city_table('burnstead', stats)}</section>
+      {check_section('burnstead')}
+      {record_details('burnstead', stats, manifest, names)}
+      {sources_section('burnstead')}
+      <div class="research-action"><a class="button button-primary" href="{explorer('burnstead')}">View Burnstead homes</a><a href="/builders/quadrant/">Quadrant Homes</a></div>
 '''
 
 
 def quadrant_body(stats, manifest):
-    flags = stats["flags"]
+    names = "<p>Matches use five Quadrant company names through 2020. Other names and later sales have not been reviewed.</p>"
     return f'''
       {stats_panel(stats)}
-      <aside class="research-note"><strong>Historical Quadrant company matches</strong><p>This collection covers five reviewed corporate-name forms through 2020. It does not automatically extend the historical Quadrant label to later transactions or another brand.</p></aside>
-      <section class="research-section" aria-labelledby="quadrant-coverage">
-        <h2 id="quadrant-coverage">Find Quadrant-linked parcels by city</h2>
-        <p>The release includes {stats['count']:,} distinct King County parcels linked to reviewed Quadrant company names in Assessor sale records, across {len(stats['cities'])} postal-city labels. Redmond, Snoqualmie, and Renton have the largest included groups. These counts describe dataset coverage, not all historical Quadrant homes or market share.</p>
-        {city_table('quadrant', stats)}
-      </section>
-      <section class="research-section" aria-labelledby="quadrant-dates">
-        <h2 id="quadrant-dates">Keep the recording date separate from year built</h2>
-        <p>Among included parcels, the earliest first matching company recording is {day(stats['record_min'])}, and the latest is {day(stats['record_max'])}. The underlying county source snapshot is dated {day(manifest['sourceAsOf'])}, but this collection's reviewed company matches stop in 2020. Misspellings, other entities, combined sellers, and transactions from 2021 onward await review.</p>
-        <p>County year-built values range from {stats['year_min']} to {stats['year_max']}. A construction year after the company sale does not establish that Quadrant built that structure. Resolve the property's chronology with the original documents and permits.</p>
-      </section>
-      <section class="research-section" aria-labelledby="quadrant-evidence">
-        <h2 id="quadrant-evidence">What to check before naming the builder</h2>
-        <p>Open a parcel in the explorer and follow its county property link. Use its recording references in the {link(RECORDER, "official Recorder's search")}, then compare the legal description, company name, and dates. A property seller can differ from the contractor who constructed the home.</p>
-        <p>For this collection, {flags['land-only-evidence']:,} associations have only land-classified supporting sales rather than an improved-residential classification. Another review flag marks {flags['chronology-review']:,} parcels where county year built is at least three years after the earliest matching recording. There are also {flags['multi-parcel-recording']:,} associations with a recording covering multiple parcels. Flags can overlap, and these counts are prompts for document review, not proven errors.</p>
-        <p>Ask the correct city or county permit office for the original construction file. Check its named contractor and project description against the parcel. Our <a href="{GUIDE}">King County builder research guide</a> explains how to find the jurisdiction and work through older recorded documents.</p>
-      </section>
-      <section class="research-sources" aria-labelledby="quadrant-sources"><h2 id="quadrant-sources">Coverage limits and official sources</h2><p>A no-match here means there is no reviewed association in this release. It does not rule out a historical Quadrant connection. Counts are computed from the released county records, not current sale listings. Use {link(RESEARCH, "King County's property-research tools")} and <a href="/#about">our data methodology</a> to continue checking the evidence.</p></section>
-      <div class="research-action"><a class="button button-primary" href="{explorer('quadrant')}">Explore Quadrant associations</a><a href="/builders/burnstead/">Explore Burnstead records</a></div>
+      <aside class="research-note"><p>These homes are matched to Quadrant company names in sales records through 2020. A sale record does not confirm who built the home.</p></aside>
+      <section class="research-section" aria-labelledby="quadrant-coverage"><h2 id="quadrant-coverage">Homes by city</h2>{city_table('quadrant', stats)}</section>
+      {check_section('quadrant')}
+      {record_details('quadrant', stats, manifest, names)}
+      {sources_section('quadrant')}
+      <div class="research-action"><a class="button button-primary" href="{explorer('quadrant')}">View Quadrant homes</a><a href="/builders/burnstead/">Burnstead</a></div>
 '''
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lastmod", default="2026-10-11", help="Date these page files changed, YYYY-MM-DD")
+    parser.add_argument("--pages-only", action="store_true", help="Leave sitemap.xml and robots.txt unchanged")
     args = parser.parse_args()
     modified = date.fromisoformat(args.lastmod).isoformat()
     manifest = json.loads((ROOT / "data/manifest.json").read_text())
@@ -275,10 +254,10 @@ def main():
     burnstead = collection_stats("burnstead", manifest, index, details)
     quadrant = collection_stats("quadrant", manifest, index, details)
     pages = [
-        (GUIDE, "How to Find Who Built Your Home in King County | Who Built My Home?", "Research a King County home's builder using parcel records, eReal Property, recorded deeds, and original permits. Learn what a company match does and does not prove.", "How to find who built your home in King County", "Research guide", "Follow the evidence from your address to the parcel, recorded documents, and original construction permit.", guide_body(manifest)),
-        ("/builders/buchan/", "Buchan Homes in King County: County-Record Research | Who Built My Home?", f"Explore {buchan['count']:,} King County parcels in one Buchan company-record collection. Browse city counts, construction-year ranges, and evidence for individual homes.", "Research Buchan homes in King County", "Builder records", "Browse one combined Buchan collection and follow the county evidence for a particular home.", buchan_body(buchan, manifest)),
-        ("/builders/burnstead/", "Burnstead Homes in King County: Research County Records | Who Built My Home?", f"Explore {burnstead['count']:,} King County parcels associated with reviewed Burnstead company names. Browse city counts, county year-built ranges, and evidence limits.", "Research Burnstead homes in King County", "Builder records", "Explore county sale-record connections to Burnstead-named companies, then verify the evidence for a particular home.", burnstead_body(burnstead, manifest)),
-        ("/builders/quadrant/", "Quadrant Homes in King County: County-Record Explorer | Who Built My Home?", f"Explore {quadrant['count']:,} King County parcels associated with reviewed historical Quadrant company names. Browse city counts and learn how to verify a home's builder.", "Research Quadrant homes in King County", "Builder records", "Find historical Quadrant company-sale associations and the county records you can use to investigate them.", quadrant_body(quadrant, manifest)),
+        (GUIDE, "Find Your Home's Builder in King County | Who Built My Home?", "Find a home's builder using King County property records, deeds, and building permits.", "How to find your home's builder", "Research guide", "Start with the address, then check county records and the original building permit.", guide_body(manifest)),
+        ("/builders/buchan/", "Buchan Homes in King County | Who Built My Home?", f"Search {buchan['count']:,} homes matched to Buchan company names in King County sales records.", "Buchan homes in King County", "Buchan", f"{buchan['count']:,} homes matched to Buchan company names in King County sales records.", buchan_body(buchan, manifest)),
+        ("/builders/burnstead/", "Burnstead Homes in King County | Who Built My Home?", f"Search {burnstead['count']:,} homes matched to Burnstead company names in King County sales records.", "Burnstead homes in King County", "Burnstead", f"{burnstead['count']:,} homes matched to Burnstead company names in King County sales records.", burnstead_body(burnstead, manifest)),
+        ("/builders/quadrant/", "Quadrant Homes in King County | Who Built My Home?", f"Search {quadrant['count']:,} homes matched to Quadrant company names in King County sales records.", "Quadrant homes in King County", "Quadrant", f"{quadrant['count']:,} homes matched to Quadrant company names in King County sales records.", quadrant_body(quadrant, manifest)),
     ]
     for path, title, description, heading, label, intro, body in pages:
         target = ROOT / path.strip("/") / "index.html"
@@ -286,6 +265,8 @@ def main():
         rendered = shell(path, title, description, heading, label, intro, body, modified, manifest["sourceAsOf"])
         target.write_text("\n".join(line.rstrip() for line in rendered.splitlines()) + "\n")
         print(f"Built {target.relative_to(ROOT)}")
+    if args.pages_only:
+        return
     locations = ["/"] + [page[0] for page in pages]
     entries = "\n".join(f"  <url><loc>{BASE}{path}</loc><lastmod>{modified}</lastmod></url>" for path in locations)
     (ROOT / "sitemap.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{entries}\n</urlset>\n')

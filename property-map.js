@@ -86,7 +86,7 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
 
   function markerFor(property) {
     if (markers.has(property.pin)) return markers.get(property.pin);
-    const label = `${property.address}, ${property.city}. Open property record.`;
+    const label = `${property.address}, ${property.city}. View home details.`;
     const marker = library.marker(locations.get(property.pin), {
       icon: library.divIcon({ className: 'property-map-pin', html: '<span aria-hidden="true"></span>', iconSize: [24, 24], iconAnchor: [12, 12] }),
       title: label, alt: label, keyboard: true,
@@ -104,8 +104,8 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
     if (!visible || !map || !locations) return;
     const { mapped, missing } = matchMapProperties(latest, locations);
     status.textContent = latest.length
-      ? `${integer(mapped.length)} of ${integer(latest.length)} matching homes mapped${missing ? ` · ${integer(missing)} without a checked location remain in the list` : ''}.`
-      : 'No matching homes. Change the search or filters to see parcel locations.';
+      ? `${integer(mapped.length)} of ${integer(latest.length)} homes on map${missing ? ` · ${integer(missing)} shown only in the list` : ''}.`
+      : 'No matching homes. Try another search or clear the filters.';
     fit.disabled = mapped.length === 0;
     // Sorting or moving between list pages must not reset a user's map position.
     const nextSignature = mapped.map(property => property.pin).sort().join(',');
@@ -119,7 +119,7 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
   }
 
   function showError() {
-    status.textContent = 'Map unavailable. Search results are still available below.';
+    status.textContent = 'Map unavailable. Use the list below.';
     error.hidden = false;
     retry.hidden = false;
   }
@@ -127,7 +127,7 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
   async function initialize() {
     if (map) return;
     if (pending) return pending;
-    status.textContent = 'Loading parcel locations and map…';
+    status.textContent = 'Loading map…';
     error.hidden = true;
     retry.hidden = true;
     fit.disabled = true;
@@ -150,7 +150,7 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
       tiles.on('tileerror', () => {
         tileErrors += 1;
         tileNotice.hidden = false;
-        tileNotice.textContent = 'Some background map tiles are unavailable. Parcel markers and the result list still work.';
+        tileNotice.textContent = 'Parts of the map did not load. You can still select a home or use the list.';
       });
       tiles.on('load', () => { if (!tileErrors) tileNotice.hidden = true; });
       // Adding tiles is delayed if the user hides the map while it is loading.
@@ -159,7 +159,7 @@ export function createPropertyMap({ manifest, properties, onOpen, elements }) {
         spiderfyOnMaxZoom: true, zoomToBoundsOnClick: true,
         iconCreateFunction: cluster => {
           const count = cluster.getChildCount();
-          const label = `${integer(count)} properties. Zoom in to explore.`;
+          const label = `${integer(count)} homes. Select to zoom in.`;
           const html = document.createElement('span');
           html.textContent = integer(count);
           html.setAttribute('aria-label', label);

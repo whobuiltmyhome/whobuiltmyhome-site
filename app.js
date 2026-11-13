@@ -4,6 +4,14 @@ export const PAGE_SIZE = 20;
 const MAX_QUERY_LENGTH = 160;
 const SORT_VALUES = new Set(['address', 'city', 'year-asc', 'year-desc']);
 const ROUTINE_DATA_FLAGS = new Set(['assessor-sale-association', 'gis-primary-address-recovery']);
+const DATA_NOTES = {
+  'chronology-review': 'The sale record is at least three years older than the home’s listed construction year.',
+  'land-only-evidence': 'The matching sales are classified as land.',
+  'legal-corroboration-missing': 'The parcel match comes from Assessor records. The plat, lot, and block have not been checked separately.',
+  'minor-chronology-gap': 'The sale record is one or two years older than the home’s listed construction year.',
+  'multi-parcel-recording': 'This sale record covers more than one parcel.',
+  'recording-crosswalk': 'County sources list different parcel numbers. This site uses the Assessor’s parcel match.',
+};
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 async function responseJson(response) {
@@ -175,10 +183,10 @@ async function bootstrap() {
     if (!isReady || !manifest.geometryAvailable) return;
     byId('map-error').hidden = true;
     byId('retry-map').hidden = true;
-    byId('map-status').textContent = 'Loading parcel locations and map…';
+    byId('map-status').textContent = 'Loading map…';
     try {
       if (!mapController) {
-        if (!mapLoading) mapLoading = import('./property-map.js').then(({ createPropertyMap }) => {
+        if (!mapLoading) mapLoading = import('./property-map.js?v=20261113-ui').then(({ createPropertyMap }) => {
           mapController = createPropertyMap({ manifest, properties, onOpen: pin => openProperty(pin, true),
             elements: { canvas: byId('property-map'), status: byId('map-status'), error: byId('map-error'),
               retry: byId('retry-map'), fit: byId('fit-map'), tileNotice: byId('map-tile-notice') } });
@@ -188,7 +196,7 @@ async function bootstrap() {
       mapController.setProperties(filtered);
       if (mapExpanded) await mapController.show();
     } catch {
-      byId('map-status').textContent = 'Map unavailable. Search results are still available below.';
+      byId('map-status').textContent = 'Map unavailable. Use the list below.';
       byId('map-error').hidden = false;
       byId('retry-map').hidden = false;
     }
@@ -224,7 +232,7 @@ async function bootstrap() {
     const meta = node('span', 'property-meta');
     meta.append(node('span', 'property-year', property.yearBuilt === null ? 'Year not listed' : `Built ${property.yearBuilt}`));
     const label = property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name).filter(Boolean).join(' · ');
-    meta.append(node('span', '', label ? `${label} association` : 'Builder association'));
+    meta.append(node('span', '', label || 'Builder not listed'));
     const additionalFlags = property.reviewFlags.filter(flag => !ROUTINE_DATA_FLAGS.has(flag));
     if (additionalFlags.length) meta.append(node('span', 'property-review', `${additionalFlags.length} data ${additionalFlags.length === 1 ? 'note' : 'notes'}`));
     main.append(meta);
@@ -241,7 +249,7 @@ async function bootstrap() {
     const malformedYear = [ui['year-from'], ui['year-to']].some(control => control.value && !parseYear(control.value));
     const invalidYears = malformedYear || (state.from && state.to && Number(state.from) > Number(state.to));
     ui['filter-error'].hidden = !invalidYears;
-    ui['filter-error'].textContent = malformedYear ? 'Enter a four-digit year between 1600 and 2100, or leave it blank.' : invalidYears ? 'The “from” year must be earlier than or equal to the “to” year.' : '';
+    ui['filter-error'].textContent = malformedYear ? 'Enter a four-digit year from 1600 to 2100, or leave it blank.' : invalidYears ? 'The start year must come before the end year, or be the same.' : '';
     filtered = invalidYears ? [] : filterProperties(properties, state);
     mapController?.setProperties(filtered);
     const page = paginateProperties(filtered, state.page);
@@ -274,7 +282,7 @@ async function bootstrap() {
       } else {
         const suggestions = suggestProperties(properties, state.q);
         if (suggestions.length) {
-          recovery.append(node('p', '', 'Possible address matches — check the address before choosing:'));
+          recovery.append(node('p', '', 'Did you mean one of these addresses?'));
           const list = node('ul', 'suggestion-list');
           for (const property of suggestions) {
             const item = node('li');
@@ -341,7 +349,7 @@ async function bootstrap() {
     ui['detail-body'].replaceChildren();
     ui['copy-status'].textContent = '';
     ui['copy-property-link'].disabled = !property;
-    const title = node('h2', '', property ? formatAddress(property.address) : 'Home not included');
+    const title = node('h2', '', property ? formatAddress(property.address) : 'Home not found');
     title.id = 'detail-title';
     ui['detail-body'].append(title);
     if (!ui['property-dialog'].open) {
@@ -349,19 +357,16 @@ async function bootstrap() {
       document.body.classList.add('dialog-open');
     }
     if (!property) {
-      ui['detail-body'].append(node('p', 'detail-notice', 'This shared parcel number is not in the current builder view. Close this window to search the included homes.'));
+      ui['detail-body'].append(node('p', 'detail-notice', 'This parcel is not listed on the site. Close this window to search for another home.'));
       return;
     }
     if (track) trackPropertyOpen();
     ui['detail-body'].append(node('p', 'detail-locality', `${formatAddress(property.city)}, WA ${property.zip}`));
-    const badges = node('div', 'detail-badges');
-    badges.append(node('span', 'badge badge-gold', 'Original builder unconfirmed'));
-    const connectionNotice = 'A builder-related company appears in a county sale for this parcel. The record may concern the home, land, or a parcel transfer; it does not establish who built the current home.';
-    ui['detail-body'].append(badges, node('p', 'detail-notice', connectionNotice));
+    ui['detail-body'].append(node('p', 'detail-notice', 'From King County property and sales records. Builder not confirmed.'));
     const facts = node('dl', 'detail-facts');
-    facts.append(fact('Builder association', property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name || 'Builder association').join('; ')), fact('Year built · county record', property.yearBuilt ?? 'Not listed'), fact('King County parcel', property.pin));
+    facts.append(fact('Builder match', property.collectionIds.map(id => manifest.collections.find(collection => collection.id === id)?.name || 'Not listed').join('; ')), fact('Year built', property.yearBuilt ?? 'Not listed'), fact('Parcel number', property.pin));
     ui['detail-body'].append(facts);
-    const loading = node('p', 'detail-loading', 'Loading county details…');
+    const loading = node('p', 'detail-loading', 'Loading records…');
     ui['detail-body'].append(loading);
     try {
       const allDetails = await fetchDetails();
@@ -369,22 +374,20 @@ async function bootstrap() {
       const detail = allDetails[pin];
       if (!detail || !Array.isArray(detail.recordings) || !Array.isArray(detail.notes)) throw new Error('Evidence unavailable');
       loading.remove();
-      facts.append(fact('First matching county record', formatDate(detail.firstCompanyRecording)));
       const sources = node('div', 'detail-source-links');
-      const county = sourceLink('View King County property details', detail.countyUrl, 'county_record');
+      const county = sourceLink('King County property record', detail.countyUrl, 'county_record');
       if (county) sources.append(county);
       ui['detail-body'].append(sources);
       const actions = node('div', 'detail-actions');
-      const explore = node('a', '', `More matching homes in ${formatAddress(property.city)}`);
+      const explore = node('a', '', `More homes in ${formatAddress(property.city)}`);
       explore.href = `${buildUrlSearch({ ...readUrlState(), city: property.city, collection: property.collectionIds[0] })}#explorer`;
-      const report = node('a', '', 'Email a correction');
+      const report = node('a', '', 'Report an error');
       report.href = `mailto:hello@whobuiltmyhome.com?${new URLSearchParams({ subject: `Property data: ${property.pin}`, body: `Parcel: ${property.pin}\nHome: ${formatAddress(property.address)}, ${formatAddress(property.city)}\n\nWhat seems incorrect?\n\nSupporting public source (optional):` })}`;
       actions.append(explore, report);
       ui['detail-body'].append(actions);
       const evidence = node('details', 'detail-evidence');
-      evidence.append(node('summary', '', 'Why this match?'));
-      evidence.open = property.reviewFlags.some(flag => !ROUTINE_DATA_FLAGS.has(flag));
-      evidence.append(node('p', '', 'The address and parcel match county property data. The company groups below identify sale associations, not independently verified construction.'));
+      const hasNotes = property.reviewFlags.some(flag => !ROUTINE_DATA_FLAGS.has(flag));
+      evidence.append(node('summary', '', hasNotes ? 'County records and notes' : 'County records'));
       ui['detail-body'].append(evidence);
       const connections = detail.connections || [{ ...detail, collectionId: property.collectionIds[0], entityIds: [], reviewFlags: property.reviewFlags }];
       for (const connection of connections) {
@@ -392,23 +395,20 @@ async function bootstrap() {
         section.dataset.collection = connection.collectionId;
         const collection = manifest.collections.find(c => c.id === connection.collectionId);
         section.append(node('h3', '', collection?.name || 'Builder match'));
-        const entityNames = (connection.entityIds || []).map(id => manifest.entities?.find(e => e.id === id)?.name).filter(Boolean);
-        if (entityNames.length) section.append(node('p', '', `Company match group: ${entityNames.join('; ')}`));
-        const companyExplanation = connection.collectionId === 'buchan' && !entityNames.length
-          ? 'This is a historical Buchan company association. The John Buchan / William Buchan attribution remains unreviewed. Use the county property details and recording references below to investigate the association.'
-          : 'These are reviewed company labels; some group several historical company names. Use the county property details and recording references below to investigate the association.';
-        section.append(node('p', '', companyExplanation));
-        section.append(node('p', '', `First matching record: ${formatDate(connection.firstCompanyRecording)}`));
+        if (connection.collectionId === 'buchan' && !(connection.entityIds || []).length) {
+          section.append(node('p', '', 'John Buchan and William Buchan matches are grouped together here.'));
+        }
+        section.append(node('p', '', `First matching sale record: ${formatDate(connection.firstCompanyRecording)}`));
         const reviewNotes = (connection.reviewFlags || []).filter(flag => !ROUTINE_DATA_FLAGS.has(flag))
-          .map(flag => manifest.reviewFlagDescriptions?.[flag]).filter(Boolean);
+          .map(flag => DATA_NOTES[flag] || manifest.reviewFlagDescriptions?.[flag]).filter(Boolean);
         if (reviewNotes.length) {
           const notes = node('ul');
           for (const note of reviewNotes) notes.append(node('li', '', note));
           section.append(notes);
-        } else section.append(node('p', '', 'No additional data notes listed.'));
-        section.append(node('h4', '', 'County record references'));
+        }
+        section.append(node('h4', '', 'Record numbers'));
         const list = node('ul', 'recording-list');
-        list.setAttribute('aria-label', 'County recording identifiers');
+        list.setAttribute('aria-label', 'County record numbers');
         for (const recording of connection.recordings) list.append(node('li', '', recording));
         section.append(list);
         evidence.append(section);
@@ -416,8 +416,8 @@ async function bootstrap() {
     } catch {
       if (request !== detailRequest || state.pin !== pin) return;
       loading.remove();
-      ui['detail-body'].append(node('p', 'detail-error', 'The county-detail file could not be loaded. Your search results are still available.'));
-      const retry = node('button', 'button button-secondary', 'Try details again');
+      ui['detail-body'].append(node('p', 'detail-error', 'Records could not be loaded. Please try again.'));
+      const retry = node('button', 'button button-secondary', 'Try again');
       retry.type = 'button';
       retry.addEventListener('click', () => openProperty(pin));
       ui['detail-body'].append(retry);
@@ -438,7 +438,7 @@ async function bootstrap() {
         const homes = properties.filter(property => property.collectionIds.includes(collection.id));
         const cityCount = new Set(homes.map(property => property.city)).size;
         const years = homes.map(property => property.yearBuilt).filter(Number.isInteger);
-        item.append(node('h3', '', collection.name), node('p', 'builder-count', `${integer(collection.propertyCount)} associated homes`), node('p', '', `${cityCount} ${cityCount === 1 ? 'city' : 'cities'} · Built ${Math.min(...years)}–${Math.max(...years)}`));
+        item.append(node('h3', '', collection.name), node('p', 'builder-count', `${integer(collection.propertyCount)} homes`), node('p', '', `${cityCount} ${cityCount === 1 ? 'city' : 'cities'} · Built ${Math.min(...years)}–${Math.max(...years)}`));
         const explore = node('a', 'collection-link', 'View homes →');
         explore.href = `?collection=${encodeURIComponent(collection.id)}#explorer`;
         item.append(explore);
@@ -460,7 +460,7 @@ async function bootstrap() {
   function showLoadError() {
     isReady = false;
     ui['load-state'].hidden = false;
-    ui['load-state'].replaceChildren(node('h3', '', 'The builder view could not be loaded'), node('p', '', 'Check your connection, then try again. No homes have been loaded.'));
+    ui['load-state'].replaceChildren(node('h3', '', 'Homes could not be loaded'), node('p', '', 'Check your connection and try again.'));
     const retry = node('button', 'button button-secondary', 'Try again');
     retry.type = 'button';
     retry.addEventListener('click', loadCollection);
